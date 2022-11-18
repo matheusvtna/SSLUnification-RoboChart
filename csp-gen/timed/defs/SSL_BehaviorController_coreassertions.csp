@@ -1,0 +1,58 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 18-11-2022 10:36:07
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "core_timed_defs.csp"
+include "file_main_defs.csp"
+include "core_defs.csp"
+include "SSL_BehaviorController.csp"
+include "state_timed_defs.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+
+transparent wbisim
+channel r__
+-- generate SSL_BehaviorController
+P_SSL_BehaviorController = let
+	id__ = 0
+	
+	
+	
+		
+within
+	SSL_BehaviorController::O__(id__)
+
+assert P_SSL_BehaviorController :[deadlock-free]	
+assert P_SSL_BehaviorController;RUN({r__}) :[deadlock-free]
+assert P_SSL_BehaviorController :[deterministic]
+assert P_SSL_BehaviorController :[divergence-free]
+
+-- generate SSL_BehaviorController_stm_ref0
+P_SSL_BehaviorController_stm_ref0 = let
+	id__ = 0
+	
+	
+	
+within
+	SSL_BehaviorController::stm_ref0::O__(
+		id__
+	)
+assert P_SSL_BehaviorController_stm_ref0 :[deadlock-free]	
+assert P_SSL_BehaviorController_stm_ref0;RUN({r__}) :[deadlock-free]
+assert P_SSL_BehaviorController_stm_ref0 :[deterministic]
+assert P_SSL_BehaviorController_stm_ref0 :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_SSL_BehaviorController_stm_ref0[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_SSL_BehaviorController_stm_ref0
+-- timed deadlock free
+assert prioritise(P_SSL_BehaviorController[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_SSL_BehaviorController

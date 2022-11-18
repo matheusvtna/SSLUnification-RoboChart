@@ -1,0 +1,235 @@
+interface IMove {
+	move ( linearVelocity : real , angularVelocity : real )
+	stop ()
+}
+
+interface ICamera {
+	event sendRawFrame: string
+}
+
+// Unification Modules.
+
+interface IReferee {
+	event sendGameEventVision: string
+	event sendGameEventDecision: string
+}
+
+interface IVision {
+	event receiveGameEvent: string
+	event receiveRawFrame: string
+	
+	event sendFrameDecision: string
+	event sendFieldDecision: string
+	
+	event sendFrameBehavior: string
+	event sendFieldBehavior: string
+	
+	event sendFramePlanning: string
+	event sendFieldPlanning: string
+	
+	event sendFrameNavigation: string
+	event sendFieldNavigation: string
+} 
+
+interface IDecision {
+	event receiveGameEvent: string
+	event receiveFrame: string
+	event receiveField: string
+	event sendTactic: string
+}
+
+interface IBehavior {
+	event receiveFrame: string
+	event receiveField: string
+	event receiveTactic: string
+	event sendAction: string
+}
+
+interface IPlanning {
+	event receiveFrame: string
+	event receiveField: string	
+	event receiveAction: string
+	event sendCommand: string
+}
+
+interface INavigation {
+	event receiveFrame: string
+	event receiveField: string	
+	event receiveCommand: string	
+}
+
+stm goToPointAndStop {
+	
+	// Frame
+	var frame: string
+	
+ 	// Vars do robo. 
+	var robotPosition : real*real
+	var robotAngle : real
+	
+	// Vars da posicao target.
+	var targetPosition : real*real
+	var targetAngle : real	
+	
+	// Constantes de parada dos estados de goToPoint
+	// e adjustAngle, respectivamente.
+	const STOP_DIST_THRESHOLD: real
+	const STOP_ANGLE_THRESHOLD: real
+	
+	// Vars de transicao
+	var distance: real
+	var angleDiff: real
+	
+	// Vars de actions
+	var linearVelocity: real
+	var angularVelocity: real
+	
+	//FSM.
+	
+	// States.
+	initial i0
+	state sGoToPoint {
+		entry robotPosition = getRobotPosition (frame);
+		robotAngle = getRobotAngle (frame);
+		targetPosition = getTargetPosition (frame);
+		targetAngle = getTargetAngle (frame);
+		distance = getDistance(robotPosition, targetPosition);
+		angleDiff = smallestAngleDiff(robotAngle, targetAngle);
+		IMove::move(linearVelocity, angularVelocity) 
+		
+		exit IMove::stop()
+	}
+	state sAdjustAngle {
+		entry robotPosition = getRobotPosition (frame);
+		robotAngle = getRobotAngle (frame);
+		targetPosition = getTargetPosition (frame);
+		targetAngle = getTargetAngle (frame);
+		distance = getDistance(robotPosition, targetPosition);
+		angleDiff = smallestAngleDiff(robotAngle, targetAngle);
+		IMove::move(linearVelocity, angularVelocity)  
+		
+		exit IMove::stop()
+	}
+	final f0
+	
+	// Transitions.
+	transition t0 {
+		from i0
+		to sGoToPoint
+	}
+	
+	transition t1 {		
+		from sGoToPoint
+		to sAdjustAngle
+		condition distance <= STOP_DIST_THRESHOLD		
+	}
+	transition t2 {
+		from sGoToPoint
+		to f0
+		condition distance <= STOP_DIST_THRESHOLD /\ angleDiff <= STOP_ANGLE_THRESHOLD
+	}
+	transition t3 {
+		from sAdjustAngle
+		to f0
+		condition distance <= STOP_DIST_THRESHOLD /\ angleDiff <= STOP_ANGLE_THRESHOLD
+	}
+	transition t4 {
+		from sAdjustAngle
+		to sGoToPoint
+		condition distance > STOP_DIST_THRESHOLD
+	}
+
+}
+
+module SSL {
+	robotic platform SSLRobot {
+		uses ICamera
+		uses IReferee
+		provides IMove 
+	}
+
+	controller VisionController {		
+		uses IVision
+		sref stm_ref0 = stm0		
+	}
+
+	controller DecisionController {
+		uses IDecision
+		sref stm_ref0 = stm0
+	}
+
+	controller BehaviorController {
+		uses IBehavior
+		sref stm_ref0 = stm0	
+	}
+	
+	controller PlanningController {		
+		uses IPlanning		
+		sref stm_ref0 = stm0	
+	}
+	
+	controller NavigationController {		
+		uses INavigation
+		sref stm_ref0 = stm0	
+		requires IMove 
+	}
+
+	// Emit da visão para o Software.
+	connection SSLRobot on sendRawFrame to VisionController on receiveRawFrame ( _async )
+	 
+	// Emit `frame` and `field` from VisionController to other modules.
+	//
+	// Decision.
+	connection VisionController on sendFrameDecision to DecisionController on receiveFrame ( _async )
+	connection VisionController on sendFieldDecision to DecisionController on receiveField ( _async )
+	//
+	// Behavior.
+	connection VisionController on sendFrameBehavior to BehaviorController on receiveFrame ( _async )
+	connection VisionController on sendFieldBehavior to BehaviorController on receiveField ( _async )
+	//
+	// Planning.
+	connection VisionController on sendFramePlanning to PlanningController on receiveFrame ( _async )
+	connection VisionController on sendFieldPlanning to PlanningController on receiveField ( _async )
+	//
+	// Navigation.
+	connection VisionController on sendFrameNavigation to NavigationController on receiveFrame ( _async )
+	connection VisionController on sendFieldNavigation to NavigationController on receiveField ( _async )
+	
+	// Emit and connect for each module.
+	//
+	// Decision.
+	connection DecisionController on sendTactic to BehaviorController on receiveTactic ( _async )
+	//
+	// Behavior.
+	connection BehaviorController on sendAction to PlanningController on receiveAction ( _async )
+	//
+	// Planning.
+	connection PlanningController on sendCommand to NavigationController on receiveCommand ( _async )
+connection SSLRobot on sendGameEventVision to VisionController on receiveGameEvent ( _async )
+	connection SSLRobot on sendGameEventDecision to DecisionController on receiveGameEvent ( _async )
+}
+
+stm stm0 {
+	initial i0
+	final f0
+	transition t0 {
+		from i0
+		to f0
+	}	
+}
+
+// Helpers
+function getRobotPosition(frame: string): real*real {}
+
+function getRobotAngle(frame: string): real {}
+
+function getDistance(robot:real*real, target: real*real) : real {}
+
+function smallestAngleDiff(source: real, target: real): real {}
+
+
+// TODO: As informacoes de target nao vem do frame, mas sim do Decision...
+function getTargetPosition(frame: string): real*real {}
+function getTargetAngle(frame: string): real {}
+
+

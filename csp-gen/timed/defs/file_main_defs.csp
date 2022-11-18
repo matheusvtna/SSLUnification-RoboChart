@@ -1,0 +1,18 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 18-11-2022 10:36:07
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+-- data definitions used by platform:/resource/SSLUnification/main.rct
+
+pre_getRobotPosition(param_frame) = true
+pre_getRobotAngle(param_frame) = true
+pre_getDistance(param_robot,param_target) = true
+pre_smallestAngleDiff(param_source,param_target) = true
+pre_getTargetPosition(param_frame) = true
+pre_getTargetAngle(param_frame) = true
+	

@@ -1,0 +1,90 @@
+-- generate --
+
+-- MODULE CONSTANTS
+
+-- CONTROLLER CONSTANTS
+
+-- STATEMACHINE CONSTANTS
+
+-- generate nat
+nametype core_nat = union({0..2},{calc_type_min(Union(
+			{}))..calc_type_max(Union({}))})
+
+-- generate getTargetAngle
+getTargetAngle(frame) = 0
+
+-- generate getDistance
+getDistance(robot,target) = 0
+
+-- generate core_clock_type
+nametype core_clock_type = {0..10}
+
+-- BASIC FUNCTIONS
+
+-- generate string
+nametype core_string = LSeq(Char,2)
+
+-- generate smallestAngleDiff
+smallestAngleDiff(source,target) = 0
+
+-- generate real
+nametype core_real = union({ -2..2},{calc_type_min(Union(
+			{{getRobotAngle(frame)|frame <- {""}},{getTargetAngle(frame)|frame <- {""}},{getDistance(robotPosition,targetPosition)|targetPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real},robotPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real}},{smallestAngleDiff(robotAngle,targetAngle)|targetAngle <- { -2..2},robotAngle <- { -2..2}},{getRobotAngle(frame)|frame <- {""}},{getTargetAngle(frame)|frame <- {""}},{getDistance(robotPosition,targetPosition)|targetPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real},robotPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real}},{smallestAngleDiff(robotAngle,targetAngle)|targetAngle <- { -2..2},robotAngle <- { -2..2}},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{robotAngle|robotAngle <- { -2..2}},{linearVelocity|linearVelocity <- { -2..2}},{targetAngle|targetAngle <- { -2..2}},{angularVelocity|angularVelocity <- { -2..2}},{angularVelocity|angularVelocity <- { -2..2}},{targetAngle|targetAngle <- { -2..2}},{robotAngle|robotAngle <- { -2..2}},{linearVelocity|linearVelocity <- { -2..2}}}))..calc_type_max(Union({{getRobotAngle(frame)|frame <- {""}},{getTargetAngle(frame)|frame <- {""}},{getDistance(robotPosition,targetPosition)|targetPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real},robotPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real}},{smallestAngleDiff(robotAngle,targetAngle)|targetAngle <- { -2..2},robotAngle <- { -2..2}},{getRobotAngle(frame)|frame <- {""}},{getTargetAngle(frame)|frame <- {""}},{getDistance(robotPosition,targetPosition)|targetPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real},robotPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real}},{smallestAngleDiff(robotAngle,targetAngle)|targetAngle <- { -2..2},robotAngle <- { -2..2}},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{robotAngle|robotAngle <- { -2..2}},{linearVelocity|linearVelocity <- { -2..2}},{targetAngle|targetAngle <- { -2..2}},{angularVelocity|angularVelocity <- { -2..2}},{angularVelocity|angularVelocity <- { -2..2}},{targetAngle|targetAngle <- { -2..2}},{robotAngle|robotAngle <- { -2..2}},{linearVelocity|linearVelocity <- { -2..2}}}))}) 
+
+-- VECTOR TYPES AND OPERATIONS
+
+
+-- CLOCKS
+
+-- generate int
+nametype core_int = union({ -2..2},{calc_type_min(Union(
+			{}))..calc_type_max(Union({}))})
+
+-- generate getRobotPosition
+getRobotPosition(frame) = (0,0)
+
+-- generate -- OPERATION BOUNDS
+
+-- MODULE CONSTANTS
+
+-- CONTROLLER CONSTANTS
+
+-- STATEMACHINE CONSTANTS
+
+-- generate Div
+Div(e1,e2,T) = if member(e1/e2,T) then e1/e2 else e1
+
+-- generate Neg
+Neg(e1,T) = if member(-e1,T) then -e1 else e1
+
+-- generate boolean
+nametype core_boolean = Bool
+
+-- generate Mult
+Mult(e1,e2,T) = if member(e1*e2,T) then e1*e2 else e1
+
+-- generate getTargetPosition
+getTargetPosition(frame) = (0,0)
+
+-- generate Modulus
+Modulus(e1,e2,T) = if member(e1%e2,T) then e1%e2 else e1
+
+-- generate const_goToPointAndStop_STOP_DIST_THRESHOLD
+const_goToPointAndStop_STOP_DIST_THRESHOLD = 0
+
+-- generate const_goToPointAndStop_STOP_ANGLE_THRESHOLD
+const_goToPointAndStop_STOP_ANGLE_THRESHOLD = 0
+
+-- OPERATION CONSTANTS
+
+-- BASIC TYPES
+
+-- generate Plus
+Plus(e1,e2,T) = if member(e1+e2,T) then e1+e2 else e1
+
+-- generate Minus
+Minus(e1,e2,T) = if member(e1-e2,T) then e1-e2 else e1
+
+-- generate getRobotAngle
+getRobotAngle(frame) = 0
+
