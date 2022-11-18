@@ -1,3 +1,5 @@
+import vistionSTM
+
 interface IMove {
 	move ( linearVelocity : real , angularVelocity : real )
 	stop ()
@@ -150,7 +152,7 @@ module SSL {
 
 	controller VisionController {		
 		uses IVision
-		sref stm_ref0 = stm0		
+		sref stm_ref0 = VisionSTM		
 	}
 
 	controller DecisionController {
@@ -205,7 +207,7 @@ module SSL {
 	//
 	// Planning.
 	connection PlanningController on sendCommand to NavigationController on receiveCommand ( _async )
-connection SSLRobot on sendGameEventVision to VisionController on receiveGameEvent ( _async )
+	connection SSLRobot on sendGameEventVision to VisionController on receiveGameEvent ( _async )
 	connection SSLRobot on sendGameEventDecision to DecisionController on receiveGameEvent ( _async )
 }
 
