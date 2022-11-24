@@ -1,0 +1,22 @@
+interface iVision {
+	event receiveGameEvent: string
+	event receiveRawFrame: string
+	
+	event sendFrameDecision: string
+	event sendFieldDecision: string
+	
+	event sendFrameBehavior: string
+	event sendFieldBehavior: string
+	
+	event sendFramePlanning: string
+	event sendFieldPlanning: string
+	
+	event sendFrameNavigation: string
+	event sendFieldNavigation: string
+}
+
+controller visionController {
+	uses iVision
+	sref stm_ref0 = VisionSTM
+}
+
