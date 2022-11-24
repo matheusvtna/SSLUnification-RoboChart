@@ -1,0 +1,11 @@
+
+
+stm DecisionSTM {
+	final f0
+	initial i0
+	transition t0 {
+		from i0
+		to f0
+	}
+}
+

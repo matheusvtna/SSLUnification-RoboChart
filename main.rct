@@ -152,27 +152,27 @@ module SSL {
 
 	controller VisionController {		
 		uses IVision
-		sref stm_ref0 = VisionSTM		
+		sref stm_ref0 = VisionSTM	
 	}
 
 	controller DecisionController {
 		uses IDecision
-		sref stm_ref0 = stm0
+		sref stm_ref0 = DecisionSTM
 	}
 
 	controller BehaviorController {
 		uses IBehavior
-		sref stm_ref0 = stm0	
+		sref stm_ref0 = BehaviorSTM	
 	}
 	
 	controller PlanningController {		
 		uses IPlanning		
-		sref stm_ref0 = stm0	
+		sref stm_ref0 = PlanningSTM	
 	}
 	
 	controller NavigationController {		
 		uses INavigation
-		sref stm_ref0 = stm0	
+		sref stm_ref0 = NavigationSTM	
 		requires IMove 
 	}
 
