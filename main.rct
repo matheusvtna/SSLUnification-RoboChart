@@ -1,4 +1,8 @@
-import vistionSTM
+import visionSTM
+import behaviorSTM
+import navigationSTM
+import planningSTM
+import decisionSTM
 
 interface IMove {
 	move ( linearVelocity : real , angularVelocity : real )
@@ -150,65 +154,31 @@ module SSL {
 		provides IMove 
 	}
 
-	controller VisionController {		
-		uses IVision
-		sref stm_ref0 = VisionSTM	
-	}
+	cref ctrl_ref0 = visionController
+connection SSLRobot on sendRawFrame to ctrl_ref0 on receiveRawFrame ( _async )
 
-	controller DecisionController {
-		uses IDecision
-		sref stm_ref0 = DecisionSTM
-	}
+	connection SSLRobot on sendGameEventVision to ctrl_ref0 on receiveGameEvent ( _async )
 
-	controller BehaviorController {
-		uses IBehavior
-		sref stm_ref0 = BehaviorSTM	
-	}
-	
-	controller PlanningController {		
-		uses IPlanning		
-		sref stm_ref0 = PlanningSTM	
-	}
-	
-	controller NavigationController {		
-		uses INavigation
-		sref stm_ref0 = NavigationSTM	
-		requires IMove 
-	}
+	connection ctrl_ref0 on sendFrameDecision to ctrl_ref1 on receiveFrame
 
-	// Emit da visão para o Software.
-	connection SSLRobot on sendRawFrame to VisionController on receiveRawFrame ( _async )
-	 
-	// Emit `frame` and `field` from VisionController to other modules.
-	//
-	// Decision.
-	connection VisionController on sendFrameDecision to DecisionController on receiveFrame ( _async )
-	connection VisionController on sendFieldDecision to DecisionController on receiveField ( _async )
-	//
-	// Behavior.
-	connection VisionController on sendFrameBehavior to BehaviorController on receiveFrame ( _async )
-	connection VisionController on sendFieldBehavior to BehaviorController on receiveField ( _async )
-	//
-	// Planning.
-	connection VisionController on sendFramePlanning to PlanningController on receiveFrame ( _async )
-	connection VisionController on sendFieldPlanning to PlanningController on receiveField ( _async )
-	//
-	// Navigation.
-	connection VisionController on sendFrameNavigation to NavigationController on receiveFrame ( _async )
-	connection VisionController on sendFieldNavigation to NavigationController on receiveField ( _async )
-	
-	// Emit and connect for each module.
-	//
-	// Decision.
-	connection DecisionController on sendTactic to BehaviorController on receiveTactic ( _async )
-	//
-	// Behavior.
-	connection BehaviorController on sendAction to PlanningController on receiveAction ( _async )
-	//
-	// Planning.
-	connection PlanningController on sendCommand to NavigationController on receiveCommand ( _async )
-	connection SSLRobot on sendGameEventVision to VisionController on receiveGameEvent ( _async )
-	connection SSLRobot on sendGameEventDecision to DecisionController on receiveGameEvent ( _async )
+	connection ctrl_ref0 on sendFieldDecision to ctrl_ref1 on receiveField
+connection SSLRobot on sendGameEventDecision to ctrl_ref1 on receiveGameEvent ( _async )
+
+	connection ctrl_ref1 on sendTactic to ctrl_ref2 on receiveTactic ( _async )
+
+	connection ctrl_ref0 on sendFieldBehavior to ctrl_ref2 on receiveFrame ( _async )
+
+	connection ctrl_ref0 on sendFrameBehavior to ctrl_ref2 on receiveField ( _async )
+	cref ctrl_ref1 = DecisionController
+	cref ctrl_ref2 = BehaviorController
+	cref ctrl_ref3 = PlanningController
+	connection ctrl_ref2 on sendAction to ctrl_ref3 on receiveAction ( _async )
+	connection ctrl_ref0 on sendFieldPlanning to ctrl_ref3 on receiveField ( _async )
+	connection ctrl_ref0 on sendFramePlanning to ctrl_ref3 on receiveFrame ( _async )
+	connection ctrl_ref3 on sendCommand to ctrl_ref4 on receiveCommand ( _async )
+	connection ctrl_ref0 on sendFrameNavigation to ctrl_ref4 on receiveFrame ( _async )
+	connection ctrl_ref0 on sendFieldNavigation to ctrl_ref4 on receiveField ( _async )
+	cref ctrl_ref4 = NavigationController
 }
 
 stm stm0 {
