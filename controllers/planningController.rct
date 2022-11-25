@@ -1,0 +1,7 @@
+import planningSTM
+
+controller PlanningController {		
+	uses IPlanning		
+	sref stm_ref0 = PlanningSTM	
+}
+

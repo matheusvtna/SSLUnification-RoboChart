@@ -1,0 +1,13 @@
+import behaviorSTM
+
+interface IBehavior {
+	event receiveFrame: string
+	event receiveField: string
+	event receiveTactic: string
+	event sendAction: string
+}
+
+controller BehaviorController {
+	uses IBehavior
+	sref stm_ref0 = BehaviorSTM	
+}
