@@ -1,0 +1,30 @@
+
+--
+-- RoboChart generator version 3.0.0.202209090727
+-- Automatically generated on 24-11-2022 14:12:51
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_behaviorSTM_defs.csp"
+include "core_defs.csp"
+include "state_defs.csp"
+include "BehaviorSTM.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+channel r__
+-- generate BehaviorSTM
+P_BehaviorSTM = let
+	id__ = 0
+	
+	
+	
+within
+	BehaviorSTM::O__(
+		id__
+	)
+assert P_BehaviorSTM :[deadlock-free]	
+assert P_BehaviorSTM;RUN({r__}) :[deadlock-free]
+assert P_BehaviorSTM :[deterministic]
+assert P_BehaviorSTM :[divergence-free]

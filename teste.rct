@@ -1,0 +1,4 @@
+controller ctrl0 {
+	sref stm_ref0 = VisionSTM
+}
+

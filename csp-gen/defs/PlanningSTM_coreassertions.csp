@@ -1,0 +1,30 @@
+
+--
+-- RoboChart generator version 3.0.0.202209090727
+-- Automatically generated on 24-11-2022 14:16:28
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "core_defs.csp"
+include "file_planningSTM_defs.csp"
+include "state_defs.csp"
+include "PlanningSTM.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+channel r__
+-- generate PlanningSTM
+P_PlanningSTM = let
+	id__ = 0
+	
+	
+	
+within
+	PlanningSTM::O__(
+		id__
+	)
+assert P_PlanningSTM :[deadlock-free]	
+assert P_PlanningSTM;RUN({r__}) :[deadlock-free]
+assert P_PlanningSTM :[deterministic]
+assert P_PlanningSTM :[divergence-free]

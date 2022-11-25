@@ -1,0 +1,53 @@
+
+--
+-- RoboChart generator version 3.0.0.202209090727
+-- Automatically generated on 24-11-2022 21:49:30
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_navigationController.csp"
+
+
+
+-- generate NavigationController
+P_NavigationController = let
+	id__ = 0
+	
+	
+	
+		
+within
+	NavigationController::O__(id__)
+
+assert P_NavigationController :[deadlock-free]	
+assert P_NavigationController;RUN({r__}) :[deadlock-free]
+assert P_NavigationController :[deterministic]
+assert P_NavigationController :[divergence-free]
+
+-- generate NavigationController_stm_ref0
+P_NavigationController_stm_ref0 = let
+	id__ = 0
+	
+	
+	
+within
+	NavigationController::stm_ref0::O__(
+		id__
+	)
+assert P_NavigationController_stm_ref0 :[deadlock-free]	
+assert P_NavigationController_stm_ref0;RUN({r__}) :[deadlock-free]
+assert P_NavigationController_stm_ref0 :[deterministic]
+assert P_NavigationController_stm_ref0 :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_NavigationController_stm_ref0[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_NavigationController_stm_ref0
+-- timed deadlock free
+assert prioritise(P_NavigationController[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_NavigationController
+
