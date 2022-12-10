@@ -1,5 +1,3 @@
-
-
 stm DecisionSTM {
 	final f0
 	initial i0

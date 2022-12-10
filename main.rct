@@ -1,150 +1,14 @@
-import visionSTM
-import behaviorSTM
-import navigationSTM
-import planningSTM
-import decisionSTM
+import controllers
+import modules
 
-interface IMove {
-	move ( linearVelocity : real , angularVelocity : real )
-	stop ()
-}
-
+// SSL Robot Interfaces.
 interface ICamera {
 	event sendRawFrame: string
 }
 
-// Unification Modules.
-
 interface IReferee {
 	event sendGameEventVision: string
 	event sendGameEventDecision: string
-}
-
-interface IVision {
-	event receiveGameEvent: string
-	event receiveRawFrame: string
-	
-	event sendFrameDecision: string
-	event sendFieldDecision: string
-	
-	event sendFrameBehavior: string
-	event sendFieldBehavior: string
-	
-	event sendFramePlanning: string
-	event sendFieldPlanning: string
-	
-	event sendFrameNavigation: string
-	event sendFieldNavigation: string
-} 
-
-interface IDecision {
-	event receiveGameEvent: string
-	event receiveFrame: string
-	event receiveField: string
-	event sendTactic: string
-}
-
-interface IBehavior {
-	event receiveFrame: string
-	event receiveField: string
-	event receiveTactic: string
-	event sendAction: string
-}
-
-interface IPlanning {
-	event receiveFrame: string
-	event receiveField: string	
-	event receiveAction: string
-	event sendCommand: string
-}
-
-interface INavigation {
-	event receiveFrame: string
-	event receiveField: string	
-	event receiveCommand: string	
-}
-
-stm goToPointAndStop {
-	
-	// Frame
-	var frame: string
-	
- 	// Vars do robo. 
-	var robotPosition : real*real
-	var robotAngle : real
-	
-	// Vars da posicao target.
-	var targetPosition : real*real
-	var targetAngle : real	
-	
-	// Constantes de parada dos estados de goToPoint
-	// e adjustAngle, respectivamente.
-	const STOP_DIST_THRESHOLD: real
-	const STOP_ANGLE_THRESHOLD: real
-	
-	// Vars de transicao
-	var distance: real
-	var angleDiff: real
-	
-	// Vars de actions
-	var linearVelocity: real
-	var angularVelocity: real
-	
-	//FSM.
-	
-	// States.
-	initial i0
-	state sGoToPoint {
-		entry robotPosition = getRobotPosition (frame);
-		robotAngle = getRobotAngle (frame);
-		targetPosition = getTargetPosition (frame);
-		targetAngle = getTargetAngle (frame);
-		distance = getDistance(robotPosition, targetPosition);
-		angleDiff = smallestAngleDiff(robotAngle, targetAngle);
-		IMove::move(linearVelocity, angularVelocity) 
-		
-		exit IMove::stop()
-	}
-	state sAdjustAngle {
-		entry robotPosition = getRobotPosition (frame);
-		robotAngle = getRobotAngle (frame);
-		targetPosition = getTargetPosition (frame);
-		targetAngle = getTargetAngle (frame);
-		distance = getDistance(robotPosition, targetPosition);
-		angleDiff = smallestAngleDiff(robotAngle, targetAngle);
-		IMove::move(linearVelocity, angularVelocity)  
-		
-		exit IMove::stop()
-	}
-	final f0
-	
-	// Transitions.
-	transition t0 {
-		from i0
-		to sGoToPoint
-	}
-	
-	transition t1 {		
-		from sGoToPoint
-		to sAdjustAngle
-		condition distance <= STOP_DIST_THRESHOLD		
-	}
-	transition t2 {
-		from sGoToPoint
-		to f0
-		condition distance <= STOP_DIST_THRESHOLD /\ angleDiff <= STOP_ANGLE_THRESHOLD
-	}
-	transition t3 {
-		from sAdjustAngle
-		to f0
-		condition distance <= STOP_DIST_THRESHOLD /\ angleDiff <= STOP_ANGLE_THRESHOLD
-	}
-	transition t4 {
-		from sAdjustAngle
-		to sGoToPoint
-		condition distance > STOP_DIST_THRESHOLD
-	}
-
 }
 
 module SSL {
@@ -154,54 +18,31 @@ module SSL {
 		provides IMove 
 	}
 
-	cref ctrl_ref0 = visionController
-connection SSLRobot on sendRawFrame to ctrl_ref0 on receiveRawFrame ( _async )
-
-	connection SSLRobot on sendGameEventVision to ctrl_ref0 on receiveGameEvent ( _async )
-
-	connection ctrl_ref0 on sendFrameDecision to ctrl_ref1 on receiveFrame
-
-	connection ctrl_ref0 on sendFieldDecision to ctrl_ref1 on receiveField
-connection SSLRobot on sendGameEventDecision to ctrl_ref1 on receiveGameEvent ( _async )
-
-	connection ctrl_ref1 on sendTactic to ctrl_ref2 on receiveTactic ( _async )
-
-	connection ctrl_ref0 on sendFieldBehavior to ctrl_ref2 on receiveFrame ( _async )
-
-	connection ctrl_ref0 on sendFrameBehavior to ctrl_ref2 on receiveField ( _async )
-	cref ctrl_ref1 = DecisionController
-	cref ctrl_ref2 = BehaviorController
-	cref ctrl_ref3 = PlanningController
-	connection ctrl_ref2 on sendAction to ctrl_ref3 on receiveAction ( _async )
-	connection ctrl_ref0 on sendFieldPlanning to ctrl_ref3 on receiveField ( _async )
-	connection ctrl_ref0 on sendFramePlanning to ctrl_ref3 on receiveFrame ( _async )
-	connection ctrl_ref3 on sendCommand to ctrl_ref4 on receiveCommand ( _async )
-	connection ctrl_ref0 on sendFrameNavigation to ctrl_ref4 on receiveFrame ( _async )
-	connection ctrl_ref0 on sendFieldNavigation to ctrl_ref4 on receiveField ( _async )
-	cref ctrl_ref4 = NavigationController
+	// SSL Unification Module Controllers.
+	cref visionControllerRef = VisionController
+	cref decisionControllerRef = DecisionController
+	cref behaviorControllerRef = BehaviorController
+	cref planningControllerRef = PlanningController
+	cref navigationControllerRef = NavigationController
+	
+	// Controllers connections.
+	connection SSLRobot on sendRawFrame to visionControllerRef on receiveRawFrame ( _async )
+	connection SSLRobot on sendGameEventVision to visionControllerRef on receiveGameEvent ( _async )
+	connection SSLRobot on sendGameEventDecision to decisionControllerRef on receiveGameEvent ( _async )
+	
+	connection visionControllerRef on sendFrameDecision to decisionControllerRef on receiveFrame ( _async )
+	connection visionControllerRef on sendFrameBehavior to behaviorControllerRef on receiveField ( _async )
+	connection visionControllerRef on sendFramePlanning to planningControllerRef on receiveFrame ( _async )
+	connection visionControllerRef on sendFrameNavigation to navigationControllerRef on receiveFrame ( _async )
+	
+	connection visionControllerRef on sendFieldDecision to decisionControllerRef on receiveField ( _async )
+	connection visionControllerRef on sendFieldBehavior to behaviorControllerRef on receiveFrame ( _async )
+	connection visionControllerRef on sendFieldPlanning to planningControllerRef on receiveField ( _async )
+	connection visionControllerRef on sendFieldNavigation to navigationControllerRef on receiveField ( _async )
+		
+	connection decisionControllerRef on sendTactic to behaviorControllerRef on receiveTactic ( _async )
+	
+	connection behaviorControllerRef on sendAction to planningControllerRef on receiveAction ( _async )
+	
+	connection planningControllerRef on sendCommand to navigationControllerRef on receiveCommand ( _async )
 }
-
-stm stm0 {
-	initial i0
-	final f0
-	transition t0 {
-		from i0
-		to f0
-	}	
-}
-
-// Helpers
-function getRobotPosition(frame: string): real*real {}
-
-function getRobotAngle(frame: string): real {}
-
-function getDistance(robot:real*real, target: real*real) : real {}
-
-function smallestAngleDiff(source: real, target: real): real {}
-
-
-// TODO: As informacoes de target nao vem do frame, mas sim do Decision...
-function getTargetPosition(frame: string): real*real {}
-function getTargetAngle(frame: string): real {}
-
-

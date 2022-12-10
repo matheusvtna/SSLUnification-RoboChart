@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202209090727
--- Automatically generated on 24-11-2022 22:27:53
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 10-12-2022 12:03:17
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -78,8 +78,8 @@ exports
 	
 	
 	channel get_CLID_sGoToPoint : core_clock_type 
-	channel get_CLID_sAdjustAngle : core_clock_type 
 	channel get_CLID_f0 : core_clock_type 
+	channel get_CLID_sAdjustAngle : core_clock_type 
 	--channel increment__
 	
 	CLID_sGoToPoint_clock_type(id__,
@@ -93,7 +93,7 @@ exports
 	within
 		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
-	CLID_sAdjustAngle_clock_type(id__,
+	CLID_f0_clock_type(id__,
 			          const_goToPointAndStop_STOP_DIST_THRESHOLD,
 			          const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = 
 		let
@@ -104,7 +104,7 @@ exports
 	within
 		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
-	CLID_f0_clock_type(id__,
+	CLID_sAdjustAngle_clock_type(id__,
 			          const_goToPointAndStop_STOP_DIST_THRESHOLD,
 			          const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = 
 		let
@@ -192,7 +192,7 @@ exports
 					
 					Termination = terminate -> SKIP
 					
-					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotPosition!getRobotPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotAngle!getRobotAngle(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_targetAngle?targetAngle -> share__choice(get_robotAngle?robotAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_angularVelocity?angularVelocity -> share__choice(get_linearVelocity?linearVelocity -> true&CALL__move(
+					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotPosition!getRobotPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotAngle!getRobotAngle(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_robotAngle?robotAngle -> share__choice(get_targetAngle?targetAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_linearVelocity?linearVelocity -> share__choice(get_angularVelocity?angularVelocity -> true&CALL__move(
 								id__,
 							    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 							    const_goToPointAndStop_STOP_ANGLE_THRESHOLD,
@@ -220,7 +220,7 @@ exports
 					
 					Termination = terminate -> SKIP
 					
-					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotPosition!getRobotPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotAngle!getRobotAngle(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_targetAngle?targetAngle -> share__choice(get_robotAngle?robotAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_angularVelocity?angularVelocity -> share__choice(get_linearVelocity?linearVelocity -> true&CALL__move(
+					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotPosition!getRobotPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotAngle!getRobotAngle(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_robotAngle?robotAngle -> share__choice(get_targetAngle?targetAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_linearVelocity?linearVelocity -> share__choice(get_angularVelocity?angularVelocity -> true&CALL__move(
 								id__,
 							    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 							    const_goToPointAndStop_STOP_ANGLE_THRESHOLD,
@@ -295,7 +295,7 @@ exports
 					
 					Termination = terminate -> SKIP
 					
-					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotPosition!getRobotPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotAngle!getRobotAngle(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_targetAngle?targetAngle -> share__choice(get_robotAngle?robotAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_angularVelocity?angularVelocity -> share__choice(get_linearVelocity?linearVelocity -> true&CALL__move(
+					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotPosition!getRobotPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotAngle!getRobotAngle(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_robotAngle?robotAngle -> share__choice(get_targetAngle?targetAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_linearVelocity?linearVelocity -> share__choice(get_angularVelocity?angularVelocity -> true&CALL__move(
 								id__,
 							    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 							    const_goToPointAndStop_STOP_ANGLE_THRESHOLD,
@@ -323,7 +323,7 @@ exports
 					
 					Termination = terminate -> SKIP
 					
-					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotPosition!getRobotPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotAngle!getRobotAngle(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_targetAngle?targetAngle -> share__choice(get_robotAngle?robotAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_angularVelocity?angularVelocity -> share__choice(get_linearVelocity?linearVelocity -> true&CALL__move(
+					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotPosition!getRobotPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotAngle!getRobotAngle(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_robotAngle?robotAngle -> share__choice(get_targetAngle?targetAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_linearVelocity?linearVelocity -> share__choice(get_angularVelocity?angularVelocity -> true&CALL__move(
 								id__,
 							    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 							    const_goToPointAndStop_STOP_ANGLE_THRESHOLD,

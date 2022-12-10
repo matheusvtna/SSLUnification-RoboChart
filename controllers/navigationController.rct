@@ -1,7 +1,7 @@
 interface INavigation {
 	event receiveFrame: string
-	event receiveField: string	
-	event receiveCommand: string	
+	event receiveField: string
+	event receiveCommand: string
 }
 
 interface IMove {
@@ -9,8 +9,9 @@ interface IMove {
 	stop ()
 }
 
-controller NavigationController {		
+controller NavigationController {
 	uses INavigation
-	sref stm_ref0 = NavigationSTM	
+	sref stm_ref0 = NavigationSTM
 	requires IMove 
 }
+

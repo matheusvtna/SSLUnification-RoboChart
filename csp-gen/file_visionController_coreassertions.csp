@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202209090727
--- Automatically generated on 24-11-2022 14:23:49
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 10-12-2022 11:59:32
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -11,33 +11,33 @@ include "file_visionController.csp"
 
 
 
--- generate visionController
-P_visionController = let
+-- generate VisionController
+P_VisionController = let
 	id__ = 0
 	
 	
 	
 		
 within
-	visionController::O__(id__)
+	VisionController::O__(id__)
 
-assert P_visionController :[deadlock-free]	
-assert P_visionController;RUN({r__}) :[deadlock-free]
-assert P_visionController :[deterministic]
-assert P_visionController :[divergence-free]
+assert P_VisionController :[deadlock-free]	
+assert P_VisionController;RUN({r__}) :[deadlock-free]
+assert P_VisionController :[deterministic]
+assert P_VisionController :[divergence-free]
 
--- generate visionController_stm_ref0
-P_visionController_stm_ref0 = let
+-- generate VisionController_stm_ref0
+P_VisionController_stm_ref0 = let
 	id__ = 0
 	
 	
 	
 within
-	visionController::stm_ref0::O__(
+	VisionController::stm_ref0::O__(
 		id__
 	)
-assert P_visionController_stm_ref0 :[deadlock-free]	
-assert P_visionController_stm_ref0;RUN({r__}) :[deadlock-free]
-assert P_visionController_stm_ref0 :[deterministic]
-assert P_visionController_stm_ref0 :[divergence-free]
+assert P_VisionController_stm_ref0 :[deadlock-free]	
+assert P_VisionController_stm_ref0;RUN({r__}) :[deadlock-free]
+assert P_VisionController_stm_ref0 :[deterministic]
+assert P_VisionController_stm_ref0 :[divergence-free]
 
