@@ -9,5 +9,5 @@ interface IBehavior {
 
 controller BehaviorController {
 	uses IBehavior
-	sref stm_ref0 = BehaviorSTM	
+	sref stm_ref0 = BehaviorSTM
 }

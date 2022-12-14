@@ -6,15 +6,19 @@
 
 -- STATEMACHINE CONSTANTS
 
+-- OPERATION CONSTANTS
+
+-- BASIC TYPES
+
 -- generate nat
 nametype core_nat = union({0..2},{calc_type_min(Union(
 			{}))..calc_type_max(Union({}))})
 
--- generate getTargetAngle
-getTargetAngle(frame) = 0
-
 -- generate getDistance
 getDistance(robot,target) = 0
+
+-- generate getTargetAngle
+getTargetAngle(frame) = 0
 
 -- generate core_clock_type
 nametype core_clock_type = {0..10}
@@ -29,7 +33,7 @@ smallestAngleDiff(source,target) = 0
 
 -- generate real
 nametype core_real = union({ -2..2},{calc_type_min(Union(
-			{{getRobotAngle(frame)|frame <- {""}},{getTargetAngle(frame)|frame <- {""}},{getDistance(robotPosition,targetPosition)|robotPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real},targetPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real}},{smallestAngleDiff(robotAngle,targetAngle)|targetAngle <- { -2..2},robotAngle <- { -2..2}},{getRobotAngle(frame)|frame <- {""}},{getTargetAngle(frame)|frame <- {""}},{getDistance(robotPosition,targetPosition)|robotPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real},targetPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real}},{smallestAngleDiff(robotAngle,targetAngle)|targetAngle <- { -2..2},robotAngle <- { -2..2}},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{targetAngle|targetAngle <- { -2..2}},{targetAngle|targetAngle <- { -2..2}},{linearVelocity|linearVelocity <- { -2..2}},{angularVelocity|angularVelocity <- { -2..2}},{robotAngle|robotAngle <- { -2..2}},{angularVelocity|angularVelocity <- { -2..2}},{robotAngle|robotAngle <- { -2..2}},{linearVelocity|linearVelocity <- { -2..2}}}))..calc_type_max(Union({{getRobotAngle(frame)|frame <- {""}},{getTargetAngle(frame)|frame <- {""}},{getDistance(robotPosition,targetPosition)|robotPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real},targetPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real}},{smallestAngleDiff(robotAngle,targetAngle)|targetAngle <- { -2..2},robotAngle <- { -2..2}},{getRobotAngle(frame)|frame <- {""}},{getTargetAngle(frame)|frame <- {""}},{getDistance(robotPosition,targetPosition)|robotPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real},targetPosition <- {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real}},{smallestAngleDiff(robotAngle,targetAngle)|targetAngle <- { -2..2},robotAngle <- { -2..2}},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{targetAngle|targetAngle <- { -2..2}},{targetAngle|targetAngle <- { -2..2}},{linearVelocity|linearVelocity <- { -2..2}},{angularVelocity|angularVelocity <- { -2..2}},{robotAngle|robotAngle <- { -2..2}},{angularVelocity|angularVelocity <- { -2..2}},{robotAngle|robotAngle <- { -2..2}},{linearVelocity|linearVelocity <- { -2..2}}}))}) 
+			{{ -2..2},{ -2..2}}))..calc_type_max(Union({{ -2..2},{ -2..2}}))}) 
 
 -- VECTOR TYPES AND OPERATIONS
 

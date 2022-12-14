@@ -1,12 +1,12 @@
 
 --
--- RoboChart generator version 3.0.0.202209090727
--- Automatically generated on 24-11-2022 14:23:19
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 10-12-2022 11:49:22
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
--- data definitions used by platform:/resource/SSLUnification/stm/visionSTM.rct
+-- data definitions used by platform:/resource/SSLUnification/module-stm/visionSTM.rct
 
 	

@@ -11,3 +11,4 @@ controller DecisionController {
 	uses IDecision
 	sref stm_ref0 = DecisionSTM
 }
+

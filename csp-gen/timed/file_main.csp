@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202209090727
--- Automatically generated on 24-11-2022 22:27:53
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 10-12-2022 12:06:00
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -9,7 +9,6 @@
 
 include "defs/file_behaviorController_defs.csp"
 include "defs/state_timed_defs.csp"
-include "defs/file_teste_defs.csp"
 include "defs/core_defs.csp"
 include "defs/file_behaviorSTM_defs.csp"
 include "defs/file_planningController_defs.csp"
@@ -18,7 +17,6 @@ include "defs/file_decisionSTM_defs.csp"
 include "defs/file_planningSTM_defs.csp"
 include "defs/file_main.csp"
 include "defs/file_main_defs.csp"
-include "defs/file_architecture_defs.csp"
 include "defs/robochart_defs.csp"
 include "defs/file_visionController_defs.csp"
 include "defs/core_timed_defs.csp"

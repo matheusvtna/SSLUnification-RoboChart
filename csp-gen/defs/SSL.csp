@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202209090727
--- Automatically generated on 24-11-2022 22:27:53
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 10-12-2022 12:06:00
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -39,7 +39,7 @@ module SSL
 	|}
 	
 	-- declaring controller
-		module ctrl_ref0
+		module visionControllerRef
 			shared_variable_events = {|
 			|}
 			
@@ -514,7 +514,7 @@ module SSL
 				HEXT(id__) = O__(id__) [|shared_variable_events|] SKIP			
 	
 		endmodule
-		module ctrl_ref1
+		module decisionControllerRef
 			shared_variable_events = {|
 			|}
 			
@@ -977,7 +977,7 @@ module SSL
 				HEXT(id__) = O__(id__) [|shared_variable_events|] SKIP			
 	
 		endmodule
-		module ctrl_ref2
+		module behaviorControllerRef
 			shared_variable_events = {|
 			|}
 			
@@ -1440,7 +1440,7 @@ module SSL
 				HEXT(id__) = O__(id__) [|shared_variable_events|] SKIP			
 	
 		endmodule
-		module ctrl_ref3
+		module planningControllerRef
 			shared_variable_events = {|
 			|}
 			
@@ -1903,7 +1903,7 @@ module SSL
 				HEXT(id__) = O__(id__) [|shared_variable_events|] SKIP			
 	
 		endmodule
-		module ctrl_ref4
+		module navigationControllerRef
 			shared_variable_events = {|
 			|}
 			
@@ -2378,50 +2378,60 @@ module SSL
 	
 	D__(id__) = let
 		Buffer0(<v>) = 
-			ctrl_ref1::sendTactic.out?x -> Buffer0(<x>)
+			visionControllerRef::sendFrameDecision.out?x -> Buffer0(<x>)
 			[]
-			ctrl_ref2::receiveTactic.in!v -> Buffer0(<>)
-		Buffer0(<>) = ctrl_ref1::sendTactic.out?x -> Buffer0(<x>)
+			decisionControllerRef::receiveFrame.in!v -> Buffer0(<>)
+		Buffer0(<>) = visionControllerRef::sendFrameDecision.out?x -> Buffer0(<x>)
 		Buffer1(<v>) = 
-			ctrl_ref0::sendFieldBehavior.out?x -> Buffer1(<x>)
+			visionControllerRef::sendFrameBehavior.out?x -> Buffer1(<x>)
 			[]
-			ctrl_ref2::receiveFrame.in!v -> Buffer1(<>)
-		Buffer1(<>) = ctrl_ref0::sendFieldBehavior.out?x -> Buffer1(<x>)
+			behaviorControllerRef::receiveField.in!v -> Buffer1(<>)
+		Buffer1(<>) = visionControllerRef::sendFrameBehavior.out?x -> Buffer1(<x>)
 		Buffer2(<v>) = 
-			ctrl_ref0::sendFrameBehavior.out?x -> Buffer2(<x>)
+			visionControllerRef::sendFramePlanning.out?x -> Buffer2(<x>)
 			[]
-			ctrl_ref2::receiveField.in!v -> Buffer2(<>)
-		Buffer2(<>) = ctrl_ref0::sendFrameBehavior.out?x -> Buffer2(<x>)
+			planningControllerRef::receiveFrame.in!v -> Buffer2(<>)
+		Buffer2(<>) = visionControllerRef::sendFramePlanning.out?x -> Buffer2(<x>)
 		Buffer3(<v>) = 
-			ctrl_ref2::sendAction.out?x -> Buffer3(<x>)
+			visionControllerRef::sendFrameNavigation.out?x -> Buffer3(<x>)
 			[]
-			ctrl_ref3::receiveAction.in!v -> Buffer3(<>)
-		Buffer3(<>) = ctrl_ref2::sendAction.out?x -> Buffer3(<x>)
+			navigationControllerRef::receiveFrame.in!v -> Buffer3(<>)
+		Buffer3(<>) = visionControllerRef::sendFrameNavigation.out?x -> Buffer3(<x>)
 		Buffer4(<v>) = 
-			ctrl_ref0::sendFieldPlanning.out?x -> Buffer4(<x>)
+			visionControllerRef::sendFieldDecision.out?x -> Buffer4(<x>)
 			[]
-			ctrl_ref3::receiveField.in!v -> Buffer4(<>)
-		Buffer4(<>) = ctrl_ref0::sendFieldPlanning.out?x -> Buffer4(<x>)
+			decisionControllerRef::receiveField.in!v -> Buffer4(<>)
+		Buffer4(<>) = visionControllerRef::sendFieldDecision.out?x -> Buffer4(<x>)
 		Buffer5(<v>) = 
-			ctrl_ref0::sendFramePlanning.out?x -> Buffer5(<x>)
+			visionControllerRef::sendFieldBehavior.out?x -> Buffer5(<x>)
 			[]
-			ctrl_ref3::receiveFrame.in!v -> Buffer5(<>)
-		Buffer5(<>) = ctrl_ref0::sendFramePlanning.out?x -> Buffer5(<x>)
+			behaviorControllerRef::receiveFrame.in!v -> Buffer5(<>)
+		Buffer5(<>) = visionControllerRef::sendFieldBehavior.out?x -> Buffer5(<x>)
 		Buffer6(<v>) = 
-			ctrl_ref3::sendCommand.out?x -> Buffer6(<x>)
+			visionControllerRef::sendFieldPlanning.out?x -> Buffer6(<x>)
 			[]
-			ctrl_ref4::receiveCommand.in!v -> Buffer6(<>)
-		Buffer6(<>) = ctrl_ref3::sendCommand.out?x -> Buffer6(<x>)
+			planningControllerRef::receiveField.in!v -> Buffer6(<>)
+		Buffer6(<>) = visionControllerRef::sendFieldPlanning.out?x -> Buffer6(<x>)
 		Buffer7(<v>) = 
-			ctrl_ref0::sendFrameNavigation.out?x -> Buffer7(<x>)
+			visionControllerRef::sendFieldNavigation.out?x -> Buffer7(<x>)
 			[]
-			ctrl_ref4::receiveFrame.in!v -> Buffer7(<>)
-		Buffer7(<>) = ctrl_ref0::sendFrameNavigation.out?x -> Buffer7(<x>)
+			navigationControllerRef::receiveField.in!v -> Buffer7(<>)
+		Buffer7(<>) = visionControllerRef::sendFieldNavigation.out?x -> Buffer7(<x>)
 		Buffer8(<v>) = 
-			ctrl_ref0::sendFieldNavigation.out?x -> Buffer8(<x>)
+			decisionControllerRef::sendTactic.out?x -> Buffer8(<x>)
 			[]
-			ctrl_ref4::receiveField.in!v -> Buffer8(<>)
-		Buffer8(<>) = ctrl_ref0::sendFieldNavigation.out?x -> Buffer8(<x>)
+			behaviorControllerRef::receiveTactic.in!v -> Buffer8(<>)
+		Buffer8(<>) = decisionControllerRef::sendTactic.out?x -> Buffer8(<x>)
+		Buffer9(<v>) = 
+			behaviorControllerRef::sendAction.out?x -> Buffer9(<x>)
+			[]
+			planningControllerRef::receiveAction.in!v -> Buffer9(<>)
+		Buffer9(<>) = behaviorControllerRef::sendAction.out?x -> Buffer9(<x>)
+		Buffer10(<v>) = 
+			planningControllerRef::sendCommand.out?x -> Buffer10(<x>)
+			[]
+			navigationControllerRef::receiveCommand.in!v -> Buffer10(<>)
+		Buffer10(<>) = planningControllerRef::sendCommand.out?x -> Buffer10(<x>)
 		
 	within
 		(
@@ -2434,50 +2444,48 @@ module SSL
 				Buffer5(<>)|||
 				Buffer6(<>)|||
 				Buffer7(<>)|||
-				Buffer8(<>)
+				Buffer8(<>)|||
+				Buffer9(<>)|||
+				Buffer10(<>)
 				)
-					[|{|ctrl_ref2::receiveTactic,ctrl_ref1::sendTactic,ctrl_ref2::receiveFrame,ctrl_ref0::sendFieldBehavior,ctrl_ref2::receiveField,ctrl_ref0::sendFrameBehavior,ctrl_ref3::receiveAction,ctrl_ref2::sendAction,ctrl_ref3::receiveField,ctrl_ref0::sendFieldPlanning,ctrl_ref3::receiveFrame,ctrl_ref0::sendFramePlanning,ctrl_ref4::receiveCommand,ctrl_ref3::sendCommand,ctrl_ref4::receiveFrame,ctrl_ref0::sendFrameNavigation,ctrl_ref4::receiveField,ctrl_ref0::sendFieldNavigation|}|]
+					[|{|decisionControllerRef::receiveFrame,visionControllerRef::sendFrameDecision,behaviorControllerRef::receiveField,visionControllerRef::sendFrameBehavior,planningControllerRef::receiveFrame,visionControllerRef::sendFramePlanning,navigationControllerRef::receiveFrame,visionControllerRef::sendFrameNavigation,decisionControllerRef::receiveField,visionControllerRef::sendFieldDecision,behaviorControllerRef::receiveFrame,visionControllerRef::sendFieldBehavior,planningControllerRef::receiveField,visionControllerRef::sendFieldPlanning,navigationControllerRef::receiveField,visionControllerRef::sendFieldNavigation,behaviorControllerRef::receiveTactic,decisionControllerRef::sendTactic,planningControllerRef::receiveAction,behaviorControllerRef::sendAction,navigationControllerRef::receiveCommand,planningControllerRef::sendCommand|}|]
 				(
 					(
 						(
-							ctrl_ref0::D__(id__)[[
-								ctrl_ref0::terminate <- terminate,
-								ctrl_ref0::receiveRawFrame <- sendRawFrame,
-								ctrl_ref0::receiveGameEvent <- sendGameEventVision
+							visionControllerRef::D__(id__)[[
+								visionControllerRef::terminate <- terminate,
+								visionControllerRef::receiveRawFrame <- sendRawFrame,
+								visionControllerRef::receiveGameEvent <- sendGameEventVision
 							]]
 						)
-							[|{|terminate, ctrl_ref0::sendFrameDecision, ctrl_ref0::sendFieldDecision|}|]
+							[|{|terminate|}|]
 						(
 							(
-								ctrl_ref1::D__(id__)[[
-									ctrl_ref1::terminate <- terminate,
-									ctrl_ref1::receiveFrame.in <- ctrl_ref0::sendFrameDecision.out,
-									ctrl_ref1::receiveFrame.out <- ctrl_ref0::sendFrameDecision.in,
-									ctrl_ref1::receiveField.in <- ctrl_ref0::sendFieldDecision.out,
-									ctrl_ref1::receiveField.out <- ctrl_ref0::sendFieldDecision.in,
-									ctrl_ref1::receiveGameEvent <- sendGameEventDecision
+								decisionControllerRef::D__(id__)[[
+									decisionControllerRef::terminate <- terminate,
+									decisionControllerRef::receiveGameEvent <- sendGameEventDecision
 								]]
 							)
 								[|{|terminate|}|]
 							(
 								(
-									ctrl_ref2::D__(id__)[[
-										ctrl_ref2::terminate <- terminate
+									behaviorControllerRef::D__(id__)[[
+										behaviorControllerRef::terminate <- terminate
 									]]
 								)
 									[|{|terminate|}|]
 								(
 									(
-										ctrl_ref3::D__(id__)[[
-											ctrl_ref3::terminate <- terminate
+										planningControllerRef::D__(id__)[[
+											planningControllerRef::terminate <- terminate
 										]]
 									)
 										[|{|terminate|}|]
 									(
-										ctrl_ref4::D__(id__)[[
-											ctrl_ref4::terminate <- terminate,
-											ctrl_ref4::stopCall <- stopCall,
-											ctrl_ref4::moveCall <- moveCall
+										navigationControllerRef::D__(id__)[[
+											navigationControllerRef::terminate <- terminate,
+											navigationControllerRef::stopCall <- stopCall,
+											navigationControllerRef::moveCall <- moveCall
 										]]
 									)
 								)
@@ -2501,7 +2509,7 @@ module SSL
 					)
 					\
 					diff(
-						{|terminate, ctrl_ref0::sendFrameDecision, ctrl_ref0::sendFieldDecision|},
+						{|terminate|},
 						{|terminate|}
 					)
 						[|
@@ -2517,24 +2525,28 @@ module SSL
 			)
 			\ Union({
 				{|
-					ctrl_ref2::receiveTactic,
-					ctrl_ref1::sendTactic,
-					ctrl_ref2::receiveFrame,
-					ctrl_ref0::sendFieldBehavior,
-					ctrl_ref2::receiveField,
-					ctrl_ref0::sendFrameBehavior,
-					ctrl_ref3::receiveAction,
-					ctrl_ref2::sendAction,
-					ctrl_ref3::receiveField,
-					ctrl_ref0::sendFieldPlanning,
-					ctrl_ref3::receiveFrame,
-					ctrl_ref0::sendFramePlanning,
-					ctrl_ref4::receiveCommand,
-					ctrl_ref3::sendCommand,
-					ctrl_ref4::receiveFrame,
-					ctrl_ref0::sendFrameNavigation,
-					ctrl_ref4::receiveField,
-					ctrl_ref0::sendFieldNavigation
+					decisionControllerRef::receiveFrame,
+					visionControllerRef::sendFrameDecision,
+					behaviorControllerRef::receiveField,
+					visionControllerRef::sendFrameBehavior,
+					planningControllerRef::receiveFrame,
+					visionControllerRef::sendFramePlanning,
+					navigationControllerRef::receiveFrame,
+					visionControllerRef::sendFrameNavigation,
+					decisionControllerRef::receiveField,
+					visionControllerRef::sendFieldDecision,
+					behaviorControllerRef::receiveFrame,
+					visionControllerRef::sendFieldBehavior,
+					planningControllerRef::receiveField,
+					visionControllerRef::sendFieldPlanning,
+					navigationControllerRef::receiveField,
+					visionControllerRef::sendFieldNavigation,
+					behaviorControllerRef::receiveTactic,
+					decisionControllerRef::sendTactic,
+					planningControllerRef::receiveAction,
+					behaviorControllerRef::sendAction,
+					navigationControllerRef::receiveCommand,
+					planningControllerRef::sendCommand
 				|},
 				{|
 				|},
@@ -2549,50 +2561,60 @@ module SSL
 	
 	VS__(id__) = let
 		Buffer0(<v>) = 
-			ctrl_ref1::sendTactic.out?x -> Buffer0(<x>)
+			visionControllerRef::sendFrameDecision.out?x -> Buffer0(<x>)
 			[]
-			ctrl_ref2::receiveTactic.in!v -> Buffer0(<>)
-		Buffer0(<>) = ctrl_ref1::sendTactic.out?x -> Buffer0(<x>)
+			decisionControllerRef::receiveFrame.in!v -> Buffer0(<>)
+		Buffer0(<>) = visionControllerRef::sendFrameDecision.out?x -> Buffer0(<x>)
 		Buffer1(<v>) = 
-			ctrl_ref0::sendFieldBehavior.out?x -> Buffer1(<x>)
+			visionControllerRef::sendFrameBehavior.out?x -> Buffer1(<x>)
 			[]
-			ctrl_ref2::receiveFrame.in!v -> Buffer1(<>)
-		Buffer1(<>) = ctrl_ref0::sendFieldBehavior.out?x -> Buffer1(<x>)
+			behaviorControllerRef::receiveField.in!v -> Buffer1(<>)
+		Buffer1(<>) = visionControllerRef::sendFrameBehavior.out?x -> Buffer1(<x>)
 		Buffer2(<v>) = 
-			ctrl_ref0::sendFrameBehavior.out?x -> Buffer2(<x>)
+			visionControllerRef::sendFramePlanning.out?x -> Buffer2(<x>)
 			[]
-			ctrl_ref2::receiveField.in!v -> Buffer2(<>)
-		Buffer2(<>) = ctrl_ref0::sendFrameBehavior.out?x -> Buffer2(<x>)
+			planningControllerRef::receiveFrame.in!v -> Buffer2(<>)
+		Buffer2(<>) = visionControllerRef::sendFramePlanning.out?x -> Buffer2(<x>)
 		Buffer3(<v>) = 
-			ctrl_ref2::sendAction.out?x -> Buffer3(<x>)
+			visionControllerRef::sendFrameNavigation.out?x -> Buffer3(<x>)
 			[]
-			ctrl_ref3::receiveAction.in!v -> Buffer3(<>)
-		Buffer3(<>) = ctrl_ref2::sendAction.out?x -> Buffer3(<x>)
+			navigationControllerRef::receiveFrame.in!v -> Buffer3(<>)
+		Buffer3(<>) = visionControllerRef::sendFrameNavigation.out?x -> Buffer3(<x>)
 		Buffer4(<v>) = 
-			ctrl_ref0::sendFieldPlanning.out?x -> Buffer4(<x>)
+			visionControllerRef::sendFieldDecision.out?x -> Buffer4(<x>)
 			[]
-			ctrl_ref3::receiveField.in!v -> Buffer4(<>)
-		Buffer4(<>) = ctrl_ref0::sendFieldPlanning.out?x -> Buffer4(<x>)
+			decisionControllerRef::receiveField.in!v -> Buffer4(<>)
+		Buffer4(<>) = visionControllerRef::sendFieldDecision.out?x -> Buffer4(<x>)
 		Buffer5(<v>) = 
-			ctrl_ref0::sendFramePlanning.out?x -> Buffer5(<x>)
+			visionControllerRef::sendFieldBehavior.out?x -> Buffer5(<x>)
 			[]
-			ctrl_ref3::receiveFrame.in!v -> Buffer5(<>)
-		Buffer5(<>) = ctrl_ref0::sendFramePlanning.out?x -> Buffer5(<x>)
+			behaviorControllerRef::receiveFrame.in!v -> Buffer5(<>)
+		Buffer5(<>) = visionControllerRef::sendFieldBehavior.out?x -> Buffer5(<x>)
 		Buffer6(<v>) = 
-			ctrl_ref3::sendCommand.out?x -> Buffer6(<x>)
+			visionControllerRef::sendFieldPlanning.out?x -> Buffer6(<x>)
 			[]
-			ctrl_ref4::receiveCommand.in!v -> Buffer6(<>)
-		Buffer6(<>) = ctrl_ref3::sendCommand.out?x -> Buffer6(<x>)
+			planningControllerRef::receiveField.in!v -> Buffer6(<>)
+		Buffer6(<>) = visionControllerRef::sendFieldPlanning.out?x -> Buffer6(<x>)
 		Buffer7(<v>) = 
-			ctrl_ref0::sendFrameNavigation.out?x -> Buffer7(<x>)
+			visionControllerRef::sendFieldNavigation.out?x -> Buffer7(<x>)
 			[]
-			ctrl_ref4::receiveFrame.in!v -> Buffer7(<>)
-		Buffer7(<>) = ctrl_ref0::sendFrameNavigation.out?x -> Buffer7(<x>)
+			navigationControllerRef::receiveField.in!v -> Buffer7(<>)
+		Buffer7(<>) = visionControllerRef::sendFieldNavigation.out?x -> Buffer7(<x>)
 		Buffer8(<v>) = 
-			ctrl_ref0::sendFieldNavigation.out?x -> Buffer8(<x>)
+			decisionControllerRef::sendTactic.out?x -> Buffer8(<x>)
 			[]
-			ctrl_ref4::receiveField.in!v -> Buffer8(<>)
-		Buffer8(<>) = ctrl_ref0::sendFieldNavigation.out?x -> Buffer8(<x>)
+			behaviorControllerRef::receiveTactic.in!v -> Buffer8(<>)
+		Buffer8(<>) = decisionControllerRef::sendTactic.out?x -> Buffer8(<x>)
+		Buffer9(<v>) = 
+			behaviorControllerRef::sendAction.out?x -> Buffer9(<x>)
+			[]
+			planningControllerRef::receiveAction.in!v -> Buffer9(<>)
+		Buffer9(<>) = behaviorControllerRef::sendAction.out?x -> Buffer9(<x>)
+		Buffer10(<v>) = 
+			planningControllerRef::sendCommand.out?x -> Buffer10(<x>)
+			[]
+			navigationControllerRef::receiveCommand.in!v -> Buffer10(<>)
+		Buffer10(<>) = planningControllerRef::sendCommand.out?x -> Buffer10(<x>)
 		
 	within
 		(
@@ -2605,50 +2627,48 @@ module SSL
 				Buffer5(<>)|||
 				Buffer6(<>)|||
 				Buffer7(<>)|||
-				Buffer8(<>)
+				Buffer8(<>)|||
+				Buffer9(<>)|||
+				Buffer10(<>)
 				)
-					[|{|ctrl_ref2::receiveTactic,ctrl_ref1::sendTactic,ctrl_ref2::receiveFrame,ctrl_ref0::sendFieldBehavior,ctrl_ref2::receiveField,ctrl_ref0::sendFrameBehavior,ctrl_ref3::receiveAction,ctrl_ref2::sendAction,ctrl_ref3::receiveField,ctrl_ref0::sendFieldPlanning,ctrl_ref3::receiveFrame,ctrl_ref0::sendFramePlanning,ctrl_ref4::receiveCommand,ctrl_ref3::sendCommand,ctrl_ref4::receiveFrame,ctrl_ref0::sendFrameNavigation,ctrl_ref4::receiveField,ctrl_ref0::sendFieldNavigation|}|]
+					[|{|decisionControllerRef::receiveFrame,visionControllerRef::sendFrameDecision,behaviorControllerRef::receiveField,visionControllerRef::sendFrameBehavior,planningControllerRef::receiveFrame,visionControllerRef::sendFramePlanning,navigationControllerRef::receiveFrame,visionControllerRef::sendFrameNavigation,decisionControllerRef::receiveField,visionControllerRef::sendFieldDecision,behaviorControllerRef::receiveFrame,visionControllerRef::sendFieldBehavior,planningControllerRef::receiveField,visionControllerRef::sendFieldPlanning,navigationControllerRef::receiveField,visionControllerRef::sendFieldNavigation,behaviorControllerRef::receiveTactic,decisionControllerRef::sendTactic,planningControllerRef::receiveAction,behaviorControllerRef::sendAction,navigationControllerRef::receiveCommand,planningControllerRef::sendCommand|}|]
 				(
 					(
 						(
-							ctrl_ref0::VS__(id__)[[
-								ctrl_ref0::terminate <- terminate,
-								ctrl_ref0::receiveRawFrame <- sendRawFrame,
-								ctrl_ref0::receiveGameEvent <- sendGameEventVision
+							visionControllerRef::VS__(id__)[[
+								visionControllerRef::terminate <- terminate,
+								visionControllerRef::receiveRawFrame <- sendRawFrame,
+								visionControllerRef::receiveGameEvent <- sendGameEventVision
 							]]
 						)
-							[|{|terminate, ctrl_ref0::sendFrameDecision, ctrl_ref0::sendFieldDecision|}|]
+							[|{|terminate|}|]
 						(
 							(
-								ctrl_ref1::VS__(id__)[[
-									ctrl_ref1::terminate <- terminate,
-									ctrl_ref1::receiveFrame.in <- ctrl_ref0::sendFrameDecision.out,
-									ctrl_ref1::receiveFrame.out <- ctrl_ref0::sendFrameDecision.in,
-									ctrl_ref1::receiveField.in <- ctrl_ref0::sendFieldDecision.out,
-									ctrl_ref1::receiveField.out <- ctrl_ref0::sendFieldDecision.in,
-									ctrl_ref1::receiveGameEvent <- sendGameEventDecision
+								decisionControllerRef::VS__(id__)[[
+									decisionControllerRef::terminate <- terminate,
+									decisionControllerRef::receiveGameEvent <- sendGameEventDecision
 								]]
 							)
 								[|{|terminate|}|]
 							(
 								(
-									ctrl_ref2::VS__(id__)[[
-										ctrl_ref2::terminate <- terminate
+									behaviorControllerRef::VS__(id__)[[
+										behaviorControllerRef::terminate <- terminate
 									]]
 								)
 									[|{|terminate|}|]
 								(
 									(
-										ctrl_ref3::VS__(id__)[[
-											ctrl_ref3::terminate <- terminate
+										planningControllerRef::VS__(id__)[[
+											planningControllerRef::terminate <- terminate
 										]]
 									)
 										[|{|terminate|}|]
 									(
-										ctrl_ref4::VS__(id__)[[
-											ctrl_ref4::terminate <- terminate,
-											ctrl_ref4::stopCall <- stopCall,
-											ctrl_ref4::moveCall <- moveCall
+										navigationControllerRef::VS__(id__)[[
+											navigationControllerRef::terminate <- terminate,
+											navigationControllerRef::stopCall <- stopCall,
+											navigationControllerRef::moveCall <- moveCall
 										]]
 									)
 								)
@@ -2672,7 +2692,7 @@ module SSL
 					)
 					\
 					diff(
-						{|terminate, ctrl_ref0::sendFrameDecision, ctrl_ref0::sendFieldDecision|},
+						{|terminate|},
 						{|terminate|}
 					)
 						[|
@@ -2688,24 +2708,28 @@ module SSL
 			)
 			\ Union({
 				{|
-					ctrl_ref2::receiveTactic,
-					ctrl_ref1::sendTactic,
-					ctrl_ref2::receiveFrame,
-					ctrl_ref0::sendFieldBehavior,
-					ctrl_ref2::receiveField,
-					ctrl_ref0::sendFrameBehavior,
-					ctrl_ref3::receiveAction,
-					ctrl_ref2::sendAction,
-					ctrl_ref3::receiveField,
-					ctrl_ref0::sendFieldPlanning,
-					ctrl_ref3::receiveFrame,
-					ctrl_ref0::sendFramePlanning,
-					ctrl_ref4::receiveCommand,
-					ctrl_ref3::sendCommand,
-					ctrl_ref4::receiveFrame,
-					ctrl_ref0::sendFrameNavigation,
-					ctrl_ref4::receiveField,
-					ctrl_ref0::sendFieldNavigation
+					decisionControllerRef::receiveFrame,
+					visionControllerRef::sendFrameDecision,
+					behaviorControllerRef::receiveField,
+					visionControllerRef::sendFrameBehavior,
+					planningControllerRef::receiveFrame,
+					visionControllerRef::sendFramePlanning,
+					navigationControllerRef::receiveFrame,
+					visionControllerRef::sendFrameNavigation,
+					decisionControllerRef::receiveField,
+					visionControllerRef::sendFieldDecision,
+					behaviorControllerRef::receiveFrame,
+					visionControllerRef::sendFieldBehavior,
+					planningControllerRef::receiveField,
+					visionControllerRef::sendFieldPlanning,
+					navigationControllerRef::receiveField,
+					visionControllerRef::sendFieldNavigation,
+					behaviorControllerRef::receiveTactic,
+					decisionControllerRef::sendTactic,
+					planningControllerRef::receiveAction,
+					behaviorControllerRef::sendAction,
+					navigationControllerRef::receiveCommand,
+					planningControllerRef::sendCommand
 				|},
 				{|
 				|},
@@ -2720,50 +2744,60 @@ module SSL
 	
 	O__(id__) = sbisim(diamond(let
 		Buffer0(<v>) = 
-			ctrl_ref1::sendTactic.out?x -> Buffer0(<x>)
+			visionControllerRef::sendFrameDecision.out?x -> Buffer0(<x>)
 			[]
-			ctrl_ref2::receiveTactic.in!v -> Buffer0(<>)
-		Buffer0(<>) = ctrl_ref1::sendTactic.out?x -> Buffer0(<x>)
+			decisionControllerRef::receiveFrame.in!v -> Buffer0(<>)
+		Buffer0(<>) = visionControllerRef::sendFrameDecision.out?x -> Buffer0(<x>)
 		Buffer1(<v>) = 
-			ctrl_ref0::sendFieldBehavior.out?x -> Buffer1(<x>)
+			visionControllerRef::sendFrameBehavior.out?x -> Buffer1(<x>)
 			[]
-			ctrl_ref2::receiveFrame.in!v -> Buffer1(<>)
-		Buffer1(<>) = ctrl_ref0::sendFieldBehavior.out?x -> Buffer1(<x>)
+			behaviorControllerRef::receiveField.in!v -> Buffer1(<>)
+		Buffer1(<>) = visionControllerRef::sendFrameBehavior.out?x -> Buffer1(<x>)
 		Buffer2(<v>) = 
-			ctrl_ref0::sendFrameBehavior.out?x -> Buffer2(<x>)
+			visionControllerRef::sendFramePlanning.out?x -> Buffer2(<x>)
 			[]
-			ctrl_ref2::receiveField.in!v -> Buffer2(<>)
-		Buffer2(<>) = ctrl_ref0::sendFrameBehavior.out?x -> Buffer2(<x>)
+			planningControllerRef::receiveFrame.in!v -> Buffer2(<>)
+		Buffer2(<>) = visionControllerRef::sendFramePlanning.out?x -> Buffer2(<x>)
 		Buffer3(<v>) = 
-			ctrl_ref2::sendAction.out?x -> Buffer3(<x>)
+			visionControllerRef::sendFrameNavigation.out?x -> Buffer3(<x>)
 			[]
-			ctrl_ref3::receiveAction.in!v -> Buffer3(<>)
-		Buffer3(<>) = ctrl_ref2::sendAction.out?x -> Buffer3(<x>)
+			navigationControllerRef::receiveFrame.in!v -> Buffer3(<>)
+		Buffer3(<>) = visionControllerRef::sendFrameNavigation.out?x -> Buffer3(<x>)
 		Buffer4(<v>) = 
-			ctrl_ref0::sendFieldPlanning.out?x -> Buffer4(<x>)
+			visionControllerRef::sendFieldDecision.out?x -> Buffer4(<x>)
 			[]
-			ctrl_ref3::receiveField.in!v -> Buffer4(<>)
-		Buffer4(<>) = ctrl_ref0::sendFieldPlanning.out?x -> Buffer4(<x>)
+			decisionControllerRef::receiveField.in!v -> Buffer4(<>)
+		Buffer4(<>) = visionControllerRef::sendFieldDecision.out?x -> Buffer4(<x>)
 		Buffer5(<v>) = 
-			ctrl_ref0::sendFramePlanning.out?x -> Buffer5(<x>)
+			visionControllerRef::sendFieldBehavior.out?x -> Buffer5(<x>)
 			[]
-			ctrl_ref3::receiveFrame.in!v -> Buffer5(<>)
-		Buffer5(<>) = ctrl_ref0::sendFramePlanning.out?x -> Buffer5(<x>)
+			behaviorControllerRef::receiveFrame.in!v -> Buffer5(<>)
+		Buffer5(<>) = visionControllerRef::sendFieldBehavior.out?x -> Buffer5(<x>)
 		Buffer6(<v>) = 
-			ctrl_ref3::sendCommand.out?x -> Buffer6(<x>)
+			visionControllerRef::sendFieldPlanning.out?x -> Buffer6(<x>)
 			[]
-			ctrl_ref4::receiveCommand.in!v -> Buffer6(<>)
-		Buffer6(<>) = ctrl_ref3::sendCommand.out?x -> Buffer6(<x>)
+			planningControllerRef::receiveField.in!v -> Buffer6(<>)
+		Buffer6(<>) = visionControllerRef::sendFieldPlanning.out?x -> Buffer6(<x>)
 		Buffer7(<v>) = 
-			ctrl_ref0::sendFrameNavigation.out?x -> Buffer7(<x>)
+			visionControllerRef::sendFieldNavigation.out?x -> Buffer7(<x>)
 			[]
-			ctrl_ref4::receiveFrame.in!v -> Buffer7(<>)
-		Buffer7(<>) = ctrl_ref0::sendFrameNavigation.out?x -> Buffer7(<x>)
+			navigationControllerRef::receiveField.in!v -> Buffer7(<>)
+		Buffer7(<>) = visionControllerRef::sendFieldNavigation.out?x -> Buffer7(<x>)
 		Buffer8(<v>) = 
-			ctrl_ref0::sendFieldNavigation.out?x -> Buffer8(<x>)
+			decisionControllerRef::sendTactic.out?x -> Buffer8(<x>)
 			[]
-			ctrl_ref4::receiveField.in!v -> Buffer8(<>)
-		Buffer8(<>) = ctrl_ref0::sendFieldNavigation.out?x -> Buffer8(<x>)
+			behaviorControllerRef::receiveTactic.in!v -> Buffer8(<>)
+		Buffer8(<>) = decisionControllerRef::sendTactic.out?x -> Buffer8(<x>)
+		Buffer9(<v>) = 
+			behaviorControllerRef::sendAction.out?x -> Buffer9(<x>)
+			[]
+			planningControllerRef::receiveAction.in!v -> Buffer9(<>)
+		Buffer9(<>) = behaviorControllerRef::sendAction.out?x -> Buffer9(<x>)
+		Buffer10(<v>) = 
+			planningControllerRef::sendCommand.out?x -> Buffer10(<x>)
+			[]
+			navigationControllerRef::receiveCommand.in!v -> Buffer10(<>)
+		Buffer10(<>) = planningControllerRef::sendCommand.out?x -> Buffer10(<x>)
 		
 	within
 		(
@@ -2776,50 +2810,48 @@ module SSL
 				Buffer5(<>)|||
 				Buffer6(<>)|||
 				Buffer7(<>)|||
-				Buffer8(<>)
+				Buffer8(<>)|||
+				Buffer9(<>)|||
+				Buffer10(<>)
 				)
-					[|{|ctrl_ref2::receiveTactic,ctrl_ref1::sendTactic,ctrl_ref2::receiveFrame,ctrl_ref0::sendFieldBehavior,ctrl_ref2::receiveField,ctrl_ref0::sendFrameBehavior,ctrl_ref3::receiveAction,ctrl_ref2::sendAction,ctrl_ref3::receiveField,ctrl_ref0::sendFieldPlanning,ctrl_ref3::receiveFrame,ctrl_ref0::sendFramePlanning,ctrl_ref4::receiveCommand,ctrl_ref3::sendCommand,ctrl_ref4::receiveFrame,ctrl_ref0::sendFrameNavigation,ctrl_ref4::receiveField,ctrl_ref0::sendFieldNavigation|}|]
+					[|{|decisionControllerRef::receiveFrame,visionControllerRef::sendFrameDecision,behaviorControllerRef::receiveField,visionControllerRef::sendFrameBehavior,planningControllerRef::receiveFrame,visionControllerRef::sendFramePlanning,navigationControllerRef::receiveFrame,visionControllerRef::sendFrameNavigation,decisionControllerRef::receiveField,visionControllerRef::sendFieldDecision,behaviorControllerRef::receiveFrame,visionControllerRef::sendFieldBehavior,planningControllerRef::receiveField,visionControllerRef::sendFieldPlanning,navigationControllerRef::receiveField,visionControllerRef::sendFieldNavigation,behaviorControllerRef::receiveTactic,decisionControllerRef::sendTactic,planningControllerRef::receiveAction,behaviorControllerRef::sendAction,navigationControllerRef::receiveCommand,planningControllerRef::sendCommand|}|]
 				(
 					(
 						(
-							ctrl_ref0::O__(id__)[[
-								ctrl_ref0::terminate <- terminate,
-								ctrl_ref0::receiveRawFrame <- sendRawFrame,
-								ctrl_ref0::receiveGameEvent <- sendGameEventVision
+							visionControllerRef::O__(id__)[[
+								visionControllerRef::terminate <- terminate,
+								visionControllerRef::receiveRawFrame <- sendRawFrame,
+								visionControllerRef::receiveGameEvent <- sendGameEventVision
 							]]
 						)
-							[|{|terminate, ctrl_ref0::sendFrameDecision, ctrl_ref0::sendFieldDecision|}|]
+							[|{|terminate|}|]
 						(
 							(
-								ctrl_ref1::O__(id__)[[
-									ctrl_ref1::terminate <- terminate,
-									ctrl_ref1::receiveFrame.in <- ctrl_ref0::sendFrameDecision.out,
-									ctrl_ref1::receiveFrame.out <- ctrl_ref0::sendFrameDecision.in,
-									ctrl_ref1::receiveField.in <- ctrl_ref0::sendFieldDecision.out,
-									ctrl_ref1::receiveField.out <- ctrl_ref0::sendFieldDecision.in,
-									ctrl_ref1::receiveGameEvent <- sendGameEventDecision
+								decisionControllerRef::O__(id__)[[
+									decisionControllerRef::terminate <- terminate,
+									decisionControllerRef::receiveGameEvent <- sendGameEventDecision
 								]]
 							)
 								[|{|terminate|}|]
 							(
 								(
-									ctrl_ref2::O__(id__)[[
-										ctrl_ref2::terminate <- terminate
+									behaviorControllerRef::O__(id__)[[
+										behaviorControllerRef::terminate <- terminate
 									]]
 								)
 									[|{|terminate|}|]
 								(
 									(
-										ctrl_ref3::O__(id__)[[
-											ctrl_ref3::terminate <- terminate
+										planningControllerRef::O__(id__)[[
+											planningControllerRef::terminate <- terminate
 										]]
 									)
 										[|{|terminate|}|]
 									(
-										ctrl_ref4::O__(id__)[[
-											ctrl_ref4::terminate <- terminate,
-											ctrl_ref4::stopCall <- stopCall,
-											ctrl_ref4::moveCall <- moveCall
+										navigationControllerRef::O__(id__)[[
+											navigationControllerRef::terminate <- terminate,
+											navigationControllerRef::stopCall <- stopCall,
+											navigationControllerRef::moveCall <- moveCall
 										]]
 									)
 								)
@@ -2843,7 +2875,7 @@ module SSL
 					)
 					\
 					diff(
-						{|terminate, ctrl_ref0::sendFrameDecision, ctrl_ref0::sendFieldDecision|},
+						{|terminate|},
 						{|terminate|}
 					)
 						[|
@@ -2859,24 +2891,28 @@ module SSL
 			)
 			\ Union({
 				{|
-					ctrl_ref2::receiveTactic,
-					ctrl_ref1::sendTactic,
-					ctrl_ref2::receiveFrame,
-					ctrl_ref0::sendFieldBehavior,
-					ctrl_ref2::receiveField,
-					ctrl_ref0::sendFrameBehavior,
-					ctrl_ref3::receiveAction,
-					ctrl_ref2::sendAction,
-					ctrl_ref3::receiveField,
-					ctrl_ref0::sendFieldPlanning,
-					ctrl_ref3::receiveFrame,
-					ctrl_ref0::sendFramePlanning,
-					ctrl_ref4::receiveCommand,
-					ctrl_ref3::sendCommand,
-					ctrl_ref4::receiveFrame,
-					ctrl_ref0::sendFrameNavigation,
-					ctrl_ref4::receiveField,
-					ctrl_ref0::sendFieldNavigation
+					decisionControllerRef::receiveFrame,
+					visionControllerRef::sendFrameDecision,
+					behaviorControllerRef::receiveField,
+					visionControllerRef::sendFrameBehavior,
+					planningControllerRef::receiveFrame,
+					visionControllerRef::sendFramePlanning,
+					navigationControllerRef::receiveFrame,
+					visionControllerRef::sendFrameNavigation,
+					decisionControllerRef::receiveField,
+					visionControllerRef::sendFieldDecision,
+					behaviorControllerRef::receiveFrame,
+					visionControllerRef::sendFieldBehavior,
+					planningControllerRef::receiveField,
+					visionControllerRef::sendFieldPlanning,
+					navigationControllerRef::receiveField,
+					visionControllerRef::sendFieldNavigation,
+					behaviorControllerRef::receiveTactic,
+					decisionControllerRef::sendTactic,
+					planningControllerRef::receiveAction,
+					behaviorControllerRef::sendAction,
+					navigationControllerRef::receiveCommand,
+					planningControllerRef::sendCommand
 				|},
 				{|
 				|},
@@ -2892,50 +2928,60 @@ module SSL
 	
 	VS_O__(id__) = sbisim(diamond(let
 		Buffer0(<v>) = 
-			ctrl_ref1::sendTactic.out?x -> Buffer0(<x>)
+			visionControllerRef::sendFrameDecision.out?x -> Buffer0(<x>)
 			[]
-			ctrl_ref2::receiveTactic.in!v -> Buffer0(<>)
-		Buffer0(<>) = ctrl_ref1::sendTactic.out?x -> Buffer0(<x>)
+			decisionControllerRef::receiveFrame.in!v -> Buffer0(<>)
+		Buffer0(<>) = visionControllerRef::sendFrameDecision.out?x -> Buffer0(<x>)
 		Buffer1(<v>) = 
-			ctrl_ref0::sendFieldBehavior.out?x -> Buffer1(<x>)
+			visionControllerRef::sendFrameBehavior.out?x -> Buffer1(<x>)
 			[]
-			ctrl_ref2::receiveFrame.in!v -> Buffer1(<>)
-		Buffer1(<>) = ctrl_ref0::sendFieldBehavior.out?x -> Buffer1(<x>)
+			behaviorControllerRef::receiveField.in!v -> Buffer1(<>)
+		Buffer1(<>) = visionControllerRef::sendFrameBehavior.out?x -> Buffer1(<x>)
 		Buffer2(<v>) = 
-			ctrl_ref0::sendFrameBehavior.out?x -> Buffer2(<x>)
+			visionControllerRef::sendFramePlanning.out?x -> Buffer2(<x>)
 			[]
-			ctrl_ref2::receiveField.in!v -> Buffer2(<>)
-		Buffer2(<>) = ctrl_ref0::sendFrameBehavior.out?x -> Buffer2(<x>)
+			planningControllerRef::receiveFrame.in!v -> Buffer2(<>)
+		Buffer2(<>) = visionControllerRef::sendFramePlanning.out?x -> Buffer2(<x>)
 		Buffer3(<v>) = 
-			ctrl_ref2::sendAction.out?x -> Buffer3(<x>)
+			visionControllerRef::sendFrameNavigation.out?x -> Buffer3(<x>)
 			[]
-			ctrl_ref3::receiveAction.in!v -> Buffer3(<>)
-		Buffer3(<>) = ctrl_ref2::sendAction.out?x -> Buffer3(<x>)
+			navigationControllerRef::receiveFrame.in!v -> Buffer3(<>)
+		Buffer3(<>) = visionControllerRef::sendFrameNavigation.out?x -> Buffer3(<x>)
 		Buffer4(<v>) = 
-			ctrl_ref0::sendFieldPlanning.out?x -> Buffer4(<x>)
+			visionControllerRef::sendFieldDecision.out?x -> Buffer4(<x>)
 			[]
-			ctrl_ref3::receiveField.in!v -> Buffer4(<>)
-		Buffer4(<>) = ctrl_ref0::sendFieldPlanning.out?x -> Buffer4(<x>)
+			decisionControllerRef::receiveField.in!v -> Buffer4(<>)
+		Buffer4(<>) = visionControllerRef::sendFieldDecision.out?x -> Buffer4(<x>)
 		Buffer5(<v>) = 
-			ctrl_ref0::sendFramePlanning.out?x -> Buffer5(<x>)
+			visionControllerRef::sendFieldBehavior.out?x -> Buffer5(<x>)
 			[]
-			ctrl_ref3::receiveFrame.in!v -> Buffer5(<>)
-		Buffer5(<>) = ctrl_ref0::sendFramePlanning.out?x -> Buffer5(<x>)
+			behaviorControllerRef::receiveFrame.in!v -> Buffer5(<>)
+		Buffer5(<>) = visionControllerRef::sendFieldBehavior.out?x -> Buffer5(<x>)
 		Buffer6(<v>) = 
-			ctrl_ref3::sendCommand.out?x -> Buffer6(<x>)
+			visionControllerRef::sendFieldPlanning.out?x -> Buffer6(<x>)
 			[]
-			ctrl_ref4::receiveCommand.in!v -> Buffer6(<>)
-		Buffer6(<>) = ctrl_ref3::sendCommand.out?x -> Buffer6(<x>)
+			planningControllerRef::receiveField.in!v -> Buffer6(<>)
+		Buffer6(<>) = visionControllerRef::sendFieldPlanning.out?x -> Buffer6(<x>)
 		Buffer7(<v>) = 
-			ctrl_ref0::sendFrameNavigation.out?x -> Buffer7(<x>)
+			visionControllerRef::sendFieldNavigation.out?x -> Buffer7(<x>)
 			[]
-			ctrl_ref4::receiveFrame.in!v -> Buffer7(<>)
-		Buffer7(<>) = ctrl_ref0::sendFrameNavigation.out?x -> Buffer7(<x>)
+			navigationControllerRef::receiveField.in!v -> Buffer7(<>)
+		Buffer7(<>) = visionControllerRef::sendFieldNavigation.out?x -> Buffer7(<x>)
 		Buffer8(<v>) = 
-			ctrl_ref0::sendFieldNavigation.out?x -> Buffer8(<x>)
+			decisionControllerRef::sendTactic.out?x -> Buffer8(<x>)
 			[]
-			ctrl_ref4::receiveField.in!v -> Buffer8(<>)
-		Buffer8(<>) = ctrl_ref0::sendFieldNavigation.out?x -> Buffer8(<x>)
+			behaviorControllerRef::receiveTactic.in!v -> Buffer8(<>)
+		Buffer8(<>) = decisionControllerRef::sendTactic.out?x -> Buffer8(<x>)
+		Buffer9(<v>) = 
+			behaviorControllerRef::sendAction.out?x -> Buffer9(<x>)
+			[]
+			planningControllerRef::receiveAction.in!v -> Buffer9(<>)
+		Buffer9(<>) = behaviorControllerRef::sendAction.out?x -> Buffer9(<x>)
+		Buffer10(<v>) = 
+			planningControllerRef::sendCommand.out?x -> Buffer10(<x>)
+			[]
+			navigationControllerRef::receiveCommand.in!v -> Buffer10(<>)
+		Buffer10(<>) = planningControllerRef::sendCommand.out?x -> Buffer10(<x>)
 		
 	within
 		(
@@ -2948,50 +2994,48 @@ module SSL
 				Buffer5(<>)|||
 				Buffer6(<>)|||
 				Buffer7(<>)|||
-				Buffer8(<>)
+				Buffer8(<>)|||
+				Buffer9(<>)|||
+				Buffer10(<>)
 				)
-					[|{|ctrl_ref2::receiveTactic,ctrl_ref1::sendTactic,ctrl_ref2::receiveFrame,ctrl_ref0::sendFieldBehavior,ctrl_ref2::receiveField,ctrl_ref0::sendFrameBehavior,ctrl_ref3::receiveAction,ctrl_ref2::sendAction,ctrl_ref3::receiveField,ctrl_ref0::sendFieldPlanning,ctrl_ref3::receiveFrame,ctrl_ref0::sendFramePlanning,ctrl_ref4::receiveCommand,ctrl_ref3::sendCommand,ctrl_ref4::receiveFrame,ctrl_ref0::sendFrameNavigation,ctrl_ref4::receiveField,ctrl_ref0::sendFieldNavigation|}|]
+					[|{|decisionControllerRef::receiveFrame,visionControllerRef::sendFrameDecision,behaviorControllerRef::receiveField,visionControllerRef::sendFrameBehavior,planningControllerRef::receiveFrame,visionControllerRef::sendFramePlanning,navigationControllerRef::receiveFrame,visionControllerRef::sendFrameNavigation,decisionControllerRef::receiveField,visionControllerRef::sendFieldDecision,behaviorControllerRef::receiveFrame,visionControllerRef::sendFieldBehavior,planningControllerRef::receiveField,visionControllerRef::sendFieldPlanning,navigationControllerRef::receiveField,visionControllerRef::sendFieldNavigation,behaviorControllerRef::receiveTactic,decisionControllerRef::sendTactic,planningControllerRef::receiveAction,behaviorControllerRef::sendAction,navigationControllerRef::receiveCommand,planningControllerRef::sendCommand|}|]
 				(
 					(
 						(
-							ctrl_ref0::VS_O__(id__)[[
-								ctrl_ref0::terminate <- terminate,
-								ctrl_ref0::receiveRawFrame <- sendRawFrame,
-								ctrl_ref0::receiveGameEvent <- sendGameEventVision
+							visionControllerRef::VS_O__(id__)[[
+								visionControllerRef::terminate <- terminate,
+								visionControllerRef::receiveRawFrame <- sendRawFrame,
+								visionControllerRef::receiveGameEvent <- sendGameEventVision
 							]]
 						)
-							[|{|terminate, ctrl_ref0::sendFrameDecision, ctrl_ref0::sendFieldDecision|}|]
+							[|{|terminate|}|]
 						(
 							(
-								ctrl_ref1::VS_O__(id__)[[
-									ctrl_ref1::terminate <- terminate,
-									ctrl_ref1::receiveFrame.in <- ctrl_ref0::sendFrameDecision.out,
-									ctrl_ref1::receiveFrame.out <- ctrl_ref0::sendFrameDecision.in,
-									ctrl_ref1::receiveField.in <- ctrl_ref0::sendFieldDecision.out,
-									ctrl_ref1::receiveField.out <- ctrl_ref0::sendFieldDecision.in,
-									ctrl_ref1::receiveGameEvent <- sendGameEventDecision
+								decisionControllerRef::VS_O__(id__)[[
+									decisionControllerRef::terminate <- terminate,
+									decisionControllerRef::receiveGameEvent <- sendGameEventDecision
 								]]
 							)
 								[|{|terminate|}|]
 							(
 								(
-									ctrl_ref2::VS_O__(id__)[[
-										ctrl_ref2::terminate <- terminate
+									behaviorControllerRef::VS_O__(id__)[[
+										behaviorControllerRef::terminate <- terminate
 									]]
 								)
 									[|{|terminate|}|]
 								(
 									(
-										ctrl_ref3::VS_O__(id__)[[
-											ctrl_ref3::terminate <- terminate
+										planningControllerRef::VS_O__(id__)[[
+											planningControllerRef::terminate <- terminate
 										]]
 									)
 										[|{|terminate|}|]
 									(
-										ctrl_ref4::VS_O__(id__)[[
-											ctrl_ref4::terminate <- terminate,
-											ctrl_ref4::stopCall <- stopCall,
-											ctrl_ref4::moveCall <- moveCall
+										navigationControllerRef::VS_O__(id__)[[
+											navigationControllerRef::terminate <- terminate,
+											navigationControllerRef::stopCall <- stopCall,
+											navigationControllerRef::moveCall <- moveCall
 										]]
 									)
 								)
@@ -3015,7 +3059,7 @@ module SSL
 					)
 					\
 					diff(
-						{|terminate, ctrl_ref0::sendFrameDecision, ctrl_ref0::sendFieldDecision|},
+						{|terminate|},
 						{|terminate|}
 					)
 						[|
@@ -3031,24 +3075,28 @@ module SSL
 			)
 			\ Union({
 				{|
-					ctrl_ref2::receiveTactic,
-					ctrl_ref1::sendTactic,
-					ctrl_ref2::receiveFrame,
-					ctrl_ref0::sendFieldBehavior,
-					ctrl_ref2::receiveField,
-					ctrl_ref0::sendFrameBehavior,
-					ctrl_ref3::receiveAction,
-					ctrl_ref2::sendAction,
-					ctrl_ref3::receiveField,
-					ctrl_ref0::sendFieldPlanning,
-					ctrl_ref3::receiveFrame,
-					ctrl_ref0::sendFramePlanning,
-					ctrl_ref4::receiveCommand,
-					ctrl_ref3::sendCommand,
-					ctrl_ref4::receiveFrame,
-					ctrl_ref0::sendFrameNavigation,
-					ctrl_ref4::receiveField,
-					ctrl_ref0::sendFieldNavigation
+					decisionControllerRef::receiveFrame,
+					visionControllerRef::sendFrameDecision,
+					behaviorControllerRef::receiveField,
+					visionControllerRef::sendFrameBehavior,
+					planningControllerRef::receiveFrame,
+					visionControllerRef::sendFramePlanning,
+					navigationControllerRef::receiveFrame,
+					visionControllerRef::sendFrameNavigation,
+					decisionControllerRef::receiveField,
+					visionControllerRef::sendFieldDecision,
+					behaviorControllerRef::receiveFrame,
+					visionControllerRef::sendFieldBehavior,
+					planningControllerRef::receiveField,
+					visionControllerRef::sendFieldPlanning,
+					navigationControllerRef::receiveField,
+					visionControllerRef::sendFieldNavigation,
+					behaviorControllerRef::receiveTactic,
+					decisionControllerRef::sendTactic,
+					planningControllerRef::receiveAction,
+					behaviorControllerRef::sendAction,
+					navigationControllerRef::receiveCommand,
+					planningControllerRef::sendCommand
 				|},
 				{|
 				|},
@@ -3064,50 +3112,60 @@ module SSL
 	
 	AS_O__(id__) = sbisim(diamond(let
 		Buffer0(<v>) = 
-			ctrl_ref1::sendTactic.out?x -> Buffer0(<x>)
+			visionControllerRef::sendFrameDecision.out?x -> Buffer0(<x>)
 			[]
-			ctrl_ref2::receiveTactic.in!v -> Buffer0(<>)
-		Buffer0(<>) = ctrl_ref1::sendTactic.out?x -> Buffer0(<x>)
+			decisionControllerRef::receiveFrame.in!v -> Buffer0(<>)
+		Buffer0(<>) = visionControllerRef::sendFrameDecision.out?x -> Buffer0(<x>)
 		Buffer1(<v>) = 
-			ctrl_ref0::sendFieldBehavior.out?x -> Buffer1(<x>)
+			visionControllerRef::sendFrameBehavior.out?x -> Buffer1(<x>)
 			[]
-			ctrl_ref2::receiveFrame.in!v -> Buffer1(<>)
-		Buffer1(<>) = ctrl_ref0::sendFieldBehavior.out?x -> Buffer1(<x>)
+			behaviorControllerRef::receiveField.in!v -> Buffer1(<>)
+		Buffer1(<>) = visionControllerRef::sendFrameBehavior.out?x -> Buffer1(<x>)
 		Buffer2(<v>) = 
-			ctrl_ref0::sendFrameBehavior.out?x -> Buffer2(<x>)
+			visionControllerRef::sendFramePlanning.out?x -> Buffer2(<x>)
 			[]
-			ctrl_ref2::receiveField.in!v -> Buffer2(<>)
-		Buffer2(<>) = ctrl_ref0::sendFrameBehavior.out?x -> Buffer2(<x>)
+			planningControllerRef::receiveFrame.in!v -> Buffer2(<>)
+		Buffer2(<>) = visionControllerRef::sendFramePlanning.out?x -> Buffer2(<x>)
 		Buffer3(<v>) = 
-			ctrl_ref2::sendAction.out?x -> Buffer3(<x>)
+			visionControllerRef::sendFrameNavigation.out?x -> Buffer3(<x>)
 			[]
-			ctrl_ref3::receiveAction.in!v -> Buffer3(<>)
-		Buffer3(<>) = ctrl_ref2::sendAction.out?x -> Buffer3(<x>)
+			navigationControllerRef::receiveFrame.in!v -> Buffer3(<>)
+		Buffer3(<>) = visionControllerRef::sendFrameNavigation.out?x -> Buffer3(<x>)
 		Buffer4(<v>) = 
-			ctrl_ref0::sendFieldPlanning.out?x -> Buffer4(<x>)
+			visionControllerRef::sendFieldDecision.out?x -> Buffer4(<x>)
 			[]
-			ctrl_ref3::receiveField.in!v -> Buffer4(<>)
-		Buffer4(<>) = ctrl_ref0::sendFieldPlanning.out?x -> Buffer4(<x>)
+			decisionControllerRef::receiveField.in!v -> Buffer4(<>)
+		Buffer4(<>) = visionControllerRef::sendFieldDecision.out?x -> Buffer4(<x>)
 		Buffer5(<v>) = 
-			ctrl_ref0::sendFramePlanning.out?x -> Buffer5(<x>)
+			visionControllerRef::sendFieldBehavior.out?x -> Buffer5(<x>)
 			[]
-			ctrl_ref3::receiveFrame.in!v -> Buffer5(<>)
-		Buffer5(<>) = ctrl_ref0::sendFramePlanning.out?x -> Buffer5(<x>)
+			behaviorControllerRef::receiveFrame.in!v -> Buffer5(<>)
+		Buffer5(<>) = visionControllerRef::sendFieldBehavior.out?x -> Buffer5(<x>)
 		Buffer6(<v>) = 
-			ctrl_ref3::sendCommand.out?x -> Buffer6(<x>)
+			visionControllerRef::sendFieldPlanning.out?x -> Buffer6(<x>)
 			[]
-			ctrl_ref4::receiveCommand.in!v -> Buffer6(<>)
-		Buffer6(<>) = ctrl_ref3::sendCommand.out?x -> Buffer6(<x>)
+			planningControllerRef::receiveField.in!v -> Buffer6(<>)
+		Buffer6(<>) = visionControllerRef::sendFieldPlanning.out?x -> Buffer6(<x>)
 		Buffer7(<v>) = 
-			ctrl_ref0::sendFrameNavigation.out?x -> Buffer7(<x>)
+			visionControllerRef::sendFieldNavigation.out?x -> Buffer7(<x>)
 			[]
-			ctrl_ref4::receiveFrame.in!v -> Buffer7(<>)
-		Buffer7(<>) = ctrl_ref0::sendFrameNavigation.out?x -> Buffer7(<x>)
+			navigationControllerRef::receiveField.in!v -> Buffer7(<>)
+		Buffer7(<>) = visionControllerRef::sendFieldNavigation.out?x -> Buffer7(<x>)
 		Buffer8(<v>) = 
-			ctrl_ref0::sendFieldNavigation.out?x -> Buffer8(<x>)
+			decisionControllerRef::sendTactic.out?x -> Buffer8(<x>)
 			[]
-			ctrl_ref4::receiveField.in!v -> Buffer8(<>)
-		Buffer8(<>) = ctrl_ref0::sendFieldNavigation.out?x -> Buffer8(<x>)
+			behaviorControllerRef::receiveTactic.in!v -> Buffer8(<>)
+		Buffer8(<>) = decisionControllerRef::sendTactic.out?x -> Buffer8(<x>)
+		Buffer9(<v>) = 
+			behaviorControllerRef::sendAction.out?x -> Buffer9(<x>)
+			[]
+			planningControllerRef::receiveAction.in!v -> Buffer9(<>)
+		Buffer9(<>) = behaviorControllerRef::sendAction.out?x -> Buffer9(<x>)
+		Buffer10(<v>) = 
+			planningControllerRef::sendCommand.out?x -> Buffer10(<x>)
+			[]
+			navigationControllerRef::receiveCommand.in!v -> Buffer10(<>)
+		Buffer10(<>) = planningControllerRef::sendCommand.out?x -> Buffer10(<x>)
 		
 	within
 		(
@@ -3120,50 +3178,48 @@ module SSL
 				Buffer5(<>)|||
 				Buffer6(<>)|||
 				Buffer7(<>)|||
-				Buffer8(<>)
+				Buffer8(<>)|||
+				Buffer9(<>)|||
+				Buffer10(<>)
 				)
-					[|{|ctrl_ref2::receiveTactic,ctrl_ref1::sendTactic,ctrl_ref2::receiveFrame,ctrl_ref0::sendFieldBehavior,ctrl_ref2::receiveField,ctrl_ref0::sendFrameBehavior,ctrl_ref3::receiveAction,ctrl_ref2::sendAction,ctrl_ref3::receiveField,ctrl_ref0::sendFieldPlanning,ctrl_ref3::receiveFrame,ctrl_ref0::sendFramePlanning,ctrl_ref4::receiveCommand,ctrl_ref3::sendCommand,ctrl_ref4::receiveFrame,ctrl_ref0::sendFrameNavigation,ctrl_ref4::receiveField,ctrl_ref0::sendFieldNavigation|}|]
+					[|{|decisionControllerRef::receiveFrame,visionControllerRef::sendFrameDecision,behaviorControllerRef::receiveField,visionControllerRef::sendFrameBehavior,planningControllerRef::receiveFrame,visionControllerRef::sendFramePlanning,navigationControllerRef::receiveFrame,visionControllerRef::sendFrameNavigation,decisionControllerRef::receiveField,visionControllerRef::sendFieldDecision,behaviorControllerRef::receiveFrame,visionControllerRef::sendFieldBehavior,planningControllerRef::receiveField,visionControllerRef::sendFieldPlanning,navigationControllerRef::receiveField,visionControllerRef::sendFieldNavigation,behaviorControllerRef::receiveTactic,decisionControllerRef::sendTactic,planningControllerRef::receiveAction,behaviorControllerRef::sendAction,navigationControllerRef::receiveCommand,planningControllerRef::sendCommand|}|]
 				(
 					(
 						(
-							ctrl_ref0::O__(id__)[[
-								ctrl_ref0::terminate <- terminate,
-								ctrl_ref0::receiveRawFrame <- sendRawFrame,
-								ctrl_ref0::receiveGameEvent <- sendGameEventVision
+							visionControllerRef::O__(id__)[[
+								visionControllerRef::terminate <- terminate,
+								visionControllerRef::receiveRawFrame <- sendRawFrame,
+								visionControllerRef::receiveGameEvent <- sendGameEventVision
 							]]
 						)
-							[|{|terminate, ctrl_ref0::sendFrameDecision, ctrl_ref0::sendFieldDecision|}|]
+							[|{|terminate|}|]
 						(
 							(
-								ctrl_ref1::O__(id__)[[
-									ctrl_ref1::terminate <- terminate,
-									ctrl_ref1::receiveFrame.in <- ctrl_ref0::sendFrameDecision.out,
-									ctrl_ref1::receiveFrame.out <- ctrl_ref0::sendFrameDecision.in,
-									ctrl_ref1::receiveField.in <- ctrl_ref0::sendFieldDecision.out,
-									ctrl_ref1::receiveField.out <- ctrl_ref0::sendFieldDecision.in,
-									ctrl_ref1::receiveGameEvent <- sendGameEventDecision
+								decisionControllerRef::O__(id__)[[
+									decisionControllerRef::terminate <- terminate,
+									decisionControllerRef::receiveGameEvent <- sendGameEventDecision
 								]]
 							)
 								[|{|terminate|}|]
 							(
 								(
-									ctrl_ref2::O__(id__)[[
-										ctrl_ref2::terminate <- terminate
+									behaviorControllerRef::O__(id__)[[
+										behaviorControllerRef::terminate <- terminate
 									]]
 								)
 									[|{|terminate|}|]
 								(
 									(
-										ctrl_ref3::O__(id__)[[
-											ctrl_ref3::terminate <- terminate
+										planningControllerRef::O__(id__)[[
+											planningControllerRef::terminate <- terminate
 										]]
 									)
 										[|{|terminate|}|]
 									(
-										ctrl_ref4::O__(id__)[[
-											ctrl_ref4::terminate <- terminate,
-											ctrl_ref4::stopCall <- stopCall,
-											ctrl_ref4::moveCall <- moveCall
+										navigationControllerRef::O__(id__)[[
+											navigationControllerRef::terminate <- terminate,
+											navigationControllerRef::stopCall <- stopCall,
+											navigationControllerRef::moveCall <- moveCall
 										]]
 									)
 								)
@@ -3187,7 +3243,7 @@ module SSL
 					)
 					\
 					diff(
-						{|terminate, ctrl_ref0::sendFrameDecision, ctrl_ref0::sendFieldDecision|},
+						{|terminate|},
 						{|terminate|}
 					)
 						[|
@@ -3203,24 +3259,28 @@ module SSL
 			)
 			\ Union({
 				{|
-					ctrl_ref2::receiveTactic,
-					ctrl_ref1::sendTactic,
-					ctrl_ref2::receiveFrame,
-					ctrl_ref0::sendFieldBehavior,
-					ctrl_ref2::receiveField,
-					ctrl_ref0::sendFrameBehavior,
-					ctrl_ref3::receiveAction,
-					ctrl_ref2::sendAction,
-					ctrl_ref3::receiveField,
-					ctrl_ref0::sendFieldPlanning,
-					ctrl_ref3::receiveFrame,
-					ctrl_ref0::sendFramePlanning,
-					ctrl_ref4::receiveCommand,
-					ctrl_ref3::sendCommand,
-					ctrl_ref4::receiveFrame,
-					ctrl_ref0::sendFrameNavigation,
-					ctrl_ref4::receiveField,
-					ctrl_ref0::sendFieldNavigation
+					decisionControllerRef::receiveFrame,
+					visionControllerRef::sendFrameDecision,
+					behaviorControllerRef::receiveField,
+					visionControllerRef::sendFrameBehavior,
+					planningControllerRef::receiveFrame,
+					visionControllerRef::sendFramePlanning,
+					navigationControllerRef::receiveFrame,
+					visionControllerRef::sendFrameNavigation,
+					decisionControllerRef::receiveField,
+					visionControllerRef::sendFieldDecision,
+					behaviorControllerRef::receiveFrame,
+					visionControllerRef::sendFieldBehavior,
+					planningControllerRef::receiveField,
+					visionControllerRef::sendFieldPlanning,
+					navigationControllerRef::receiveField,
+					visionControllerRef::sendFieldNavigation,
+					behaviorControllerRef::receiveTactic,
+					decisionControllerRef::sendTactic,
+					planningControllerRef::receiveAction,
+					behaviorControllerRef::sendAction,
+					navigationControllerRef::receiveCommand,
+					planningControllerRef::sendCommand
 				|},
 				{|
 				|},
