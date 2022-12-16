@@ -1,0 +1,10 @@
+import behaviors
+
+stm BehaviorSTM {
+	initial i0
+	final f0
+	transition t0 {
+		from i0
+		to f0
+	}
+}

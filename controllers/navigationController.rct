@@ -1,0 +1,17 @@
+interface INavigation {
+	event receiveFrame: string
+	event receiveField: string
+	event receiveCommand: string
+}
+
+interface IMove {
+	move ( linearVelocity : real , angularVelocity : real )
+	stop ()
+}
+
+controller NavigationController {
+	uses INavigation
+	sref stm_ref0 = NavigationSTM
+	requires IMove 
+}
+

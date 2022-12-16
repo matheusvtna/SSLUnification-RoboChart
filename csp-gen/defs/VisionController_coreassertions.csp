@@ -1,0 +1,45 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 16-12-2022 00:37:40
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "VisionController.csp"
+include "core_defs.csp"
+include "state_defs.csp"
+include "file_visionController_defs.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+channel r__
+-- generate VisionController
+P_VisionController = let
+	id__ = 0
+	
+	
+	
+		
+within
+	VisionController::O__(id__)
+
+assert P_VisionController :[deadlock-free]	
+assert P_VisionController;RUN({r__}) :[deadlock-free]
+assert P_VisionController :[deterministic]
+assert P_VisionController :[divergence-free]
+
+-- generate VisionController_stm_ref0
+P_VisionController_stm_ref0 = let
+	id__ = 0
+	
+	
+	
+within
+	VisionController::stm_ref0::O__(
+		id__
+	)
+assert P_VisionController_stm_ref0 :[deadlock-free]	
+assert P_VisionController_stm_ref0;RUN({r__}) :[deadlock-free]
+assert P_VisionController_stm_ref0 :[deterministic]
+assert P_VisionController_stm_ref0 :[divergence-free]

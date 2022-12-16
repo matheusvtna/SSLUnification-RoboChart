@@ -1,0 +1,13 @@
+// Helpers
+function getRobotPosition(frame: string): real*real {}
+
+function getRobotAngle(frame: string): real {}
+
+function getDistance(robot:real*real, target: real*real) : real {}
+
+function smallestAngleDiff(source: real, target: real): real {}
+
+
+// TODO: As informacoes de target nao vem do frame, mas sim do Decision...
+function getTargetPosition(frame: string): real*real {}
+function getTargetAngle(frame: string): real {}

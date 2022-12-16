@@ -1,0 +1,14 @@
+import decisionSTM
+
+interface IDecision {
+	event receiveGameEvent: string
+	event receiveFrame: string
+	event receiveField: string
+	event sendTactic: string
+}
+
+controller DecisionController {
+	uses IDecision
+	sref stm_ref0 = DecisionSTM
+}
+

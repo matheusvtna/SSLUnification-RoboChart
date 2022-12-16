@@ -1,0 +1,14 @@
+import planningSTM
+
+interface IPlanning {
+	event receiveFrame: string
+	event receiveField: string	
+	event receiveAction: string
+	event sendCommand: string
+}
+
+controller PlanningController {		
+	uses IPlanning		
+	sref stm_ref0 = PlanningSTM	
+}
+

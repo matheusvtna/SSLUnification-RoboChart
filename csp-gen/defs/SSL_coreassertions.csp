@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 18-11-2022 10:36:06
+-- Automatically generated on 10-12-2022 12:06:00
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -29,148 +29,78 @@ assert P_SSL;RUN({r__}) :[deadlock-free]
 assert P_SSL :[deterministic]
 assert P_SSL :[divergence-free]
 
--- generate SSL_VisionController
-P_SSL_VisionController = let
+-- generate SSL_visionControllerRef
+P_SSL_visionControllerRef = let
 	id__ = 0
 	
 	
 	
 		
 within
-	SSL::VisionController::O__(id__)
+	SSL::visionControllerRef::O__(id__)
 
-assert P_SSL_VisionController :[deadlock-free]	
-assert P_SSL_VisionController;RUN({r__}) :[deadlock-free]
-assert P_SSL_VisionController :[deterministic]
-assert P_SSL_VisionController :[divergence-free]
+assert P_SSL_visionControllerRef :[deadlock-free]	
+assert P_SSL_visionControllerRef;RUN({r__}) :[deadlock-free]
+assert P_SSL_visionControllerRef :[deterministic]
+assert P_SSL_visionControllerRef :[divergence-free]
 
--- generate SSL_VisionController_stm_ref0
-P_SSL_VisionController_stm_ref0 = let
-	id__ = 0
-	
-	
-	
-within
-	SSL::VisionController::stm_ref0::O__(
-		id__
-	)
-assert P_SSL_VisionController_stm_ref0 :[deadlock-free]	
-assert P_SSL_VisionController_stm_ref0;RUN({r__}) :[deadlock-free]
-assert P_SSL_VisionController_stm_ref0 :[deterministic]
-assert P_SSL_VisionController_stm_ref0 :[divergence-free]
--- generate SSL_DecisionController
-P_SSL_DecisionController = let
+-- generate SSL_decisionControllerRef
+P_SSL_decisionControllerRef = let
 	id__ = 0
 	
 	
 	
 		
 within
-	SSL::DecisionController::O__(id__)
+	SSL::decisionControllerRef::O__(id__)
 
-assert P_SSL_DecisionController :[deadlock-free]	
-assert P_SSL_DecisionController;RUN({r__}) :[deadlock-free]
-assert P_SSL_DecisionController :[deterministic]
-assert P_SSL_DecisionController :[divergence-free]
+assert P_SSL_decisionControllerRef :[deadlock-free]	
+assert P_SSL_decisionControllerRef;RUN({r__}) :[deadlock-free]
+assert P_SSL_decisionControllerRef :[deterministic]
+assert P_SSL_decisionControllerRef :[divergence-free]
 
--- generate SSL_DecisionController_stm_ref0
-P_SSL_DecisionController_stm_ref0 = let
-	id__ = 0
-	
-	
-	
-within
-	SSL::DecisionController::stm_ref0::O__(
-		id__
-	)
-assert P_SSL_DecisionController_stm_ref0 :[deadlock-free]	
-assert P_SSL_DecisionController_stm_ref0;RUN({r__}) :[deadlock-free]
-assert P_SSL_DecisionController_stm_ref0 :[deterministic]
-assert P_SSL_DecisionController_stm_ref0 :[divergence-free]
--- generate SSL_BehaviorController
-P_SSL_BehaviorController = let
+-- generate SSL_behaviorControllerRef
+P_SSL_behaviorControllerRef = let
 	id__ = 0
 	
 	
 	
 		
 within
-	SSL::BehaviorController::O__(id__)
+	SSL::behaviorControllerRef::O__(id__)
 
-assert P_SSL_BehaviorController :[deadlock-free]	
-assert P_SSL_BehaviorController;RUN({r__}) :[deadlock-free]
-assert P_SSL_BehaviorController :[deterministic]
-assert P_SSL_BehaviorController :[divergence-free]
+assert P_SSL_behaviorControllerRef :[deadlock-free]	
+assert P_SSL_behaviorControllerRef;RUN({r__}) :[deadlock-free]
+assert P_SSL_behaviorControllerRef :[deterministic]
+assert P_SSL_behaviorControllerRef :[divergence-free]
 
--- generate SSL_BehaviorController_stm_ref0
-P_SSL_BehaviorController_stm_ref0 = let
-	id__ = 0
-	
-	
-	
-within
-	SSL::BehaviorController::stm_ref0::O__(
-		id__
-	)
-assert P_SSL_BehaviorController_stm_ref0 :[deadlock-free]	
-assert P_SSL_BehaviorController_stm_ref0;RUN({r__}) :[deadlock-free]
-assert P_SSL_BehaviorController_stm_ref0 :[deterministic]
-assert P_SSL_BehaviorController_stm_ref0 :[divergence-free]
--- generate SSL_PlanningController
-P_SSL_PlanningController = let
+-- generate SSL_planningControllerRef
+P_SSL_planningControllerRef = let
 	id__ = 0
 	
 	
 	
 		
 within
-	SSL::PlanningController::O__(id__)
+	SSL::planningControllerRef::O__(id__)
 
-assert P_SSL_PlanningController :[deadlock-free]	
-assert P_SSL_PlanningController;RUN({r__}) :[deadlock-free]
-assert P_SSL_PlanningController :[deterministic]
-assert P_SSL_PlanningController :[divergence-free]
+assert P_SSL_planningControllerRef :[deadlock-free]	
+assert P_SSL_planningControllerRef;RUN({r__}) :[deadlock-free]
+assert P_SSL_planningControllerRef :[deterministic]
+assert P_SSL_planningControllerRef :[divergence-free]
 
--- generate SSL_PlanningController_stm_ref0
-P_SSL_PlanningController_stm_ref0 = let
-	id__ = 0
-	
-	
-	
-within
-	SSL::PlanningController::stm_ref0::O__(
-		id__
-	)
-assert P_SSL_PlanningController_stm_ref0 :[deadlock-free]	
-assert P_SSL_PlanningController_stm_ref0;RUN({r__}) :[deadlock-free]
-assert P_SSL_PlanningController_stm_ref0 :[deterministic]
-assert P_SSL_PlanningController_stm_ref0 :[divergence-free]
--- generate SSL_NavigationController
-P_SSL_NavigationController = let
+-- generate SSL_navigationControllerRef
+P_SSL_navigationControllerRef = let
 	id__ = 0
 	
 	
 	
 		
 within
-	SSL::NavigationController::O__(id__)
+	SSL::navigationControllerRef::O__(id__)
 
-assert P_SSL_NavigationController :[deadlock-free]	
-assert P_SSL_NavigationController;RUN({r__}) :[deadlock-free]
-assert P_SSL_NavigationController :[deterministic]
-assert P_SSL_NavigationController :[divergence-free]
+assert P_SSL_navigationControllerRef :[deadlock-free]	
+assert P_SSL_navigationControllerRef;RUN({r__}) :[deadlock-free]
+assert P_SSL_navigationControllerRef :[deterministic]
+assert P_SSL_navigationControllerRef :[divergence-free]
 
--- generate SSL_NavigationController_stm_ref0
-P_SSL_NavigationController_stm_ref0 = let
-	id__ = 0
-	
-	
-	
-within
-	SSL::NavigationController::stm_ref0::O__(
-		id__
-	)
-assert P_SSL_NavigationController_stm_ref0 :[deadlock-free]	
-assert P_SSL_NavigationController_stm_ref0;RUN({r__}) :[deadlock-free]
-assert P_SSL_NavigationController_stm_ref0 :[deterministic]
-assert P_SSL_NavigationController_stm_ref0 :[divergence-free]
