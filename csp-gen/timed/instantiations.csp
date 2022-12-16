@@ -33,7 +33,7 @@ smallestAngleDiff(source,target) = 0
 
 -- generate real
 nametype core_real = union({ -2..2},{calc_type_min(Union(
-			{{ -2..2},{ -2..2}}))..calc_type_max(Union({{ -2..2},{ -2..2}}))}) 
+			{}))..calc_type_max(Union({}))}) 
 
 -- VECTOR TYPES AND OPERATIONS
 
