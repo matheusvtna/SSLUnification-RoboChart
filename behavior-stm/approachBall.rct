@@ -1,0 +1,25 @@
+import utils
+
+operation approachBall(ball: string) {
+	
+	// Robot instance.
+	var robot: string	
+	
+	// States.
+	initial Initial
+	state Approach {}	
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to Approach
+	}
+	
+	transition stop {		
+		from Approach
+		to Stop
+		condition allyHasBall(robot, ball)
+	}
+}	
+

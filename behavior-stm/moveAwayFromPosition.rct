@@ -1,0 +1,25 @@
+import utils
+
+operation moveAwayFromPosition(frame: string, dangerousPosition: real * real, distanceThreshold: real) {
+	
+	// Robot instance.
+	var robotPosition: real*real	
+		
+	// States.
+	initial Initial
+	state MoveAWay {}	
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to MoveAWay
+	}
+	
+	transition stop {		
+		from MoveAWay
+		to Stop
+		condition getDistance(robotPosition, dangerousPosition) > distanceThreshold
+	}
+}
+

@@ -1,0 +1,23 @@
+import utils
+
+operation carryBall(frame: string, targetPosition: real * real, distanceThreshold: real) {
+	var ballPosition: real*real	
+		
+	// States.
+	initial Initial
+	state CarryBall {}	
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to CarryBall
+	}
+	
+	transition stop {		
+		from CarryBall
+		to Stop
+		condition getDistance(ballPosition, targetPosition) < distanceThreshold
+	}
+}
+

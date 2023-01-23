@@ -1,3 +1,41 @@
+-- generate string
+nametype core_string = LSeq(Char,2)
+
+-- generate getBall
+getBall(frame) = ""
+
+-- generate allyHasBall
+allyHasBall(robot,ball) = true
+
+-- generate -- OPERATION BOUNDS
+
+-- MODULE CONSTANTS
+
+-- CONTROLLER CONSTANTS
+
+-- STATEMACHINE CONSTANTS
+
+-- generate getTargetPosition
+getTargetPosition(frame) = (0,0)
+
+-- generate allyIsCloseToBall
+allyIsCloseToBall(robot,ball) = true
+
+-- generate const_goToPointAndStop_STOP_DIST_THRESHOLD
+const_goToPointAndStop_STOP_DIST_THRESHOLD = 0
+
+-- generate Plus
+Plus(e1,e2,T) = if member(e1+e2,T) then e1+e2 else e1
+
+-- generate getBallPosition
+getBallPosition(frame) = (0,0)
+
+-- generate allyIsBehindBall
+allyIsBehindBall(robot,targetPosition) = true
+
+-- generate getRobotAngle
+getRobotAngle(frame) = 0
+
 -- generate --
 
 -- MODULE CONSTANTS
@@ -15,7 +53,7 @@ nametype core_nat = union({0..2},{calc_type_min(Union(
 			{}))..calc_type_max(Union({}))})
 
 -- generate getDistance
-getDistance(robot,target) = 0
+getDistance(source,target) = 0
 
 -- generate getTargetAngle
 getTargetAngle(frame) = 0
@@ -25,15 +63,12 @@ nametype core_clock_type = {0..10}
 
 -- BASIC FUNCTIONS
 
--- generate string
-nametype core_string = LSeq(Char,2)
-
 -- generate smallestAngleDiff
 smallestAngleDiff(source,target) = 0
 
 -- generate real
 nametype core_real = union({ -2..2},{calc_type_min(Union(
-			{}))..calc_type_max(Union({}))}) 
+			{{ -2..2},{ -2..2},{ -2..2},{ -2..2}}))..calc_type_max(Union({{ -2..2},{ -2..2},{ -2..2},{ -2..2}}))}) 
 
 -- VECTOR TYPES AND OPERATIONS
 
@@ -47,14 +82,6 @@ nametype core_int = union({ -2..2},{calc_type_min(Union(
 -- generate getRobotPosition
 getRobotPosition(frame) = (0,0)
 
--- generate -- OPERATION BOUNDS
-
--- MODULE CONSTANTS
-
--- CONTROLLER CONSTANTS
-
--- STATEMACHINE CONSTANTS
-
 -- generate Div
 Div(e1,e2,T) = if member(e1/e2,T) then e1/e2 else e1
 
@@ -67,14 +94,8 @@ nametype core_boolean = Bool
 -- generate Mult
 Mult(e1,e2,T) = if member(e1*e2,T) then e1*e2 else e1
 
--- generate getTargetPosition
-getTargetPosition(frame) = (0,0)
-
 -- generate Modulus
 Modulus(e1,e2,T) = if member(e1%e2,T) then e1%e2 else e1
-
--- generate const_goToPointAndStop_STOP_DIST_THRESHOLD
-const_goToPointAndStop_STOP_DIST_THRESHOLD = 0
 
 -- generate const_goToPointAndStop_STOP_ANGLE_THRESHOLD
 const_goToPointAndStop_STOP_ANGLE_THRESHOLD = 0
@@ -83,12 +104,9 @@ const_goToPointAndStop_STOP_ANGLE_THRESHOLD = 0
 
 -- BASIC TYPES
 
--- generate Plus
-Plus(e1,e2,T) = if member(e1+e2,T) then e1+e2 else e1
+-- generate allyIsBehind
+allyIsBehind(robot,targetPosition,angleThreshold) = true
 
 -- generate Minus
 Minus(e1,e2,T) = if member(e1-e2,T) then e1-e2 else e1
-
--- generate getRobotAngle
-getRobotAngle(frame) = 0
 

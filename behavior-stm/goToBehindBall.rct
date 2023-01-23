@@ -1,0 +1,25 @@
+import utils
+
+operation goToBehindBall(lookingToTargetPosition: real * real) {
+	
+	// Robot instance.
+	var robot: string	
+	
+	// States.
+	initial Initial
+	state GoToBehindBall {}	
+	final Stop
+	
+	// Transitions.
+	transition goToBehindBall {
+		from Initial
+		to GoToBehindBall
+	}
+	
+	transition stop {		
+		from GoToBehindBall
+		to Stop
+		condition allyIsBehind(robot, lookingToTargetPosition, 60.0) 
+	}
+}	
+

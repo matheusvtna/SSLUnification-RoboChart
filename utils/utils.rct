@@ -3,10 +3,19 @@ function getRobotPosition(frame: string): real*real {}
 
 function getRobotAngle(frame: string): real {}
 
-function getDistance(robot:real*real, target: real*real) : real {}
+function getBall(frame: string): string {}
+
+function getBallPosition(frame: string): real*real {}
+
+function getDistance(source:real*real, target: real*real) : real {}
 
 function smallestAngleDiff(source: real, target: real): real {}
 
+function allyIsBehind(robot: string, targetPosition: real*real, angleThreshold: real): boolean {}
+
+function allyHasBall(robot: string, ball: string): boolean {}
+
+function allyIsCloseToBall(robot: string, ball: string): boolean {}
 
 // TODO: As informacoes de target nao vem do frame, mas sim do Decision...
 function getTargetPosition(frame: string): real*real {}

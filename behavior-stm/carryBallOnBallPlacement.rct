@@ -1,0 +1,65 @@
+import utils
+
+operation carryBallOnBallPlacement(frame: string, targetPosition: real*real) {
+	
+	// Robot instance.
+	var robot: string
+	var ball: string = getBall(frame)
+	
+	const DIST_THRESHOLD_BALL_TO_TARGET: real = 150
+	const DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH: real = 500
+	const MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES: real = 60
+		
+	// States.
+	initial Initial
+	state GoToBehindBall {
+		entry goToBehindBall(targetPosition)
+	}
+	state ApproachBall {
+		entry approachBall(ball)
+	}
+	state PlaceBall {
+		// TODO: Change carryBall to PlaceBall, which defines whether the robot should carry or pass the ball to place it.
+		entry carryBall(frame, targetPosition, DIST_THRESHOLD_BALL_TO_TARGET)
+	}
+	state MoveAwayFromBall {
+		entry moveAwayFromPosition(frame, targetPosition, DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH)
+	}
+	final Final
+	
+	// Transitions.
+	
+	// As transicoes desta maquina (operacao) sao as mesmas condicoes das sub-maquinas.
+	// Como fazer esse fluxo sem que haja duplicacao de condicionais?
+	// Se for repetir, pode haver condicoes escritas diferentes, onde nao deveriam existir.
+	// Existe alguma forma de transicionar quando uma operacao acabar?
+	transition AdjustToCarryBall {
+		from Initial
+		to GoToBehindBall
+	}
+	
+	transition GetBallControl {		
+		from GoToBehindBall
+		to ApproachBall
+		condition (allyIsBehind(robot, targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES) /\ allyIsCloseToBall(robot, ball))
+	}
+	
+	transition PlaceBallInPosition {
+		from ApproachBall
+		to PlaceBall
+		condition allyHasBall(robot, ball)
+	}
+	
+	transition MoveAway {
+		from PlaceBall	
+		to MoveAwayFromBall
+		condition getDistance(getBallPosition(ball), targetPosition) < DIST_THRESHOLD_BALL_TO_TARGET
+	}
+	
+	transition Finish {
+		from MoveAwayFromBall
+		to Final
+		condition getDistance(getRobotPosition(robot), targetPosition) < DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH
+	}
+}	
+

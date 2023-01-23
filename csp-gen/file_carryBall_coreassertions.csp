@@ -1,0 +1,33 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 22-01-2023 21:41:27
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_carryBall.csp"
+
+
+-- generate OP_carryBall
+P_OP_carryBall = let
+	id__ = 0
+	
+	param_frame = ""
+	param_targetPosition = (0,0)
+	param_distanceThreshold = 0
+	
+	
+	
+within
+	OP_carryBall::O__(id__,
+				param_frame,
+				param_targetPosition,
+				param_distanceThreshold)
+assert P_OP_carryBall :[deadlock-free]	
+assert P_OP_carryBall;RUN({r__}) :[deadlock-free]
+assert P_OP_carryBall :[deterministic]
+assert P_OP_carryBall :[divergence-free]
+
+
