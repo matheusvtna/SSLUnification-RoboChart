@@ -1,9 +1,10 @@
 import utils
 
-operation goToBehindBall(lookingToTargetPosition: real * real) {
+operation goToBehindBall(targetPosition: real * real, angleThreshold: real) {
 	
 	// Robot instance.
 	var robot: string	
+	var ball: string
 	
 	// States.
 	initial Initial
@@ -19,7 +20,7 @@ operation goToBehindBall(lookingToTargetPosition: real * real) {
 	transition stop {		
 		from GoToBehindBall
 		to Stop
-		condition allyIsBehind(robot, lookingToTargetPosition, 60.0) 
+		condition (allyIsBehind(robot, targetPosition, angleThreshold) /\ allyIsCloseToBall(robot, ball)) 
 	}
 }	
 

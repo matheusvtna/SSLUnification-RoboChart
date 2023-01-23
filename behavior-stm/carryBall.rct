@@ -17,7 +17,7 @@ operation carryBall(frame: string, targetPosition: real * real, distanceThreshol
 	transition stop {		
 		from CarryBall
 		to Stop
-		condition getDistance(ballPosition, targetPosition) < distanceThreshold
+		// condition getDistance(ballPosition, targetPosition) < distanceThreshold
 	}
 }
 
