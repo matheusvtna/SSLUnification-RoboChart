@@ -1,0 +1,37 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 22-01-2023 21:54:47
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_carryBallOnBallPlacement.csp"
+
+
+-- generate OP_carryBallOnBallPlacement
+P_OP_carryBallOnBallPlacement = let
+	id__ = 0
+	
+	param_frame = ""
+	param_targetPosition = (0,0)
+	
+	
+	const_carryBallOnBallPlacement_DIST_THRESHOLD_BALL_TO_TARGET = 150
+	const_carryBallOnBallPlacement_DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH = 500
+	const_carryBallOnBallPlacement_MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES = 60
+	
+within
+	OP_carryBallOnBallPlacement::O__(id__,
+				param_frame,
+				param_targetPosition,
+			    const_carryBallOnBallPlacement_DIST_THRESHOLD_BALL_TO_TARGET,
+			    const_carryBallOnBallPlacement_DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH,
+			    const_carryBallOnBallPlacement_MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
+assert P_OP_carryBallOnBallPlacement :[deadlock-free]	
+assert P_OP_carryBallOnBallPlacement;RUN({r__}) :[deadlock-free]
+assert P_OP_carryBallOnBallPlacement :[deterministic]
+assert P_OP_carryBallOnBallPlacement :[divergence-free]
+
+

@@ -6,6 +6,7 @@ operation carryBallOnBallPlacement(frame: string, targetPosition: real*real) {
 	var robot: string
 	var ball: string = getBall(frame)
 	
+	// Constants.
 	const DIST_THRESHOLD_BALL_TO_TARGET: real = 150
 	const DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH: real = 500
 	const MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES: real = 60
@@ -13,7 +14,7 @@ operation carryBallOnBallPlacement(frame: string, targetPosition: real*real) {
 	// States.
 	initial Initial
 	state GoToBehindBall {
-		entry goToBehindBall(targetPosition)
+		entry goToBehindBall(targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
 	}
 	state ApproachBall {
 		entry approachBall(ball)

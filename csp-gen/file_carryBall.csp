@@ -1,13 +1,12 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 22-01-2023 21:41:27
+-- Automatically generated on 22-01-2023 21:56:04
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
-include "defs/file_utils_defs.csp"
 include "defs/robochart_defs.csp"
 include "defs/state_defs.csp"
 include "defs/core_defs.csp"
