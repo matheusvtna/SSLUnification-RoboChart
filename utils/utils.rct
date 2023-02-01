@@ -1,4 +1,22 @@
 // Helpers
+datatype Position {
+	pos: real*real
+}
+
+datatype Ball {
+	pos: Position
+}
+
+datatype Robot {
+	pos: Position
+}
+
+datatype Frame {
+	ball: Ball
+	teammates: Robot*Robot*Robot*Robot*Robot*Robot
+	opponents: Robot*Robot*Robot*Robot*Robot*Robot
+}
+
 function getRobotPosition(frame: string): real*real {}
 
 function getRobotAngle(frame: string): real {}
