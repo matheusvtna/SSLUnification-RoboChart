@@ -1,0 +1,30 @@
+
+--
+-- RoboChart generator version 3.0.0.202209090727
+-- Automatically generated on 25-11-2022 11:42:33
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "qualquer_DecisionSTM.csp"
+include "core_defs.csp"
+include "qualquer_defs.csp"
+include "state_defs.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+channel r__
+-- generate qualquer_DecisionSTM
+P_qualquer_DecisionSTM = let
+	id__ = 0
+	
+	
+	
+within
+	qualquer_DecisionSTM::O__(
+		id__
+	)
+assert P_qualquer_DecisionSTM :[deadlock-free]	
+assert P_qualquer_DecisionSTM;RUN({r__}) :[deadlock-free]
+assert P_qualquer_DecisionSTM :[deterministic]
+assert P_qualquer_DecisionSTM :[divergence-free]
