@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 22-01-2023 21:56:04
+-- RoboChart generator version 3.0.0.202209090727
+-- Automatically generated on 02-02-2023 13:32:10
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -31,7 +31,7 @@ exports
 	channel terminate
 	
 	-- Variable channels
-	channel get_ballPosition, set_ballPosition, setL_ballPosition, setR_ballPosition: {(x0__,x1__) | x0__ <- core_real,x1__ <- core_real}
+	channel get_ballPosition, set_ballPosition, setL_ballPosition, setR_ballPosition: Position
 	
 	-- Shared variable channels
 	
@@ -464,7 +464,7 @@ exports
 	varMemory(id__,
 				param_frame,
 				param_targetPosition,
-				param_distanceThreshold) = Memory_ballPosition((0,0))
+				param_distanceThreshold) = Memory_ballPosition(((0,0)))
 	
 	getsetLocalChannels = {|get_ballPosition,set_ballPosition|}
 	

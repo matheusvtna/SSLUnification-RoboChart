@@ -1,14 +1,18 @@
 
 --
--- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 22-01-2023 21:54:10
+-- RoboChart generator version 3.0.0.202209090727
+-- Automatically generated on 02-02-2023 13:32:10
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
+
+
+
+
 -- compileSelfContainedOperation
-module OP_goToBehindBall
+module OP_approachBall
 exports
 	transparent diamond
 	transparent sbisim
@@ -19,7 +23,7 @@ exports
 	-- declaring identifiers of transitions
 	datatype NIDS = 
 	              NID_Initial|
-	              NID_GoToBehindBall|
+	              NID_Approach|
 	              NID_Stop
 	
 	channel internal__ : NIDS
@@ -31,8 +35,7 @@ exports
 	channel terminate
 	
 	-- Variable channels
-	channel get_robot, set_robot, setL_robot, setR_robot: core_string
-	channel get_ball, set_ball, setL_ball, setR_ball: core_string
+	channel get_robot, set_robot, setL_robot, setR_robot: Robot
 	
 	-- Shared variable channels
 	
@@ -44,12 +47,12 @@ exports
 	
 	enterSS = {|
 	Initial::enter,
-	GoToBehindBall::enter,
+	Approach::enter,
 	Stop::enter
 	|}
 	
 	enteredSS = 	{|
-	GoToBehindBall::entered,
+	Approach::entered,
 	Stop::entered
 	|}
 	
@@ -75,8 +78,7 @@ exports
 		channel enter, interrupt
 		
 		D__(id__,
-					param_targetPosition,
-					param_angleThreshold) = 
+					param_ball) = 
 			dbisim(let
 				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
 				
@@ -87,18 +89,16 @@ exports
 				Inactive [| {terminate} |> SKIP)
 		
 		VS_O__(id__,
-					param_targetPosition,
-					param_angleThreshold) = D__(id__,
-					param_targetPosition,
-					param_angleThreshold)
+					param_ball) = D__(id__,
+					param_ball)
 	
 	endmodule
 	----------------------------------------------------------------------
 	
 	
 	----------------------------------------------------------------------
-	-- State: GoToBehindBall
-	module GoToBehindBall
+	-- State: Approach
+	module Approach
 	
 	enterSS = {}
 	
@@ -121,8 +121,7 @@ exports
 		--  Note that FDR has problems with efficiently compiling the process below
 		-- 	if using a different recursion pattern.
 		D__(id__,
-					param_targetPosition,
-					param_angleThreshold) = 
+					param_ball) = 
 		dbisim(let
 			-- IMPLEMENTATION NOTE: 
 			-- The following should be defined as: Inactive = share__choice(Activation [] Termination),
@@ -144,8 +143,7 @@ exports
 			Inactive [| {terminate} |> SKIP)
 			
 		VS_O__(id__,
-					param_targetPosition,
-					param_angleThreshold) = 
+					param_ball) = 
 		dbisim(let
 			Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
 			
@@ -177,8 +175,7 @@ exports
 		
 		--	Rule: behaviours(Node)
 		D__(id__,
-					param_targetPosition,
-					param_angleThreshold) = 
+					param_ball) = 
 			dbisim(let
 				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Entering
 				
@@ -189,10 +186,8 @@ exports
 				Inactive [| {terminate} |> SKIP)
 			
 		VS_O__(id__,
-					param_targetPosition,
-					param_angleThreshold) = D__(id__,
-					param_targetPosition,
-					param_angleThreshold)
+					param_ball) = D__(id__,
+					param_ball)
 	
 	endmodule
 	----------------------------------------------------------------------
@@ -210,27 +205,22 @@ exports
 	
 	-- STM processes
 	STM(id__,
-				param_targetPosition,
-				param_angleThreshold) = -- RULE: [[stm:OperationDef]]_STM^nops : CSPProcess
+				param_ball) = -- RULE: [[stm:OperationDef]]_STM^nops : CSPProcess
 	Stateful(id__,
-				param_targetPosition,
-				param_angleThreshold) \ {terminate}
+				param_ball) \ {terminate}
 	
 	STM_VS_O(id__,
-				param_targetPosition,
-				param_angleThreshold) = -- RULE: [[stm:OperationDef]]_STM^nops : CSPProcess
+				param_ball) = -- RULE: [[stm:OperationDef]]_STM^nops : CSPProcess
 	Stateful(id__,
-				param_targetPosition,
-				param_angleThreshold) \ {terminate}
+				param_ball) \ {terminate}
 	
 	-- Transitions
 	Transitions(id__,
-				param_targetPosition,
-				param_angleThreshold) = ((let
-		Trans = share__choice(get_robot?robot -> get_ball?ball -> (
+				param_ball) = ((let
+		Trans = share__choice(get_robot?robot -> (
 			((share__ -> SKIP
-			 [] dbisim((true)&(internal__!NID_Initial -> SKIP ;  ((SKIP ; GoToBehindBall::enter -> SKIP))))
-			 	 [] dbisim((((allyIsBehind(robot,param_targetPosition,param_angleThreshold) and allyIsCloseToBall(robot,ball))))&(internal__!NID_GoToBehindBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; Stop::enter -> SKIP)))
+			 [] dbisim((true)&(internal__!NID_Initial -> SKIP ;  ((SKIP ; Approach::enter -> SKIP))))
+			 	 [] dbisim((allyHasBall(robot,param_ball))&(internal__!NID_Approach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; Stop::enter -> SKIP)))
 			 ) ; Trans)
 			 []
 			 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
@@ -248,8 +238,7 @@ exports
 	
 	-- Named process definitions
 	MachineBody(id__,
-				param_targetPosition,
-				param_angleThreshold) = 
+				param_ball) = 
 		dbisim((
 		let
 			finalNodesEntered = {|Stop::entered|}
@@ -260,7 +249,7 @@ exports
 				-- modules for defining the semantics of each node.
 				enterSS = {|
 				Initial::enter,
-				GoToBehindBall::enter,
+				Approach::enter,
 				Stop::enter
 				|}
 				hideSet = union(enterSS,{|exit,exited,internal__|})
@@ -269,41 +258,36 @@ exports
 					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 					-- because CSPM modules are used for the semantics of Node.
 					flowevts = union(enterSS,{|exit,exited,interrupt|})
-					transSync = {|internal__.NID_Initial,internal__.NID_GoToBehindBall|}
+					transSync = {|internal__.NID_Initial,internal__.NID_Approach|}
 				within
 					((
 					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
 					   Initial::D__(id__,
-					   			param_targetPosition,
-					   			param_angleThreshold)
+					   			param_ball)
 					   [| { share__, terminate } |] (
-					   GoToBehindBall::D__(id__,
-					   			param_targetPosition,
-					   			param_angleThreshold)
+					   Approach::D__(id__,
+					   			param_ball)
 					   [| { share__, terminate } |] (
 					   Stop::D__(id__,
-					   			param_targetPosition,
-					   			param_angleThreshold)
+					   			param_ball)
 					   )
 					   )
 					 )
-					 [[GoToBehindBall::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_GoToBehindBall|}]]
+					 [[Approach::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_Approach|}]]
 					 [[Stop::interrupt <- x__ | x__ <- {|interrupt|}]]
 					 [[Initial::interrupt <- x__ | x__ <- {|internal__.NID_Initial|}]]
 					 )
 					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-					  [[set_robot <- setL_robot,set_ball <- setL_ball]]
+					  [[set_robot <- setL_robot]]
 					 )
 					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
 					 			,setL_robot
-					 			,setL_ball
 					|}) |]
 					 ((Initial::enter -> Transitions(id__,
-					 			param_targetPosition,
-					 			param_angleThreshold))
-					  [[ share__ <- x__ | x__ <- {| share__,setL_robot,setL_ball |} ]]
+					 			param_ball))
+					  [[ share__ <- x__ | x__ <- {| share__,setL_robot |} ]]
 					 )
-					)[[setL_robot <- set_robot,setL_ball <- set_ball]]
+					)[[setL_robot <- set_robot]]
 					)
 				)
 				 \ hideSet)
@@ -313,32 +297,42 @@ exports
 		)
 	
 	Behaviour(id__,
-				param_targetPosition,
-				param_angleThreshold) = 
+				param_ball) = 
 		dbisim((MachineBody(id__,
-					param_targetPosition,
-					param_angleThreshold)\ enteredSS)
+					param_ball)\ enteredSS)
 		)
 	
+	IteratedBehaviour(id__,
+				param_ball) = 
+		dbisim((MachineBody(id__,
+					param_ball)\ enteredSS)
+		)
 	
 	Stateful(id__,
-				param_targetPosition,
-				param_angleThreshold) = 
+				param_ball) = 
 		((
 			(Behaviour(id__,
-						param_targetPosition,
-						param_angleThreshold) [| union(getsetLocalChannels,{terminate}) |] varMemory(id__,
-						param_targetPosition,
-						param_angleThreshold))
+						param_ball) [| union(getsetLocalChannels,{terminate}) |] varMemory(id__,
+						param_ball))
 		 	\getsetLocalChannels
 		)
 		)
 	
+	IteratedStateful(id__,
+				param_ball) =
+		(dbisim(
+			sbisim(
+				Behaviour(id__,
+							param_ball)
+				[| {|get_robot,set_robot,terminate|} |]
+				Memory_robot((((0,0)),(0,0),0,0))
+			)\{|get_robot,set_robot|}
+		)
+		)
 	
 	-- Visible counterparts
 	MachineBody_VS_O(id__,
-				param_targetPosition,
-				param_angleThreshold) = 
+				param_ball) = 
 		dbisim((
 		let
 			finalNodesEntered = {|Stop::entered|}
@@ -349,7 +343,7 @@ exports
 				-- modules for defining the semantics of each node.
 				enterSS = {|
 				Initial::enter,
-				GoToBehindBall::enter,
+				Approach::enter,
 				Stop::enter
 				|}
 				hideSet = union(enterSS,{|exit,exited,internal__|})
@@ -358,41 +352,36 @@ exports
 					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 					-- because CSPM modules are used for the semantics of Node.
 					flowevts = union(enterSS,{|exit,exited,interrupt|})
-					transSync = {|internal__.NID_Initial,internal__.NID_GoToBehindBall|}
+					transSync = {|internal__.NID_Initial,internal__.NID_Approach|}
 				within
 					((
 					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
 					   Initial::VS_O__(id__,
-					   			param_targetPosition,
-					   			param_angleThreshold)
+					   			param_ball)
 					   [| { share__, terminate } |] (
-					   GoToBehindBall::VS_O__(id__,
-					   			param_targetPosition,
-					   			param_angleThreshold)
+					   Approach::VS_O__(id__,
+					   			param_ball)
 					   [| { share__, terminate } |] (
 					   Stop::VS_O__(id__,
-					   			param_targetPosition,
-					   			param_angleThreshold)
+					   			param_ball)
 					   )
 					   )
 					 )
-					 [[GoToBehindBall::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_GoToBehindBall|}]]
+					 [[Approach::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_Approach|}]]
 					 [[Stop::interrupt <- x__ | x__ <- {|interrupt|}]]
 					 [[Initial::interrupt <- x__ | x__ <- {|internal__.NID_Initial|}]]
 					 )
 					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-					  [[set_robot <- setL_robot,set_ball <- setL_ball]]
+					  [[set_robot <- setL_robot]]
 					 )
 					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
 					 			,setL_robot
-					 			,setL_ball
 					|}) |]
 					 ((Initial::enter -> Transitions(id__,
-					 			param_targetPosition,
-					 			param_angleThreshold))
-					  [[ share__ <- x__ | x__ <- {| share__,setL_robot,setL_ball |} ]]
+					 			param_ball))
+					  [[ share__ <- x__ | x__ <- {| share__,setL_robot |} ]]
 					 )
-					)[[setL_robot <- set_robot,setL_ball <- set_ball]]
+					)[[setL_robot <- set_robot]]
 					)
 				)
 				 \ hideSet)
@@ -402,27 +391,38 @@ exports
 		)
 	
 	Behaviour_VS_O(id__,
-				param_targetPosition,
-				param_angleThreshold) = 
+				param_ball) = 
 		dbisim((MachineBody_VS_O(id__,
-					param_targetPosition,
-					param_angleThreshold))
+					param_ball))
 		)
 	
+	IteratedBehaviour_VS_O(id__,
+				param_ball) = 
+		dbisim((MachineBody_VS_O(id__,
+					param_ball))
+		)
 	
 	Stateful_VS_O(id__,
-				param_targetPosition,
-				param_angleThreshold) = 
+				param_ball) = 
 		dbisim((
 			(Behaviour_VS_O(id__,
-						param_targetPosition,
-						param_angleThreshold) [| union(getsetLocalChannels,{terminate}) |] varMemory(id__,
-						param_targetPosition,
-						param_angleThreshold))
+						param_ball) [| union(getsetLocalChannels,{terminate}) |] varMemory(id__,
+						param_ball))
 		 	\getsetLocalChannels
 		)
 		)
 	
+	IteratedStateful_VS_O(id__,
+				param_ball) =
+		(dbisim(
+			sbisim(
+				Behaviour_VS_O(id__,
+							param_ball)
+				[| {|get_robot,set_robot,terminate|} |]
+				Memory_robot((((0,0)),(0,0),0,0))
+			)\{|get_robot,set_robot|}
+		)
+		)
 	
 	-- END
 	
@@ -434,58 +434,35 @@ exports
 		set_robot?x__ -> Memory_robot(x__)
 		[]
 		terminate -> SKIP
-	Memory_ball(ball) =
-		get_ball!ball -> Memory_ball(ball)
-		[]
-		set_ball?x__ -> Memory_ball(x__)
-		[]
-		terminate -> SKIP
 	
 	-- varMemory process
 	varMemory(id__,
-				param_targetPosition,
-				param_angleThreshold) = Memory_robot("")
-	[| { terminate } |] (
-	Memory_ball("")
-	)
+				param_ball) = Memory_robot((((0,0)),(0,0),0,0))
 	
-	getsetLocalChannels = {|get_robot,set_robot,get_ball,set_ball|}
+	getsetLocalChannels = {|get_robot,set_robot|}
 	
 	-- Definition of the behaviour of state machines (default, optimised, visible, visible and optimised)
 	FVS__(id__,
-				param_targetPosition,
-				param_angleThreshold) = STM_VS_O(id__,
-				param_targetPosition,
-				param_angleThreshold)
+				param_ball) = STM_VS_O(id__,
+				param_ball)
 	
 	D__(id__,
-				param_targetPosition,
-				param_angleThreshold) = STM(id__,
-				param_targetPosition,
-				param_angleThreshold) \ internal_events
+				param_ball) = STM(id__,
+				param_ball) \ internal_events
 	O__(id__,
-				param_targetPosition,
-				param_angleThreshold) = sbisim(diamond(D__(id__,
-				param_targetPosition,
-				param_angleThreshold)))
+				param_ball) = sbisim(diamond(D__(id__,
+				param_ball)))
 	VS__(id__,
-				param_targetPosition,
-				param_angleThreshold) = FVS__(id__,
-				param_targetPosition,
-				param_angleThreshold)
+				param_ball) = FVS__(id__,
+				param_ball)
 	VS_O__(id__,
-				param_targetPosition,
-				param_angleThreshold) = sbisim(diamond(FVS__(id__,
-				param_targetPosition,
-				param_angleThreshold)))
+				param_ball) = sbisim(diamond(FVS__(id__,
+				param_ball)))
 	HEXT__(id__,
-				param_targetPosition,
-				param_angleThreshold) = O__(id__,
-				param_targetPosition,
-				param_angleThreshold) [|shared_variable_events|] SKIP
+				param_ball) = O__(id__,
+				param_ball) [|shared_variable_events|] SKIP
 	HUP__(id__,
-				param_targetPosition,
-				param_angleThreshold) = O__(id__,
-				param_targetPosition,
-				param_angleThreshold) [|{share__}|] SKIP
+				param_ball) = O__(id__,
+				param_ball) [|{share__}|] SKIP
 			endmodule
+

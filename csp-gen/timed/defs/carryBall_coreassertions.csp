@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 22-01-2023 21:56:04
+-- RoboChart generator version 3.0.0.202209090727
+-- Automatically generated on 02-02-2023 13:32:10
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -21,8 +21,8 @@ channel r__
 P_OP_carryBall = let
 	id__ = 0
 	
-	param_frame = ""
-	param_targetPosition = (0,0)
+	param_frame = ((((0,0)),(0,0)),((((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0)),((((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0)))
+	param_targetPosition = ((0,0))
 	param_distanceThreshold = 0
 	
 	

@@ -1,7 +1,7 @@
 import utils
 
-operation carryBall(frame: string, targetPosition: real * real, distanceThreshold: real) {
-	var ballPosition: real*real	
+operation carryBall(frame: Frame, targetPosition: Position, distanceThreshold: real) {
+	var ballPosition: Position
 		
 	// States.
 	initial Initial

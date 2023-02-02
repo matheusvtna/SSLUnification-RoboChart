@@ -1,0 +1,48 @@
+
+--
+-- RoboChart generator version 3.0.0.202209090727
+-- Automatically generated on 02-02-2023 13:32:10
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+-- data definitions used by platform:/resource/SSLUnification/utils/utils.rct
+nametype Position = ({(x0__,x1__) | x0__ <- core_real,x1__ <- core_real})
+Position_pos((pos)) = pos
+update_Position_pos((pos),v__) = (v__)
+nametype Ball = (Position,{(x0__,x1__) | x0__ <- core_real,x1__ <- core_real})
+Ball_pos((pos,vel)) = pos
+update_Ball_pos((pos,vel),v__) = (v__,vel)
+Ball_vel((pos,vel)) = vel
+update_Ball_vel((pos,vel),v__) = (pos,v__)
+nametype Robot = (Position,{(x0__,x1__) | x0__ <- core_real,x1__ <- core_real},core_int,core_real)
+Robot_pos((pos,vel,id,angle)) = pos
+update_Robot_pos((pos,vel,id,angle),v__) = (v__,vel,id,angle)
+Robot_vel((pos,vel,id,angle)) = vel
+update_Robot_vel((pos,vel,id,angle),v__) = (pos,v__,id,angle)
+Robot_id((pos,vel,id,angle)) = id
+update_Robot_id((pos,vel,id,angle),v__) = (pos,vel,v__,angle)
+Robot_angle((pos,vel,id,angle)) = angle
+update_Robot_angle((pos,vel,id,angle),v__) = (pos,vel,id,v__)
+nametype Frame = (Ball,{(x0__,x1__,x2__,x3__,x4__,x5__) | x0__ <- Robot,x1__ <- Robot,x2__ <- Robot,x3__ <- Robot,x4__ <- Robot,x5__ <- Robot},{(x0__,x1__,x2__,x3__,x4__,x5__) | x0__ <- Robot,x1__ <- Robot,x2__ <- Robot,x3__ <- Robot,x4__ <- Robot,x5__ <- Robot})
+Frame_ball((ball,teammates,opponents)) = ball
+update_Frame_ball((ball,teammates,opponents),v__) = (v__,teammates,opponents)
+Frame_teammates((ball,teammates,opponents)) = teammates
+update_Frame_teammates((ball,teammates,opponents),v__) = (ball,v__,opponents)
+Frame_opponents((ball,teammates,opponents)) = opponents
+update_Frame_opponents((ball,teammates,opponents),v__) = (ball,teammates,v__)
+
+pre_getRobot(param_frame) = true
+pre_getRobotPosition(param_frame) = true
+pre_getRobotAngle(param_frame) = true
+pre_getBall(param_frame) = true
+pre_getBallPosition(param_frame) = true
+pre_getDistance(param_source,param_target) = true
+pre_smallestAngleDiff(param_source,param_target) = true
+pre_allyIsBehind(param_robot,param_targetPosition,param_angleThreshold) = true
+pre_allyHasBall(param_robot,param_ball) = true
+pre_allyIsCloseToBall(param_robot,param_ball) = true
+pre_getTargetPosition(param_frame) = true
+pre_getTargetAngle(param_frame) = true
+	

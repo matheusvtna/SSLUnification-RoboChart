@@ -1,6 +1,6 @@
 import utils
 
-operation moveAwayFromPosition(frame: string, dangerousPosition: real * real, distanceThreshold: real) {
+operation moveAwayFromPosition(frame: Frame, dangerousPosition: Position, distanceThreshold: real) {
 	
 	// Robot instance.
 	var robotPosition: real*real	

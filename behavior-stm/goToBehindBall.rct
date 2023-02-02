@@ -1,6 +1,6 @@
 import utils
 
-operation goToBehindBall(targetPosition: real * real, angleThreshold: real) {
+operation goToBehindBall(targetPosition: Position, angleThreshold: real) {
 	
 	// Robot instance.
 	var robot: string	

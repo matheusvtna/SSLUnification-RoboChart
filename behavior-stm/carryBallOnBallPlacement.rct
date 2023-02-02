@@ -1,10 +1,10 @@
 import utils
 
-operation carryBallOnBallPlacement(frame: string, targetPosition: real*real) {
+operation carryBallOnBallPlacement(frame: Frame, targetPosition: Position) {
 	
 	// Robot instance.
-	var robot: string
-	var ball: string = getBall(frame)
+	var robot: Robot
+	var ball: Ball = getBall(frame)
 	
 	// Constants.
 	const DIST_THRESHOLD_BALL_TO_TARGET: real = 150

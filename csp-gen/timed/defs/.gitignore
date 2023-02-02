@@ -33,3 +33,15 @@
 /SVision_coreassertions.csp
 /file_SVision.csp
 /file_SVision_defs.csp
+/carryBall.csp
+/carryBallOnBallPlacement.csp
+/carryBallOnBallPlacement_coreassertions.csp
+/carryBall_coreassertions.csp
+/file_carryBall.csp
+/file_carryBallOnBallPlacement.csp
+/file_carryBallOnBallPlacement_defs.csp
+/file_carryBall_defs.csp
+/file_goToBehindBall.csp
+/file_goToBehindBall_defs.csp
+/goToBehindBall.csp
+/goToBehindBall_coreassertions.csp

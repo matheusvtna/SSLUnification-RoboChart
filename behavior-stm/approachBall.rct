@@ -1,9 +1,9 @@
 import utils
 
-operation approachBall(ball: string) {
+operation approachBall(ball: Ball) {
 	
 	// Robot instance.
-	var robot: string	
+	var robot: Robot	
 	
 	// States.
 	initial Initial

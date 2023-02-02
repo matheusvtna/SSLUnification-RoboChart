@@ -1,14 +1,17 @@
+import utils
+
 stm goToPointAndStop {
 	
 	// Frame
-	var frame: string
+	var frame: Frame
 	
- 	// Vars do robo. 
-	var robotPosition : real*real
+ 	// Vars do robo.
+ 	var robot: Robot 
+	var robotPosition : Position
 	var robotAngle : real
 	
 	// Vars da posicao target.
-	var targetPosition : real*real
+	var targetPosition : Position
 	var targetAngle : real	
 	
 	// Constantes de parada dos estados de goToPoint
@@ -29,8 +32,9 @@ stm goToPointAndStop {
 	// States.
 	initial i0
 	state sGoToPoint {
-		entry robotPosition = getRobotPosition (frame);
-		robotAngle = getRobotAngle (frame);
+		entry robot = getRobot(frame);
+		robotPosition = robot.pos;
+		robotAngle = robot.angle;
 		targetPosition = getTargetPosition (frame);
 		targetAngle = getTargetAngle (frame);
 		distance = getDistance(robotPosition, targetPosition);

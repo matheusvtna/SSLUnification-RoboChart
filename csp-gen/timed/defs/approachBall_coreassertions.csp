@@ -1,0 +1,39 @@
+
+--
+-- RoboChart generator version 3.0.0.202209090727
+-- Automatically generated on 02-02-2023 13:32:10
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "core_timed_defs.csp"
+include "core_defs.csp"
+include "state_timed_defs.csp"
+include "file_approachBall_defs.csp"
+include "robochart_defs.csp"
+include "approachBall.csp"
+include "../instantiations.csp"
+
+transparent wbisim
+channel r__
+-- generate OP_approachBall
+P_OP_approachBall = let
+	id__ = 0
+	
+	param_ball = (((0,0)),(0,0))
+	
+	
+	
+within
+	OP_approachBall::O__(id__,
+				param_ball)
+assert P_OP_approachBall :[deadlock-free]	
+assert P_OP_approachBall;RUN({r__}) :[deadlock-free]
+assert P_OP_approachBall :[deterministic]
+assert P_OP_approachBall :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_OP_approachBall[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_OP_approachBall
