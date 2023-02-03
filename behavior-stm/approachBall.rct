@@ -1,6 +1,7 @@
 import utils
 
 operation approachBall(ball: Ball) {
+	requires NodeStatusI
 	
 	// Robot instance.
 	var robot: Robot	
@@ -20,6 +21,7 @@ operation approachBall(ball: Ball) {
 		from Approach
 		to Stop
 		condition allyHasBall(robot, ball)
+		action isComplete = true
 	}
 }	
 

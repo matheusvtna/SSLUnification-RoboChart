@@ -17,8 +17,8 @@ datatype Robot {
 
 datatype Frame {
 	ball: Ball
-	teammates: Robot*Robot*Robot*Robot*Robot*Robot
-	opponents: Robot*Robot*Robot*Robot*Robot*Robot
+	robot: Robot
+	// TODO: mudar para ter mais de um robo de aliados e oponentes.
 }
 
 function getRobot(frame: Frame): Robot {}

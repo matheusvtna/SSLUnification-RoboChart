@@ -1,8 +1,10 @@
 import utils
 
+
 operation carryBall(frame: Frame, targetPosition: Position, distanceThreshold: real) {
+	requires NodeStatusI
 	var ballPosition: Position
-		
+	
 	// States.
 	initial Initial
 	state CarryBall {}	
@@ -17,7 +19,7 @@ operation carryBall(frame: Frame, targetPosition: Position, distanceThreshold: r
 	transition stop {		
 		from CarryBall
 		to Stop
-		// condition getDistance(ballPosition, targetPosition) < distanceThreshold
+		condition getDistance(ballPosition, targetPosition) < distanceThreshold
+		action isComplete = true
 	}
 }
-

@@ -1,6 +1,16 @@
 import utils
 
+interface NodeStatusI {
+	var isComplete : boolean
+}
+
+interface carryBallI{
+	carryBall(frame: Frame, targetPosition: Position, distanceThreshold: real)
+}
+
 operation carryBallOnBallPlacement(frame: Frame, targetPosition: Position) {
+	requires carryBallI
+	requires NodeStatusI
 	
 	// Robot instance.
 	var robot: Robot
@@ -14,17 +24,17 @@ operation carryBallOnBallPlacement(frame: Frame, targetPosition: Position) {
 	// States.
 	initial Initial
 	state GoToBehindBall {
-		entry goToBehindBall(targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
+		entry isComplete = false; goToBehindBall(targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
 	}
 	state ApproachBall {
-		entry approachBall(ball)
+		entry isComplete = false; approachBall(ball)
 	}
 	state PlaceBall {
 		// TODO: Change carryBall to PlaceBall, which defines whether the robot should carry or pass the ball to place it.
-		entry carryBall(frame, targetPosition, DIST_THRESHOLD_BALL_TO_TARGET)
+		entry isComplete = false; carryBall(frame, targetPosition, DIST_THRESHOLD_BALL_TO_TARGET)
 	}
 	state MoveAwayFromBall {
-		entry moveAwayFromPosition(frame, targetPosition, DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH)
+		entry isComplete = false; moveAwayFromPosition(frame, targetPosition, DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH)
 	}
 	final Final
 	
@@ -42,25 +52,29 @@ operation carryBallOnBallPlacement(frame: Frame, targetPosition: Position) {
 	transition GetBallControl {		
 		from GoToBehindBall
 		to ApproachBall
-		condition (allyIsBehind(robot, targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES) /\ allyIsCloseToBall(robot, ball))
+		//condition (allyIsBehind(robot, targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES) /\ allyIsCloseToBall(robot, ball))
+		condition isComplete == true
 	}
 	
 	transition PlaceBallInPosition {
 		from ApproachBall
 		to PlaceBall
-		condition allyHasBall(robot, ball)
+		//condition allyHasBall(robot, ball)
+		condition isComplete == true
 	}
 	
 	transition MoveAway {
 		from PlaceBall	
 		to MoveAwayFromBall
-		condition getDistance(getBallPosition(ball), targetPosition) < DIST_THRESHOLD_BALL_TO_TARGET
+		//condition getDistance(getBallPosition(frame), targetPosition) < DIST_THRESHOLD_BALL_TO_TARGET
+		condition isComplete == true
 	}
 	
 	transition Finish {
 		from MoveAwayFromBall
 		to Final
-		condition getDistance(getRobotPosition(robot), targetPosition) < DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH
+		//condition getDistance(getRobotPosition(frame), targetPosition) < DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH
+		condition isComplete == true
 	}
 }	
 

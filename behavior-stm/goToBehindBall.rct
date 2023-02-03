@@ -3,8 +3,8 @@ import utils
 operation goToBehindBall(targetPosition: Position, angleThreshold: real) {
 	
 	// Robot instance.
-	var robot: string	
-	var ball: string
+	var robot: Robot	
+	var ball: Ball
 	
 	// States.
 	initial Initial

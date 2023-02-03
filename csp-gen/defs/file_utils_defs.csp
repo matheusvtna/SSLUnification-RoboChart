@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202209090727
--- Automatically generated on 02-02-2023 13:32:10
+-- Automatically generated on 02-02-2023 22:20:26
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -25,13 +25,11 @@ Robot_id((pos,vel,id,angle)) = id
 update_Robot_id((pos,vel,id,angle),v__) = (pos,vel,v__,angle)
 Robot_angle((pos,vel,id,angle)) = angle
 update_Robot_angle((pos,vel,id,angle),v__) = (pos,vel,id,v__)
-nametype Frame = (Ball,{(x0__,x1__,x2__,x3__,x4__,x5__) | x0__ <- Robot,x1__ <- Robot,x2__ <- Robot,x3__ <- Robot,x4__ <- Robot,x5__ <- Robot},{(x0__,x1__,x2__,x3__,x4__,x5__) | x0__ <- Robot,x1__ <- Robot,x2__ <- Robot,x3__ <- Robot,x4__ <- Robot,x5__ <- Robot})
-Frame_ball((ball,teammates,opponents)) = ball
-update_Frame_ball((ball,teammates,opponents),v__) = (v__,teammates,opponents)
-Frame_teammates((ball,teammates,opponents)) = teammates
-update_Frame_teammates((ball,teammates,opponents),v__) = (ball,v__,opponents)
-Frame_opponents((ball,teammates,opponents)) = opponents
-update_Frame_opponents((ball,teammates,opponents),v__) = (ball,teammates,v__)
+nametype Frame = (Ball,Robot)
+Frame_ball((ball,robot)) = ball
+update_Frame_ball((ball,robot),v__) = (v__,robot)
+Frame_robot((ball,robot)) = robot
+update_Frame_robot((ball,robot),v__) = (ball,v__)
 
 pre_getRobot(param_frame) = true
 pre_getRobotPosition(param_frame) = true

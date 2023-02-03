@@ -1,0 +1,38 @@
+
+--
+-- RoboChart generator version 3.0.0.202209090727
+-- Automatically generated on 02-02-2023 23:29:44
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_moveAwayFromPosition.csp"
+
+
+-- generate OP_moveAwayFromPosition
+P_OP_moveAwayFromPosition = let
+	id__ = 0
+	
+	param_frame = ((((0,0)),(0,0)),(((0,0)),(0,0),0,0))
+	param_dangerousPosition = ((0,0))
+	param_distanceThreshold = 0
+	
+	
+	
+within
+	OP_moveAwayFromPosition::O__(id__,
+				param_frame,
+				param_dangerousPosition,
+				param_distanceThreshold)
+assert P_OP_moveAwayFromPosition :[deadlock-free]	
+assert P_OP_moveAwayFromPosition;RUN({r__}) :[deadlock-free]
+assert P_OP_moveAwayFromPosition :[deterministic]
+assert P_OP_moveAwayFromPosition :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_OP_moveAwayFromPosition[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_OP_moveAwayFromPosition
+
+

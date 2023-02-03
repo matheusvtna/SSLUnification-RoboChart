@@ -1,9 +1,9 @@
 import utils
 
 operation moveAwayFromPosition(frame: Frame, dangerousPosition: Position, distanceThreshold: real) {
-	
+	requires NodeStatusI
 	// Robot instance.
-	var robotPosition: real*real	
+	var robotPosition: Position	
 		
 	// States.
 	initial Initial
@@ -20,6 +20,7 @@ operation moveAwayFromPosition(frame: Frame, dangerousPosition: Position, distan
 		from MoveAWay
 		to Stop
 		condition getDistance(robotPosition, dangerousPosition) > distanceThreshold
+		action isComplete = true
 	}
 }
 

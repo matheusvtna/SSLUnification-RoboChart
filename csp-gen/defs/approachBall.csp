@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202209090727
--- Automatically generated on 02-02-2023 13:32:10
+-- Automatically generated on 02-02-2023 23:31:08
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -32,8 +32,10 @@ exports
 	
 	-- Variable channels
 	channel get_robot, set_robot, setL_robot, setR_robot: Robot
+	channel get_isComplete, set_isComplete, setL_isComplete, setR_isComplete: core_boolean
 	
 	-- Shared variable channels
+	channel set_EXT_isComplete: core_boolean
 	
 	-- Local variable channels for defined operations that are required by the state machine
 	
@@ -55,11 +57,13 @@ exports
 	internal_events = union(enteredSS,union(enterSS,{|interrupt,exited|}))
 	
 	shared_variable_events = {|
+		set_EXT_isComplete
 	|}
 	
 	-- channel set with all visible events
 	sem__events = {|
 		terminate
+	,	set_EXT_isComplete, set_isComplete
 		, share__
 		|}
 	
@@ -216,7 +220,7 @@ exports
 		Trans = share__choice(get_robot?robot -> (
 			((share__ -> SKIP
 			 [] dbisim((true)&(internal__!NID_Initial -> SKIP ;  ((SKIP ; Approach::enter -> SKIP))))
-			 	 [] dbisim((allyHasBall(robot,param_ball))&(internal__!NID_Approach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; Stop::enter -> SKIP)))
+			 	 [] dbisim((allyHasBall(robot,param_ball))&(internal__!NID_Approach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_isComplete!true -> SKIP))) ; Stop::enter -> SKIP)))
 			 ) ; Trans)
 			 []
 			 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
