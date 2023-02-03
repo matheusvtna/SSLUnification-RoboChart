@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202209090727
--- Automatically generated on 02-02-2023 23:29:44
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 03-02-2023 08:38:04
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -76,11 +76,11 @@ exports
 	localClockResets = {||}
 	
 	
-	channel get_CLID_Stop : core_clock_type 
 	channel get_CLID_MoveAWay : core_clock_type 
+	channel get_CLID_Stop : core_clock_type 
 	--channel increment__
 	
-	CLID_Stop_clock_type(id__) = 
+	CLID_MoveAWay_clock_type(id__) = 
 		let
 			max = (clock_type_max(Union({
 	{}
@@ -89,7 +89,7 @@ exports
 	within
 		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
-	CLID_MoveAWay_clock_type(id__) = 
+	CLID_Stop_clock_type(id__) = 
 		let
 			max = (clock_type_max(Union({
 	{}

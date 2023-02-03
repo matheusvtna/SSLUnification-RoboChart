@@ -2,6 +2,8 @@ import utils
 
 operation goToBehindBall(targetPosition: Position, angleThreshold: real) {
 	
+	requires NodeStatusI
+	
 	// Robot instance.
 	var robot: Robot	
 	var ball: Ball
@@ -21,6 +23,7 @@ operation goToBehindBall(targetPosition: Position, angleThreshold: real) {
 		from GoToBehindBall
 		to Stop
 		condition (allyIsBehind(robot, targetPosition, angleThreshold) /\ allyIsCloseToBall(robot, ball)) 
+		action isComplete = true
 	}
 }	
 

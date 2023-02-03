@@ -4,12 +4,12 @@ interface NodeStatusI {
 	var isComplete : boolean
 }
 
-interface carryBallI{
+interface CarryBallI{
 	carryBall(frame: Frame, targetPosition: Position, distanceThreshold: real)
 }
 
 operation carryBallOnBallPlacement(frame: Frame, targetPosition: Position) {
-	requires carryBallI
+	requires CarryBallI
 	requires NodeStatusI
 	
 	// Robot instance.
@@ -30,7 +30,6 @@ operation carryBallOnBallPlacement(frame: Frame, targetPosition: Position) {
 		entry isComplete = false; approachBall(ball)
 	}
 	state PlaceBall {
-		// TODO: Change carryBall to PlaceBall, which defines whether the robot should carry or pass the ball to place it.
 		entry isComplete = false; carryBall(frame, targetPosition, DIST_THRESHOLD_BALL_TO_TARGET)
 	}
 	state MoveAwayFromBall {
@@ -39,11 +38,6 @@ operation carryBallOnBallPlacement(frame: Frame, targetPosition: Position) {
 	final Final
 	
 	// Transitions.
-	
-	// As transicoes desta maquina (operacao) sao as mesmas condicoes das sub-maquinas.
-	// Como fazer esse fluxo sem que haja duplicacao de condicionais?
-	// Se for repetir, pode haver condicoes escritas diferentes, onde nao deveriam existir.
-	// Existe alguma forma de transicionar quando uma operacao acabar?
 	transition AdjustToCarryBall {
 		from Initial
 		to GoToBehindBall

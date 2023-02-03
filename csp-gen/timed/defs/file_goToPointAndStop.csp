@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202209090727
--- Automatically generated on 02-02-2023 13:32:10
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 03-02-2023 08:36:33
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -81,12 +81,12 @@ exports
 	localClockResets = {||}
 	
 	
-	channel get_CLID_sGoToPoint : core_clock_type 
 	channel get_CLID_sAdjustAngle : core_clock_type 
+	channel get_CLID_sGoToPoint : core_clock_type 
 	channel get_CLID_f0 : core_clock_type 
 	--channel increment__
 	
-	CLID_sGoToPoint_clock_type(id__,
+	CLID_sAdjustAngle_clock_type(id__,
 			          const_goToPointAndStop_STOP_DIST_THRESHOLD,
 			          const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = 
 		let
@@ -97,7 +97,7 @@ exports
 	within
 		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
-	CLID_sAdjustAngle_clock_type(id__,
+	CLID_sGoToPoint_clock_type(id__,
 			          const_goToPointAndStop_STOP_DIST_THRESHOLD,
 			          const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = 
 		let
@@ -196,7 +196,7 @@ exports
 					
 					Termination = terminate -> SKIP
 					
-					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robot!getRobot(frame) -> SKIP))));share__choice(share__choice(get_robot?robot -> true & (share__choice(set_robotPosition!Robot_pos(robot) -> SKIP))));share__choice(share__choice(get_robot?robot -> true & (share__choice(set_robotAngle!Robot_angle(robot) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_robotAngle?robotAngle -> share__choice(get_targetAngle?targetAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_angularVelocity?angularVelocity -> share__choice(get_linearVelocity?linearVelocity -> true&CALL__move(
+					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robot!getRobot(frame) -> SKIP))));share__choice(share__choice(get_robot?robot -> true & (share__choice(set_robotPosition!Robot_pos(robot) -> SKIP))));share__choice(share__choice(get_robot?robot -> true & (share__choice(set_robotAngle!Robot_angle(robot) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_targetAngle?targetAngle -> share__choice(get_robotAngle?robotAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_linearVelocity?linearVelocity -> share__choice(get_angularVelocity?angularVelocity -> true&CALL__move(
 								id__,
 							    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 							    const_goToPointAndStop_STOP_ANGLE_THRESHOLD,
@@ -224,7 +224,7 @@ exports
 					
 					Termination = terminate -> SKIP
 					
-					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robot!getRobot(frame) -> SKIP))));share__choice(share__choice(get_robot?robot -> true & (share__choice(set_robotPosition!Robot_pos(robot) -> SKIP))));share__choice(share__choice(get_robot?robot -> true & (share__choice(set_robotAngle!Robot_angle(robot) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_robotAngle?robotAngle -> share__choice(get_targetAngle?targetAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_angularVelocity?angularVelocity -> share__choice(get_linearVelocity?linearVelocity -> true&CALL__move(
+					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robot!getRobot(frame) -> SKIP))));share__choice(share__choice(get_robot?robot -> true & (share__choice(set_robotPosition!Robot_pos(robot) -> SKIP))));share__choice(share__choice(get_robot?robot -> true & (share__choice(set_robotAngle!Robot_angle(robot) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_targetAngle?targetAngle -> share__choice(get_robotAngle?robotAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_linearVelocity?linearVelocity -> share__choice(get_angularVelocity?angularVelocity -> true&CALL__move(
 								id__,
 							    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 							    const_goToPointAndStop_STOP_ANGLE_THRESHOLD,
@@ -299,7 +299,7 @@ exports
 					
 					Termination = terminate -> SKIP
 					
-					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotPosition!getRobotPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotAngle!getRobotAngle(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_robotAngle?robotAngle -> share__choice(get_targetAngle?targetAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_angularVelocity?angularVelocity -> share__choice(get_linearVelocity?linearVelocity -> true&CALL__move(
+					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotPosition!getRobotPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotAngle!getRobotAngle(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_targetAngle?targetAngle -> share__choice(get_robotAngle?robotAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_linearVelocity?linearVelocity -> share__choice(get_angularVelocity?angularVelocity -> true&CALL__move(
 								id__,
 							    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 							    const_goToPointAndStop_STOP_ANGLE_THRESHOLD,
@@ -327,7 +327,7 @@ exports
 					
 					Termination = terminate -> SKIP
 					
-					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotPosition!getRobotPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotAngle!getRobotAngle(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_robotAngle?robotAngle -> share__choice(get_targetAngle?targetAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_angularVelocity?angularVelocity -> share__choice(get_linearVelocity?linearVelocity -> true&CALL__move(
+					Active 		= share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotPosition!getRobotPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_robotAngle!getRobotAngle(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetPosition!getTargetPosition(frame) -> SKIP))));share__choice(share__choice(get_frame?frame -> true & (share__choice(set_targetAngle!getTargetAngle(frame) -> SKIP))));share__choice(share__choice(get_robotPosition?robotPosition -> share__choice(get_targetPosition?targetPosition -> true & (share__choice(set_distance!getDistance(robotPosition,targetPosition) -> SKIP)))));share__choice(share__choice(get_targetAngle?targetAngle -> share__choice(get_robotAngle?robotAngle -> true & (share__choice(set_angleDiff!smallestAngleDiff(robotAngle,targetAngle) -> SKIP)))));share__choice(get_linearVelocity?linearVelocity -> share__choice(get_angularVelocity?angularVelocity -> true&CALL__move(
 								id__,
 							    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 							    const_goToPointAndStop_STOP_ANGLE_THRESHOLD,
@@ -453,7 +453,7 @@ exports
 		Transitions(id__,
 				    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 				    const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = ((let
-			Trans = share__choice(get_distance?distance -> get_angleDiff?angleDiff -> TimeOut_1(
+			Trans = share__choice(get_angleDiff?angleDiff -> get_distance?distance -> TimeOut_1(
 				 (share__ -> SKIP
 				 [] dbisim((true)&(internal__!NID_i0 -> SKIP ;  ((SKIP ; sGoToPoint::enter -> SKIP))))
 				 [] dbisim(((distance<=const_goToPointAndStop_STOP_DIST_THRESHOLD))&(internal__!NID_sGoToPoint -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; sAdjustAngle::enter -> SKIP)))
@@ -528,18 +528,18 @@ exports
 						 [[i0::interrupt <- x__ | x__ <- {|internal__.NID_i0|}]]
 						 )
 						  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-						  [[set_distance <- setL_distance,set_angleDiff <- setL_angleDiff]]
+						  [[set_angleDiff <- setL_angleDiff,set_distance <- setL_distance]]
 						 )
 						 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-						 			,setL_distance
 						 			,setL_angleDiff
+						 			,setL_distance
 						|}) |]
 						 ((i0::enter -> Transitions(id__,
 						 		    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 						 		    const_goToPointAndStop_STOP_ANGLE_THRESHOLD))
-						  [[ share__ <- x__ | x__ <- {| share__,setL_distance,setL_angleDiff |} ]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_angleDiff,setL_distance |} ]]
 						 )
-						)[[setL_distance <- set_distance,setL_angleDiff <- set_angleDiff]]
+						)[[setL_angleDiff <- set_angleDiff,setL_distance <- set_distance]]
 						)
 					)
 					 \ hideSet)
@@ -558,7 +558,7 @@ exports
 				    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 				    const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sGoToPoint,sGoToPoint::entered,get_CLID_sAdjustAngle,sAdjustAngle::entered|}
+				stateClockSync = {|get_CLID_sAdjustAngle,sAdjustAngle::entered,get_CLID_sGoToPoint,sGoToPoint::entered|}
 			 within
 				(MachineBody(id__,
 						    const_goToPointAndStop_STOP_DIST_THRESHOLD,
@@ -572,7 +572,7 @@ exports
 				    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 				    const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sGoToPoint,sGoToPoint::entered,get_CLID_sAdjustAngle,sAdjustAngle::entered|}
+				stateClockSync = {|get_CLID_sAdjustAngle,sAdjustAngle::entered,get_CLID_sGoToPoint,sGoToPoint::entered|}
 			 within
 				(dbisim(
 					sbisim(
@@ -581,17 +581,17 @@ exports
 								MachineBody(id__,
 										    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 										    const_goToPointAndStop_STOP_ANGLE_THRESHOLD)
-								[| {|get_CLID_sAdjustAngle,sAdjustAngle::entered,terminate|} |]
-								dbisim(Clock_CLID_sAdjustAngle(id__,0,
+								[| {|get_CLID_sGoToPoint,sGoToPoint::entered,terminate|} |]
+								dbisim(Clock_CLID_sGoToPoint(id__,0,
 										          const_goToPointAndStop_STOP_DIST_THRESHOLD,
 										          const_goToPointAndStop_STOP_ANGLE_THRESHOLD))
-							)\{|get_CLID_sAdjustAngle|}
+							)\{|get_CLID_sGoToPoint|}
 						)
-						[| {|get_CLID_sGoToPoint,sGoToPoint::entered,terminate|} |]
-						dbisim(Clock_CLID_sGoToPoint(id__,0,
+						[| {|get_CLID_sAdjustAngle,sAdjustAngle::entered,terminate|} |]
+						dbisim(Clock_CLID_sAdjustAngle(id__,0,
 								          const_goToPointAndStop_STOP_DIST_THRESHOLD,
 								          const_goToPointAndStop_STOP_ANGLE_THRESHOLD))
-					)\{|get_CLID_sGoToPoint|}
+					)\{|get_CLID_sAdjustAngle|}
 				)
 				) \ union(stateClockSync,enteredSS)
 			)
@@ -689,7 +689,7 @@ exports
 						)\{|get_robot,set_robot|}
 					)
 					[| {|get_frame,set_frame,terminate|} |]
-					Memory_frame(((((0,0)),(0,0)),((((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0)),((((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0))))
+					Memory_frame(((((0,0)),(0,0)),(((0,0)),(0,0),0,0)))
 				)\{|get_frame,set_frame|}
 			)
 			)
@@ -747,18 +747,18 @@ exports
 						 [[i0::interrupt <- x__ | x__ <- {|internal__.NID_i0|}]]
 						 )
 						  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-						  [[set_distance <- setL_distance,set_angleDiff <- setL_angleDiff]]
+						  [[set_angleDiff <- setL_angleDiff,set_distance <- setL_distance]]
 						 )
 						 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-						 			,setL_distance
 						 			,setL_angleDiff
+						 			,setL_distance
 						|}) |]
 						 ((i0::enter -> Transitions(id__,
 						 		    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 						 		    const_goToPointAndStop_STOP_ANGLE_THRESHOLD))
-						  [[ share__ <- x__ | x__ <- {| share__,setL_distance,setL_angleDiff |} ]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_angleDiff,setL_distance |} ]]
 						 )
-						)[[setL_distance <- set_distance,setL_angleDiff <- set_angleDiff]]
+						)[[setL_angleDiff <- set_angleDiff,setL_distance <- set_distance]]
 						)
 					)
 					 \ hideSet)
@@ -777,7 +777,7 @@ exports
 				    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 				    const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sGoToPoint,sGoToPoint::entered,get_CLID_sAdjustAngle,sAdjustAngle::entered|}
+				stateClockSync = {|get_CLID_sAdjustAngle,sAdjustAngle::entered,get_CLID_sGoToPoint,sGoToPoint::entered|}
 			 within
 				(MachineBody_VS_O(id__,
 						    const_goToPointAndStop_STOP_DIST_THRESHOLD,
@@ -791,7 +791,7 @@ exports
 				    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 				    const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sGoToPoint,sGoToPoint::entered,get_CLID_sAdjustAngle,sAdjustAngle::entered|}
+				stateClockSync = {|get_CLID_sAdjustAngle,sAdjustAngle::entered,get_CLID_sGoToPoint,sGoToPoint::entered|}
 			 within
 				(dbisim(
 					sbisim(
@@ -800,17 +800,17 @@ exports
 								MachineBody_VS_O(id__,
 										    const_goToPointAndStop_STOP_DIST_THRESHOLD,
 										    const_goToPointAndStop_STOP_ANGLE_THRESHOLD)
-								[| {|get_CLID_sAdjustAngle,sAdjustAngle::entered,terminate|} |]
-								dbisim(Clock_CLID_sAdjustAngle(id__,0,
+								[| {|get_CLID_sGoToPoint,sGoToPoint::entered,terminate|} |]
+								dbisim(Clock_CLID_sGoToPoint(id__,0,
 										          const_goToPointAndStop_STOP_DIST_THRESHOLD,
 										          const_goToPointAndStop_STOP_ANGLE_THRESHOLD))
-							)\{|get_CLID_sAdjustAngle|}
+							)\{|get_CLID_sGoToPoint|}
 						)
-						[| {|get_CLID_sGoToPoint,sGoToPoint::entered,terminate|} |]
-						dbisim(Clock_CLID_sGoToPoint(id__,0,
+						[| {|get_CLID_sAdjustAngle,sAdjustAngle::entered,terminate|} |]
+						dbisim(Clock_CLID_sAdjustAngle(id__,0,
 								          const_goToPointAndStop_STOP_DIST_THRESHOLD,
 								          const_goToPointAndStop_STOP_ANGLE_THRESHOLD))
-					)\{|get_CLID_sGoToPoint|}
+					)\{|get_CLID_sAdjustAngle|}
 				)
 				) \ diff(union(stateClockSync,enteredSS),enteredSS)
 			)
@@ -908,7 +908,7 @@ exports
 						)\{|get_robot,set_robot|}
 					)
 					[| {|get_frame,set_frame,terminate|} |]
-					Memory_frame(((((0,0)),(0,0)),((((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0)),((((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0))))
+					Memory_frame(((((0,0)),(0,0)),(((0,0)),(0,0),0,0)))
 				)\{|get_frame,set_frame|}
 			)
 			)
@@ -981,7 +981,7 @@ exports
 		-- varMemory process
 		varMemory(id__,
 				    const_goToPointAndStop_STOP_DIST_THRESHOLD,
-				    const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = Memory_frame(((((0,0)),(0,0)),((((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0)),((((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0),(((0,0)),(0,0),0,0))))
+				    const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = Memory_frame(((((0,0)),(0,0)),(((0,0)),(0,0),0,0)))
 		[| { terminate } |] (
 		Memory_robot((((0,0)),(0,0),0,0))
 		[| { terminate } |] (
@@ -1062,23 +1062,6 @@ exports
 		
 		clockSync = {||}
 		
-		Clock_CLID_sGoToPoint(id__,x__,
-				          const_goToPointAndStop_STOP_DIST_THRESHOLD,
-				          const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = 
-			TimeOut_1(
-				sGoToPoint::entered -> Clock_CLID_sGoToPoint(id__,0,
-						          const_goToPointAndStop_STOP_DIST_THRESHOLD,
-						          const_goToPointAndStop_STOP_ANGLE_THRESHOLD)
-				[]
-				get_CLID_sGoToPoint!x__ -> Clock_CLID_sGoToPoint(id__,x__,
-						          const_goToPointAndStop_STOP_DIST_THRESHOLD,
-						          const_goToPointAndStop_STOP_ANGLE_THRESHOLD)
-				[]
-				terminate -> SKIP,Clock_CLID_sGoToPoint(id__,clock_type_plus(x__,1,CLID_sGoToPoint_clock_type(id__,
-						          const_goToPointAndStop_STOP_DIST_THRESHOLD,
-						          const_goToPointAndStop_STOP_ANGLE_THRESHOLD)),
-						          const_goToPointAndStop_STOP_DIST_THRESHOLD,
-						          const_goToPointAndStop_STOP_ANGLE_THRESHOLD))
 		Clock_CLID_sAdjustAngle(id__,x__,
 				          const_goToPointAndStop_STOP_DIST_THRESHOLD,
 				          const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = 
@@ -1096,19 +1079,36 @@ exports
 						          const_goToPointAndStop_STOP_ANGLE_THRESHOLD)),
 						          const_goToPointAndStop_STOP_DIST_THRESHOLD,
 						          const_goToPointAndStop_STOP_ANGLE_THRESHOLD))
+		Clock_CLID_sGoToPoint(id__,x__,
+				          const_goToPointAndStop_STOP_DIST_THRESHOLD,
+				          const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = 
+			TimeOut_1(
+				sGoToPoint::entered -> Clock_CLID_sGoToPoint(id__,0,
+						          const_goToPointAndStop_STOP_DIST_THRESHOLD,
+						          const_goToPointAndStop_STOP_ANGLE_THRESHOLD)
+				[]
+				get_CLID_sGoToPoint!x__ -> Clock_CLID_sGoToPoint(id__,x__,
+						          const_goToPointAndStop_STOP_DIST_THRESHOLD,
+						          const_goToPointAndStop_STOP_ANGLE_THRESHOLD)
+				[]
+				terminate -> SKIP,Clock_CLID_sGoToPoint(id__,clock_type_plus(x__,1,CLID_sGoToPoint_clock_type(id__,
+						          const_goToPointAndStop_STOP_DIST_THRESHOLD,
+						          const_goToPointAndStop_STOP_ANGLE_THRESHOLD)),
+						          const_goToPointAndStop_STOP_DIST_THRESHOLD,
+						          const_goToPointAndStop_STOP_ANGLE_THRESHOLD))
 		
 		StateClocks(id__,
 				          const_goToPointAndStop_STOP_DIST_THRESHOLD,
-				          const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = dbisim(Clock_CLID_sGoToPoint(id__,0,
+				          const_goToPointAndStop_STOP_ANGLE_THRESHOLD) = dbisim(Clock_CLID_sAdjustAngle(id__,0,
 				          const_goToPointAndStop_STOP_DIST_THRESHOLD,
 				          const_goToPointAndStop_STOP_ANGLE_THRESHOLD))
 		[| { terminate } |] (
-		dbisim(Clock_CLID_sAdjustAngle(id__,0,
+		dbisim(Clock_CLID_sGoToPoint(id__,0,
 				          const_goToPointAndStop_STOP_DIST_THRESHOLD,
 				          const_goToPointAndStop_STOP_ANGLE_THRESHOLD))
 		)
 		
-		stateClockSync = {|get_CLID_sGoToPoint,sGoToPoint::entered,get_CLID_sAdjustAngle,sAdjustAngle::entered|}
+		stateClockSync = {|get_CLID_sAdjustAngle,sAdjustAngle::entered,get_CLID_sGoToPoint,sGoToPoint::entered|}
 		
 		-- Shared memory
 		-- Shared memory variables
