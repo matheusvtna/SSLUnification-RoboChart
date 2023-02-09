@@ -21,7 +21,7 @@ operation approachBall(ball: Ball) {
 		from Approach
 		to Stop
 		condition allyHasBall(robot, ball)
-		action isComplete = true
+		action nodeStatus = NODE_STATUS::DONE
 	}
 }	
 

@@ -20,6 +20,6 @@ operation carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real
 		from CarryBall
 		to Stop
 		condition getDistance(ballPosition, targetPosition) < distanceThreshold
-		action isComplete = true
+		action nodeStatus = NODE_STATUS::DONE
 	}
 }

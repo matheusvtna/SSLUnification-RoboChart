@@ -1,7 +1,7 @@
 import utils
 
 interface NodeStatusI {
-	var isComplete : boolean
+	var nodeStatus : NODE_STATUS
 }
 
 interface CarryBallI{
@@ -18,6 +18,12 @@ interface ApproachBallI{
 
 interface MoveAwayFromPositionI {
 	moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceThreshold: real)
+}
+
+enumeration NODE_STATUS {
+	RUNNING
+	FAILED
+	DONE
 }
 
 operation carryBallOnBallPlacement(frame: Frame, targetPosition: Point) {
@@ -39,16 +45,16 @@ operation carryBallOnBallPlacement(frame: Frame, targetPosition: Point) {
 	// States.
 	initial Initial
 	state GoToBehindBall {
-		entry isComplete = false; goToBehindBall(targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
+		entry nodeStatus = NODE_STATUS::RUNNING; goToBehindBall(targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
 	}
 	state ApproachBall {
-		entry isComplete = false; approachBall(ball)
+		entry nodeStatus = NODE_STATUS::RUNNING; approachBall(ball)
 	}
 	state PlaceBall {
-		entry isComplete = false; carryBall(frame, targetPosition, DIST_THRESHOLD_BALL_TO_TARGET)
+		entry nodeStatus = NODE_STATUS::RUNNING; carryBall(frame, targetPosition, DIST_THRESHOLD_BALL_TO_TARGET)
 	}
 	state MoveAwayFromBall {
-		entry isComplete = false; moveAwayFromPosition(frame, targetPosition, DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH)
+		entry nodeStatus = NODE_STATUS::RUNNING; moveAwayFromPosition(frame, targetPosition, DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH)
 	}
 	final Final
 	
@@ -62,28 +68,28 @@ operation carryBallOnBallPlacement(frame: Frame, targetPosition: Point) {
 		from GoToBehindBall
 		to ApproachBall
 		//condition (allyIsBehind(robot, targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES) /\ allyIsCloseToBall(robot, ball))
-		condition isComplete == true
+		condition nodeStatus == NODE_STATUS::DONE
 	}
 	
 	transition PlaceBallInPosition {
 		from ApproachBall
 		to PlaceBall
 		//condition allyHasBall(robot, ball)
-		condition isComplete == true
+		condition nodeStatus == NODE_STATUS::DONE
 	}
 	
 	transition MoveAway {
 		from PlaceBall	
 		to MoveAwayFromBall
 		//condition getDistance(getBallPosition(frame), targetPosition) < DIST_THRESHOLD_BALL_TO_TARGET
-		condition isComplete == true
+		condition nodeStatus == NODE_STATUS::DONE
 	}
 	
 	transition Finish {
 		from MoveAwayFromBall
 		to Final
 		//condition getDistance(getRobotPosition(frame), targetPosition) < DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH
-		condition isComplete == true
+		condition nodeStatus == NODE_STATUS::DONE
 	}
 }	
 

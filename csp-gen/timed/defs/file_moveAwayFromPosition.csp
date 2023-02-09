@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202209090727
--- Automatically generated on 09-02-2023 16:57:45
+-- Automatically generated on 09-02-2023 18:43:23
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -36,10 +36,10 @@ exports
 	
 	-- Variable channels
 	channel get_robotPosition, set_robotPosition, setL_robotPosition, setR_robotPosition: Point
-	channel get_isComplete, set_isComplete, setL_isComplete, setR_isComplete: core_boolean
+	channel get_nodeStatus, set_nodeStatus, setL_nodeStatus, setR_nodeStatus: NODE_STATUS
 	
 	-- Shared variable channels
-	channel set_EXT_isComplete: core_boolean
+	channel set_EXT_nodeStatus: NODE_STATUS
 	
 	-- Local variable channels for defined operations that are required by the state machine
 	
@@ -61,13 +61,13 @@ exports
 	internal_events = union(enteredSS,union(enterSS,{|interrupt,exited|}))
 	
 	shared_variable_events = {|
-		set_EXT_isComplete
+		set_EXT_nodeStatus
 	|}
 	
 	-- channel set with all visible events
 	sem__events = {|
 		terminate
-	,	set_EXT_isComplete, set_isComplete
+	,	set_EXT_nodeStatus, set_nodeStatus
 		, share__
 		|}
 	
@@ -295,7 +295,7 @@ exports
 			Trans = share__choice(get_robotPosition?robotPosition -> TimeOut_1(
 				 (share__ -> SKIP
 				 [] dbisim((true)&(internal__!NID_Initial -> SKIP ;  ((SKIP ; MoveAWay::enter -> SKIP))))
-				 [] dbisim(((getDistance(robotPosition,param_dangerousPosition)>param_distanceThreshold))&(internal__!NID_MoveAWay -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_isComplete!true -> SKIP))) ; Stop::enter -> SKIP)))
+				 [] dbisim(((getDistance(robotPosition,param_dangerousPosition)>param_distanceThreshold))&(internal__!NID_MoveAWay -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; Stop::enter -> SKIP)))
 				 []
 				 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
 				 []

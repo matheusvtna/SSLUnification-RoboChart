@@ -20,7 +20,7 @@ operation moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceT
 		from MoveAWay
 		to Stop
 		condition getDistance(robotPosition, dangerousPosition) > distanceThreshold
-		action isComplete = true
+		action nodeStatus = NODE_STATUS::DONE
 	}
 }
 

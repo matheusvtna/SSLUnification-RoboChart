@@ -23,7 +23,7 @@ operation goToBehindBall(targetPosition: Point, angleThreshold: real) {
 		from GoToBehindBall
 		to Stop
 		condition (allyIsBehind(robot, targetPosition, angleThreshold) /\ allyIsCloseToBall(robot, ball)) 
-		action isComplete = true
+		action nodeStatus = NODE_STATUS::DONE
 	}
 }	
 
