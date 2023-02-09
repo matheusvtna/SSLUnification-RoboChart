@@ -1,22 +1,37 @@
 
 --
--- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 03-02-2023 08:38:04
+-- RoboChart generator version 3.0.0.202209090727
+-- Automatically generated on 09-02-2023 16:57:45
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
-include "defs/file_utils_defs.csp"
 include "defs/state_timed_defs.csp"
-include "defs/robochart_defs.csp"
-include "defs/file_moveAwayFromPosition.csp"
-include "defs/core_defs.csp"
+include "defs/file_goToPointAndStop_defs.csp"
+include "defs/file_controllers_defs.csp"
+include "defs/file_carryBallOnBallPlacement_defs.csp"
+include "defs/file_behaviors_defs.csp"
+include "defs/file_carryBall_defs.csp"
+include "defs/file_main_defs.csp"
+include "defs/file_approachBall_defs.csp"
+include "defs/file_visionController_defs.csp"
 include "defs/core_timed_defs.csp"
 include "defs/file_goToBehindBall_defs.csp"
-include "defs/file_carryBallOnBallPlacement_defs.csp"
+include "defs/file_visionSTM_defs.csp"
+include "defs/file_decisionController_defs.csp"
+include "defs/file_behaviorController_defs.csp"
+include "defs/core_defs.csp"
+include "defs/file_behaviorSTM_defs.csp"
+include "defs/file_planningController_defs.csp"
+include "defs/file_navigationSTM_defs.csp"
+include "defs/file_decisionSTM_defs.csp"
+include "defs/file_modules_defs.csp"
+include "defs/file_planningSTM_defs.csp"
 include "defs/file_moveAwayFromPosition_defs.csp"
+include "defs/file_utils_defs.csp"
+include "defs/robochart_defs.csp"
+include "defs/file_moveAwayFromPosition.csp"
 include "instantiations.csp"
-include "defs/file_carryBall_defs.csp"
-include "defs/file_approachBall_defs.csp"
+include "defs/file_navigationController_defs.csp"
 channel r__

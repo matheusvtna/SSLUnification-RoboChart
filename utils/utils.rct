@@ -1,16 +1,16 @@
 // Helpers
-datatype Position {
+datatype Point {
 	pos: real*real
 }
 
 datatype Ball {
-	pos: Position
-	vel: real*real
+	pos: Point
+	vel: Point
 }
 
 datatype Robot {
-	pos: Position
-	vel: real*real
+	pos: Point
+	vel: Point
 	id: int
 	angle: real
 }
@@ -23,24 +23,24 @@ datatype Frame {
 
 function getRobot(frame: Frame): Robot {}
  
-function getRobotPosition(frame: Frame): Position {}
+function getRobotPosition(frame: Frame): Point {}
 
 function getRobotAngle(frame: Frame): real {}
 
 function getBall(frame: Frame): Ball {}
 
-function getBallPosition(frame: Frame): Position {}
+function getBallPosition(frame: Frame): Point {}
 
-function getDistance(source:Position, target: Position) : real {}
+function getDistance(source:Point, target: Point) : real {}
 
 function smallestAngleDiff(source: real, target: real): real {}
 
-function allyIsBehind(robot: Robot, targetPosition: Position, angleThreshold: real): boolean {}
+function allyIsBehind(robot: Robot, targetPosition: Point, angleThreshold: real): boolean {}
 
 function allyHasBall(robot: Robot, ball: Ball): boolean {}
 
 function allyIsCloseToBall(robot: Robot, ball: Ball): boolean {}
 
 // TODO: As informacoes de target nao vem do frame, mas sim do Decision...
-function getTargetPosition(frame: Frame): Position {}
+function getTargetPosition(frame: Frame): Point {}
 function getTargetAngle(frame: Frame): real {}

@@ -1,22 +1,22 @@
 
 --
--- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 03-02-2023 08:36:33
+-- RoboChart generator version 3.0.0.202209090727
+-- Automatically generated on 09-02-2023 16:52:27
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
 -- data definitions used by platform:/resource/SSLUnification/utils/utils.rct
-nametype Position = ({(x0__,x1__) | x0__ <- core_real,x1__ <- core_real})
-Position_pos((pos)) = pos
-update_Position_pos((pos),v__) = (v__)
-nametype Ball = (Position,{(x0__,x1__) | x0__ <- core_real,x1__ <- core_real})
+nametype Point = ({(x0__,x1__) | x0__ <- core_real,x1__ <- core_real})
+Point_pos((pos)) = pos
+update_Point_pos((pos),v__) = (v__)
+nametype Ball = (Point,Point)
 Ball_pos((pos,vel)) = pos
 update_Ball_pos((pos,vel),v__) = (v__,vel)
 Ball_vel((pos,vel)) = vel
 update_Ball_vel((pos,vel),v__) = (pos,v__)
-nametype Robot = (Position,{(x0__,x1__) | x0__ <- core_real,x1__ <- core_real},core_int,core_real)
+nametype Robot = (Point,Point,core_int,core_real)
 Robot_pos((pos,vel,id,angle)) = pos
 update_Robot_pos((pos,vel,id,angle),v__) = (v__,vel,id,angle)
 Robot_vel((pos,vel,id,angle)) = vel

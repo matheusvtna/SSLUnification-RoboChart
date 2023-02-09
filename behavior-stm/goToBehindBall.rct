@@ -1,6 +1,6 @@
 import utils
 
-operation goToBehindBall(targetPosition: Position, angleThreshold: real) {
+operation goToBehindBall(targetPosition: Point, angleThreshold: real) {
 	
 	requires NodeStatusI
 	

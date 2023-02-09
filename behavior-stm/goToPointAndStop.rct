@@ -7,11 +7,11 @@ stm goToPointAndStop {
 	
  	// Vars do robo.
  	var robot: Robot 
-	var robotPosition : Position
+	var robotPosition : Point
 	var robotAngle : real
 	
 	// Vars da posicao target.
-	var targetPosition : Position
+	var targetPosition : Point
 	var targetAngle : real	
 	
 	// Constantes de parada dos estados de goToPoint

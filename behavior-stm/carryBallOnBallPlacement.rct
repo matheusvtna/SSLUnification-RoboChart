@@ -5,11 +5,26 @@ interface NodeStatusI {
 }
 
 interface CarryBallI{
-	carryBall(frame: Frame, targetPosition: Position, distanceThreshold: real)
+	carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real)
 }
 
-operation carryBallOnBallPlacement(frame: Frame, targetPosition: Position) {
+interface GoToBehindBallI {
+	goToBehindBall(targetPosition: Point, angleThreshold: real)
+}
+
+interface ApproachBallI{
+	approachBall(ball: Ball)
+}
+
+interface MoveAwayFromPositionI {
+	moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceThreshold: real)
+}
+
+operation carryBallOnBallPlacement(frame: Frame, targetPosition: Point) {
 	requires CarryBallI
+	requires GoToBehindBallI
+	requires ApproachBallI
+	requires MoveAwayFromPositionI
 	requires NodeStatusI
 	
 	// Robot instance.

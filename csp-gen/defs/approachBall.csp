@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 03-02-2023 08:38:04
+-- RoboChart generator version 3.0.0.202209090727
+-- Automatically generated on 09-02-2023 16:57:45
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -405,7 +405,7 @@ exports
 	
 	-- varMemory process
 	varMemory(id__,
-				param_ball) = Memory_robot((((0,0)),(0,0),0,0))
+				param_ball) = Memory_robot((((0,0)),((0,0)),0,0))
 	
 	getsetLocalChannels = {|get_robot,set_robot|}
 	

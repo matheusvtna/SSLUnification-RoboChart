@@ -1,9 +1,9 @@
 import utils
 
 
-operation carryBall(frame: Frame, targetPosition: Position, distanceThreshold: real) {
+operation carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real) {
 	requires NodeStatusI
-	var ballPosition: Position
+	var ballPosition: Point
 	
 	// States.
 	initial Initial
