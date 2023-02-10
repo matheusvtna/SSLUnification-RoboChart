@@ -1,10 +1,7 @@
 import utils
 
-interface NodeStatusI {
-	var nodeStatus : NODE_STATUS
-}
-
-interface CarryBallI{
+// TODO: Para cada interface, adicionar o contexto de cada operação para evitar parametros.
+interface CarryBallI {
 	carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real)
 }
 
@@ -12,18 +9,12 @@ interface GoToBehindBallI {
 	goToBehindBall(targetPosition: Point, angleThreshold: real)
 }
 
-interface ApproachBallI{
-	approachBall(ball: Ball)
+interface ApproachBallI {
+	approachBall(ball: Ball, angleThreshold: real)
 }
 
 interface MoveAwayFromPositionI {
 	moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceThreshold: real)
-}
-
-enumeration NODE_STATUS {
-	RUNNING
-	FAILED
-	DONE
 }
 
 operation carryBallOnBallPlacement(frame: Frame, targetPosition: Point) {
@@ -40,15 +31,20 @@ operation carryBallOnBallPlacement(frame: Frame, targetPosition: Point) {
 	// Constants.
 	const DIST_THRESHOLD_BALL_TO_TARGET: real = 150
 	const DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH: real = 500
+	const DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED: real = 200
 	const MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES: real = 60
+	const TIME_TO_PLACE_BALL_IN_SECONDS: nat = 30
 		
 	// States.
 	initial Initial
 	state GoToBehindBall {
 		entry nodeStatus = NODE_STATUS::RUNNING; goToBehindBall(targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
 	}
+	state GiveSpaceToGetBall {
+		entry nodeStatus = NODE_STATUS::RUNNING; moveAwayFromPosition(frame, getPositionFromBall(ball), DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED)
+	}
 	state ApproachBall {
-		entry nodeStatus = NODE_STATUS::RUNNING; approachBall(ball)
+		entry nodeStatus = NODE_STATUS::RUNNING; approachBall(ball, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
 	}
 	state PlaceBall {
 		entry nodeStatus = NODE_STATUS::RUNNING; carryBall(frame, targetPosition, DIST_THRESHOLD_BALL_TO_TARGET)
@@ -59,37 +55,78 @@ operation carryBallOnBallPlacement(frame: Frame, targetPosition: Point) {
 	final Final
 	
 	// Transitions.
+	// 
+	// SUCCESS PATHS.
 	transition AdjustToCarryBall {
 		from Initial
 		to GoToBehindBall
 	}
 	
+	transition AvoidBall {
+		from GoToBehindBall
+		to GiveSpaceToGetBall
+		condition nodeStatus == NODE_STATUS::FAILED
+	}
+	
+	transition TryGoToBehindBallAgain {		
+		from GiveSpaceToGetBall
+		to GoToBehindBall
+		condition nodeStatus == NODE_STATUS::DONE
+	}
+	
 	transition GetBallControl {		
 		from GoToBehindBall
 		to ApproachBall
-		//condition (allyIsBehind(robot, targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES) /\ allyIsCloseToBall(robot, ball))
 		condition nodeStatus == NODE_STATUS::DONE
 	}
 	
 	transition PlaceBallInPosition {
 		from ApproachBall
 		to PlaceBall
-		//condition allyHasBall(robot, ball)
 		condition nodeStatus == NODE_STATUS::DONE
 	}
 	
 	transition MoveAway {
 		from PlaceBall	
 		to MoveAwayFromBall
-		//condition getDistance(getBallPosition(frame), targetPosition) < DIST_THRESHOLD_BALL_TO_TARGET
 		condition nodeStatus == NODE_STATUS::DONE
 	}
 	
 	transition Finish {
 		from MoveAwayFromBall
 		to Final
-		//condition getDistance(getRobotPosition(frame), targetPosition) < DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH
 		condition nodeStatus == NODE_STATUS::DONE
+	}
+	
+	// FAILURE PATHS.
+	transition ReadjustToCarryBall {		
+		from ApproachBall
+		to GoToBehindBall		
+		condition nodeStatus == NODE_STATUS::FAILED
+	}
+	
+	transition LostBallOnCarry {		
+		from PlaceBall
+		to GoToBehindBall
+		condition nodeStatus == NODE_STATUS::FAILED
+	}
+	
+	transition FinishWithFailOnMoveAway {
+		from MoveAwayFromBall
+		to Final
+		condition nodeStatus == NODE_STATUS::FAILED
+	}
+	
+	transition FinishWithFailOnAvoidBall {
+		from GiveSpaceToGetBall
+		to Final
+		condition nodeStatus == NODE_STATUS::FAILED
+	}
+	
+	transition BallIsOutOfPosition {
+		from MoveAwayFromBall
+		to GoToBehindBall
+		condition getDistance(getPositionFromRobot(robot), getPositionFromBall(ball)) > DIST_THRESHOLD_BALL_TO_TARGET
 	}
 }	
 

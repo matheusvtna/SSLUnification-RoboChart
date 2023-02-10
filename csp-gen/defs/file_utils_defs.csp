@@ -1,13 +1,21 @@
 
 --
--- RoboChart generator version 3.0.0.202209090727
--- Automatically generated on 09-02-2023 16:52:27
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 09-02-2023 23:37:22
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
 -- data definitions used by platform:/resource/SSLUnification/utils/utils.rct
+datatype NODE_STATUS = NODE_STATUS_RUNNING | NODE_STATUS_FAILED | NODE_STATUS_DONE
+NODE_STATUS_is(NODE_STATUS_RUNNING,NODE_STATUS_RUNNING) = true
+NODE_STATUS_is(_,NODE_STATUS_RUNNING) = false
+NODE_STATUS_is(NODE_STATUS_FAILED,NODE_STATUS_FAILED) = true
+NODE_STATUS_is(_,NODE_STATUS_FAILED) = false
+NODE_STATUS_is(NODE_STATUS_DONE,NODE_STATUS_DONE) = true
+NODE_STATUS_is(_,NODE_STATUS_DONE) = false
+
 nametype Point = ({(x0__,x1__) | x0__ <- core_real,x1__ <- core_real})
 Point_pos((pos)) = pos
 update_Point_pos((pos),v__) = (v__)
@@ -33,14 +41,17 @@ update_Frame_robot((ball,robot),v__) = (ball,v__)
 
 pre_getRobot(param_frame) = true
 pre_getRobotPosition(param_frame) = true
+pre_getPositionFromRobot(param_robot) = true
 pre_getRobotAngle(param_frame) = true
 pre_getBall(param_frame) = true
+pre_getPositionFromBall(param_ball) = true
 pre_getBallPosition(param_frame) = true
 pre_getDistance(param_source,param_target) = true
 pre_smallestAngleDiff(param_source,param_target) = true
 pre_allyIsBehind(param_robot,param_targetPosition,param_angleThreshold) = true
 pre_allyHasBall(param_robot,param_ball) = true
 pre_allyIsCloseToBall(param_robot,param_ball) = true
+pre_allyIsPushingBallWithHisBack(param_robot,param_ball) = true
 pre_getTargetPosition(param_frame) = true
 pre_getTargetAngle(param_frame) = true
 	

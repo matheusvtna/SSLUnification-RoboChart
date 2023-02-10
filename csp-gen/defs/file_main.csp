@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202209090727
--- Automatically generated on 09-02-2023 16:48:08
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 09-02-2023 22:45:55
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -1922,8 +1922,8 @@ module SSL
 			
 			
 			-- declaring call and ret events for undefined operations
-			channel stopCall
 			channel moveCall: core_real.core_real
+			channel stopCall
 			
 			-- declaring controller termination channel
 			channel terminate
@@ -1934,8 +1934,8 @@ module SSL
 			,	receiveFrame,
 				receiveField,
 				receiveCommand
-			,	stopCall,
-				moveCall
+			,	moveCall,
+				stopCall
 			|}
 	
 			-- defined operations
@@ -2265,10 +2265,10 @@ module SSL
 			endmodule
 			
 				-- undefined operations
-				CALL__stop(id__) 	= stopCall -> SKIP
 				CALL__move(id__,
 						    param_linearVelocity,
 						    param_angularVelocity) 	= moveCall.param_linearVelocity.param_angularVelocity -> SKIP
+				CALL__stop(id__) 	= stopCall -> SKIP
 				
 				-- declaring controller memory
 				Memory(id__) = SKIP
@@ -2485,8 +2485,8 @@ module SSL
 									(
 										navigationControllerRef::D__(id__)[[
 											navigationControllerRef::terminate <- terminate,
-											navigationControllerRef::stopCall <- stopCall,
-											navigationControllerRef::moveCall <- moveCall
+											navigationControllerRef::moveCall <- moveCall,
+											navigationControllerRef::stopCall <- stopCall
 										]]
 									)
 								)
@@ -2668,8 +2668,8 @@ module SSL
 									(
 										navigationControllerRef::VS__(id__)[[
 											navigationControllerRef::terminate <- terminate,
-											navigationControllerRef::stopCall <- stopCall,
-											navigationControllerRef::moveCall <- moveCall
+											navigationControllerRef::moveCall <- moveCall,
+											navigationControllerRef::stopCall <- stopCall
 										]]
 									)
 								)
@@ -2851,8 +2851,8 @@ module SSL
 									(
 										navigationControllerRef::O__(id__)[[
 											navigationControllerRef::terminate <- terminate,
-											navigationControllerRef::stopCall <- stopCall,
-											navigationControllerRef::moveCall <- moveCall
+											navigationControllerRef::moveCall <- moveCall,
+											navigationControllerRef::stopCall <- stopCall
 										]]
 									)
 								)
@@ -3035,8 +3035,8 @@ module SSL
 									(
 										navigationControllerRef::VS_O__(id__)[[
 											navigationControllerRef::terminate <- terminate,
-											navigationControllerRef::stopCall <- stopCall,
-											navigationControllerRef::moveCall <- moveCall
+											navigationControllerRef::moveCall <- moveCall,
+											navigationControllerRef::stopCall <- stopCall
 										]]
 									)
 								)
@@ -3219,8 +3219,8 @@ module SSL
 									(
 										navigationControllerRef::O__(id__)[[
 											navigationControllerRef::terminate <- terminate,
-											navigationControllerRef::stopCall <- stopCall,
-											navigationControllerRef::moveCall <- moveCall
+											navigationControllerRef::moveCall <- moveCall,
+											navigationControllerRef::stopCall <- stopCall
 										]]
 									)
 								)

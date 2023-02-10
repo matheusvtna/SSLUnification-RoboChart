@@ -2,25 +2,32 @@ import utils
 
 operation moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceThreshold: real) {
 	requires NodeStatusI
-	// Robot instance.
-	var robotPosition: Point	
+	var robotPosition: Point = getRobotPosition(frame)
+	const TIME_LIMIT_TO_BEHAVE: nat = 30
 		
 	// States.
 	initial Initial
-	state MoveAWay {}	
+	state MoveAway {}	
 	final Stop
 	
 	// Transitions.
 	transition start {
 		from Initial
-		to MoveAWay
+		to MoveAway
 	}
 	
-	transition stop {		
-		from MoveAWay
+	transition success {		
+		from MoveAway
 		to Stop
-		condition getDistance(robotPosition, dangerousPosition) > distanceThreshold
+		condition getDistance(robotPosition, dangerousPosition) >= distanceThreshold
 		action nodeStatus = NODE_STATUS::DONE
 	}
+	
+	transition fail {		
+		from MoveAway
+		to Stop
+		// Como remover esse warning? O que isso significa? 
+		condition sinceEntry(MoveAway) > TIME_LIMIT_TO_BEHAVE /\ getDistance(robotPosition, dangerousPosition) < distanceThreshold
+		action nodeStatus = NODE_STATUS::FAILED
+	}
 }
-

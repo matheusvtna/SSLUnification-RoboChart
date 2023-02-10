@@ -1,6 +1,6 @@
 import utils
 
-operation approachBall(ball: Ball) {
+operation approachBall(ball: Ball, angleThreshold: real) {
 	requires NodeStatusI
 	
 	// Robot instance.
@@ -17,11 +17,18 @@ operation approachBall(ball: Ball) {
 		to Approach
 	}
 	
-	transition stop {		
+	transition success {		
 		from Approach
 		to Stop
 		condition allyHasBall(robot, ball)
 		action nodeStatus = NODE_STATUS::DONE
+	}
+	
+	transition fail {
+		from Approach
+		to Stop
+		condition not allyIsBehind(robot, getPositionFromBall(ball), angleThreshold) \/ not allyIsCloseToBall(robot, ball)
+		action nodeStatus = NODE_STATUS::FAILED
 	}
 }	
 

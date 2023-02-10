@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202209090727
--- Automatically generated on 09-02-2023 18:43:23
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 09-02-2023 23:37:22
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -23,7 +23,7 @@ exports
 	-- declaring identifiers of transitions
 	datatype NIDS = 
 	              NID_Initial|
-	              NID_MoveAWay|
+	              NID_MoveAway|
 	              NID_Stop
 	
 	channel internal__ : NIDS
@@ -49,12 +49,12 @@ exports
 	
 	enterSS = {|
 	Initial::enter,
-	MoveAWay::enter,
+	MoveAway::enter,
 	Stop::enter
 	|}
 	
 	enteredSS = 	{|
-	MoveAWay::entered,
+	MoveAway::entered,
 	Stop::entered
 	|}
 	
@@ -84,7 +84,8 @@ exports
 		D__(id__,
 					param_frame,
 					param_dangerousPosition,
-					param_distanceThreshold) = 
+					param_distanceThreshold,
+				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
 			dbisim(let
 				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
 				
@@ -97,18 +98,20 @@ exports
 		VS_O__(id__,
 					param_frame,
 					param_dangerousPosition,
-					param_distanceThreshold) = D__(id__,
+					param_distanceThreshold,
+				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = D__(id__,
 					param_frame,
 					param_dangerousPosition,
-					param_distanceThreshold)
+					param_distanceThreshold,
+				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
 	
 	endmodule
 	----------------------------------------------------------------------
 	
 	
 	----------------------------------------------------------------------
-	-- State: MoveAWay
-	module MoveAWay
+	-- State: MoveAway
+	module MoveAway
 	
 	enterSS = {}
 	
@@ -133,7 +136,8 @@ exports
 		D__(id__,
 					param_frame,
 					param_dangerousPosition,
-					param_distanceThreshold) = 
+					param_distanceThreshold,
+				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
 		dbisim(let
 			-- IMPLEMENTATION NOTE: 
 			-- The following should be defined as: Inactive = share__choice(Activation [] Termination),
@@ -157,7 +161,8 @@ exports
 		VS_O__(id__,
 					param_frame,
 					param_dangerousPosition,
-					param_distanceThreshold) = 
+					param_distanceThreshold,
+				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
 		dbisim(let
 			Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
 			
@@ -191,7 +196,8 @@ exports
 		D__(id__,
 					param_frame,
 					param_dangerousPosition,
-					param_distanceThreshold) = 
+					param_distanceThreshold,
+				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
 			dbisim(let
 				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Entering
 				
@@ -204,10 +210,12 @@ exports
 		VS_O__(id__,
 					param_frame,
 					param_dangerousPosition,
-					param_distanceThreshold) = D__(id__,
+					param_distanceThreshold,
+				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = D__(id__,
 					param_frame,
 					param_dangerousPosition,
-					param_distanceThreshold)
+					param_distanceThreshold,
+				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
 	
 	endmodule
 	----------------------------------------------------------------------
@@ -227,30 +235,36 @@ exports
 	STM(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = -- RULE: [[stm:OperationDef]]_STM^nops : CSPProcess
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = -- RULE: [[stm:OperationDef]]_STM^nops : CSPProcess
 	Stateful(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) \ {terminate}
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) \ {terminate}
 	
 	STM_VS_O(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = -- RULE: [[stm:OperationDef]]_STM^nops : CSPProcess
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = -- RULE: [[stm:OperationDef]]_STM^nops : CSPProcess
 	Stateful(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) \ {terminate}
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) \ {terminate}
 	
 	-- Transitions
 	Transitions(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = ((let
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = ((let
 		Trans = share__choice(get_robotPosition?robotPosition -> (
 			((share__ -> SKIP
-			 [] dbisim((true)&(internal__!NID_Initial -> SKIP ;  ((SKIP ; MoveAWay::enter -> SKIP))))
-			 	 [] dbisim(((getDistance(robotPosition,param_dangerousPosition)>param_distanceThreshold))&(internal__!NID_MoveAWay -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; Stop::enter -> SKIP)))
+			 [] dbisim((true)&(internal__!NID_Initial -> SKIP ;  ((SKIP ; MoveAway::enter -> SKIP))))
+			 	 [] dbisim(((getDistance(robotPosition,param_dangerousPosition)>=param_distanceThreshold))&(internal__!NID_MoveAway -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; Stop::enter -> SKIP)))
+			 	 [] dbisim((true)&(internal__!NID_MoveAway -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_FAILED -> SKIP))) ; Stop::enter -> SKIP)))
 			 ) ; Trans)
 			 []
 			 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
@@ -270,7 +284,8 @@ exports
 	MachineBody(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = 
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
 		dbisim((
 		let
 			finalNodesEntered = {|Stop::entered|}
@@ -281,7 +296,7 @@ exports
 				-- modules for defining the semantics of each node.
 				enterSS = {|
 				Initial::enter,
-				MoveAWay::enter,
+				MoveAway::enter,
 				Stop::enter
 				|}
 				hideSet = union(enterSS,{|exit,exited,internal__|})
@@ -290,28 +305,31 @@ exports
 					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 					-- because CSPM modules are used for the semantics of Node.
 					flowevts = union(enterSS,{|exit,exited,interrupt|})
-					transSync = {|internal__.NID_Initial,internal__.NID_MoveAWay|}
+					transSync = {|internal__.NID_Initial,internal__.NID_MoveAway,internal__.NID_MoveAway|}
 				within
 					((
 					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
 					   Initial::D__(id__,
 					   			param_frame,
 					   			param_dangerousPosition,
-					   			param_distanceThreshold)
+					   			param_distanceThreshold,
+					   		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
 					   [| { share__, terminate } |] (
-					   MoveAWay::D__(id__,
+					   MoveAway::D__(id__,
 					   			param_frame,
 					   			param_dangerousPosition,
-					   			param_distanceThreshold)
+					   			param_distanceThreshold,
+					   		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
 					   [| { share__, terminate } |] (
 					   Stop::D__(id__,
 					   			param_frame,
 					   			param_dangerousPosition,
-					   			param_distanceThreshold)
+					   			param_distanceThreshold,
+					   		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
 					   )
 					   )
 					 )
-					 [[MoveAWay::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_MoveAWay|}]]
+					 [[MoveAway::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_MoveAway,internal__.NID_MoveAway|}]]
 					 [[Stop::interrupt <- x__ | x__ <- {|interrupt|}]]
 					 [[Initial::interrupt <- x__ | x__ <- {|internal__.NID_Initial|}]]
 					 )
@@ -324,7 +342,8 @@ exports
 					 ((Initial::enter -> Transitions(id__,
 					 			param_frame,
 					 			param_dangerousPosition,
-					 			param_distanceThreshold))
+					 			param_distanceThreshold,
+					 		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
 					  [[ share__ <- x__ | x__ <- {| share__,setL_robotPosition |} ]]
 					 )
 					)[[setL_robotPosition <- set_robotPosition]]
@@ -339,35 +358,42 @@ exports
 	Behaviour(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = 
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
 		dbisim((MachineBody(id__,
 					param_frame,
 					param_dangerousPosition,
-					param_distanceThreshold)\ enteredSS)
+					param_distanceThreshold,
+				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)\ enteredSS)
 		)
 	
 	IteratedBehaviour(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = 
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
 		dbisim((MachineBody(id__,
 					param_frame,
 					param_dangerousPosition,
-					param_distanceThreshold)\ enteredSS)
+					param_distanceThreshold,
+				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)\ enteredSS)
 		)
 	
 	Stateful(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = 
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
 		((
 			(Behaviour(id__,
 						param_frame,
 						param_dangerousPosition,
-						param_distanceThreshold) [| union(getsetLocalChannels,{terminate}) |] varMemory(id__,
+						param_distanceThreshold,
+					    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) [| union(getsetLocalChannels,{terminate}) |] varMemory(id__,
 						param_frame,
 						param_dangerousPosition,
-						param_distanceThreshold))
+						param_distanceThreshold,
+					    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
 		 	\getsetLocalChannels
 		)
 		)
@@ -375,15 +401,17 @@ exports
 	IteratedStateful(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) =
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) =
 		(dbisim(
 			sbisim(
 				Behaviour(id__,
 							param_frame,
 							param_dangerousPosition,
-							param_distanceThreshold)
+							param_distanceThreshold,
+						    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
 				[| {|get_robotPosition,set_robotPosition,terminate|} |]
-				Memory_robotPosition(((0,0)))
+				Memory_robotPosition(getRobotPosition(param_frame))
 			)\{|get_robotPosition,set_robotPosition|}
 		)
 		)
@@ -392,7 +420,8 @@ exports
 	MachineBody_VS_O(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = 
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
 		dbisim((
 		let
 			finalNodesEntered = {|Stop::entered|}
@@ -403,7 +432,7 @@ exports
 				-- modules for defining the semantics of each node.
 				enterSS = {|
 				Initial::enter,
-				MoveAWay::enter,
+				MoveAway::enter,
 				Stop::enter
 				|}
 				hideSet = union(enterSS,{|exit,exited,internal__|})
@@ -412,28 +441,31 @@ exports
 					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 					-- because CSPM modules are used for the semantics of Node.
 					flowevts = union(enterSS,{|exit,exited,interrupt|})
-					transSync = {|internal__.NID_Initial,internal__.NID_MoveAWay|}
+					transSync = {|internal__.NID_Initial,internal__.NID_MoveAway,internal__.NID_MoveAway|}
 				within
 					((
 					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
 					   Initial::VS_O__(id__,
 					   			param_frame,
 					   			param_dangerousPosition,
-					   			param_distanceThreshold)
+					   			param_distanceThreshold,
+					   		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
 					   [| { share__, terminate } |] (
-					   MoveAWay::VS_O__(id__,
+					   MoveAway::VS_O__(id__,
 					   			param_frame,
 					   			param_dangerousPosition,
-					   			param_distanceThreshold)
+					   			param_distanceThreshold,
+					   		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
 					   [| { share__, terminate } |] (
 					   Stop::VS_O__(id__,
 					   			param_frame,
 					   			param_dangerousPosition,
-					   			param_distanceThreshold)
+					   			param_distanceThreshold,
+					   		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
 					   )
 					   )
 					 )
-					 [[MoveAWay::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_MoveAWay|}]]
+					 [[MoveAway::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_MoveAway,internal__.NID_MoveAway|}]]
 					 [[Stop::interrupt <- x__ | x__ <- {|interrupt|}]]
 					 [[Initial::interrupt <- x__ | x__ <- {|internal__.NID_Initial|}]]
 					 )
@@ -446,7 +478,8 @@ exports
 					 ((Initial::enter -> Transitions(id__,
 					 			param_frame,
 					 			param_dangerousPosition,
-					 			param_distanceThreshold))
+					 			param_distanceThreshold,
+					 		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
 					  [[ share__ <- x__ | x__ <- {| share__,setL_robotPosition |} ]]
 					 )
 					)[[setL_robotPosition <- set_robotPosition]]
@@ -461,35 +494,42 @@ exports
 	Behaviour_VS_O(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = 
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
 		dbisim((MachineBody_VS_O(id__,
 					param_frame,
 					param_dangerousPosition,
-					param_distanceThreshold))
+					param_distanceThreshold,
+				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
 		)
 	
 	IteratedBehaviour_VS_O(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = 
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
 		dbisim((MachineBody_VS_O(id__,
 					param_frame,
 					param_dangerousPosition,
-					param_distanceThreshold))
+					param_distanceThreshold,
+				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
 		)
 	
 	Stateful_VS_O(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = 
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
 		dbisim((
 			(Behaviour_VS_O(id__,
 						param_frame,
 						param_dangerousPosition,
-						param_distanceThreshold) [| union(getsetLocalChannels,{terminate}) |] varMemory(id__,
+						param_distanceThreshold,
+					    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) [| union(getsetLocalChannels,{terminate}) |] varMemory(id__,
 						param_frame,
 						param_dangerousPosition,
-						param_distanceThreshold))
+						param_distanceThreshold,
+					    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
 		 	\getsetLocalChannels
 		)
 		)
@@ -497,15 +537,17 @@ exports
 	IteratedStateful_VS_O(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) =
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) =
 		(dbisim(
 			sbisim(
 				Behaviour_VS_O(id__,
 							param_frame,
 							param_dangerousPosition,
-							param_distanceThreshold)
+							param_distanceThreshold,
+						    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
 				[| {|get_robotPosition,set_robotPosition,terminate|} |]
-				Memory_robotPosition(((0,0)))
+				Memory_robotPosition(getRobotPosition(param_frame))
 			)\{|get_robotPosition,set_robotPosition|}
 		)
 		)
@@ -525,7 +567,8 @@ exports
 	varMemory(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = Memory_robotPosition(((0,0)))
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = Memory_robotPosition(getRobotPosition(param_frame))
 	
 	getsetLocalChannels = {|get_robotPosition,set_robotPosition|}
 	
@@ -533,52 +576,66 @@ exports
 	FVS__(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = STM_VS_O(id__,
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = STM_VS_O(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold)
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
 	
 	D__(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = STM(id__,
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = STM(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) \ internal_events
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) \ internal_events
 	O__(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = sbisim(diamond(D__(id__,
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = sbisim(diamond(D__(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold)))
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)))
 	VS__(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = FVS__(id__,
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = FVS__(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold)
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
 	VS_O__(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = sbisim(diamond(FVS__(id__,
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = sbisim(diamond(FVS__(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold)))
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)))
 	HEXT__(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = O__(id__,
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = O__(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) [|shared_variable_events|] SKIP
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) [|shared_variable_events|] SKIP
 	HUP__(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) = O__(id__,
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = O__(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold) [|{share__}|] SKIP
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) [|{share__}|] SKIP
 			endmodule
 

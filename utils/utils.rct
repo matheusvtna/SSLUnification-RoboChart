@@ -1,4 +1,14 @@
 // Helpers
+enumeration NODE_STATUS {
+	RUNNING
+	FAILED
+	DONE
+}
+
+interface NodeStatusI {
+	var nodeStatus : NODE_STATUS
+}
+
 datatype Point {
 	pos: real*real
 }
@@ -25,9 +35,13 @@ function getRobot(frame: Frame): Robot {}
  
 function getRobotPosition(frame: Frame): Point {}
 
+function getPositionFromRobot(robot: Robot): Point {}
+
 function getRobotAngle(frame: Frame): real {}
 
 function getBall(frame: Frame): Ball {}
+
+function getPositionFromBall(ball: Ball): Point {}
 
 function getBallPosition(frame: Frame): Point {}
 
@@ -40,6 +54,8 @@ function allyIsBehind(robot: Robot, targetPosition: Point, angleThreshold: real)
 function allyHasBall(robot: Robot, ball: Ball): boolean {}
 
 function allyIsCloseToBall(robot: Robot, ball: Ball): boolean {}
+
+function allyIsPushingBallWithHisBack(robot: Robot, ball: Ball): boolean {}
 
 // TODO: As informacoes de target nao vem do frame, mas sim do Decision...
 function getTargetPosition(frame: Frame): Point {}

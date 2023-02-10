@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202209090727
--- Automatically generated on 09-02-2023 18:43:23
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 09-02-2023 23:37:22
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -26,12 +26,14 @@ P_OP_moveAwayFromPosition = let
 	param_distanceThreshold = 0
 	
 	
+	const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE = 30
 	
 within
 	OP_moveAwayFromPosition::O__(id__,
 				param_frame,
 				param_dangerousPosition,
-				param_distanceThreshold)
+				param_distanceThreshold,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
 assert P_OP_moveAwayFromPosition :[deadlock-free]	
 assert P_OP_moveAwayFromPosition;RUN({r__}) :[deadlock-free]
 assert P_OP_moveAwayFromPosition :[deterministic]

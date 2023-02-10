@@ -19,11 +19,18 @@ operation goToBehindBall(targetPosition: Point, angleThreshold: real) {
 		to GoToBehindBall
 	}
 	
-	transition stop {		
+	transition sucess {		
 		from GoToBehindBall
 		to Stop
 		condition (allyIsBehind(robot, targetPosition, angleThreshold) /\ allyIsCloseToBall(robot, ball)) 
 		action nodeStatus = NODE_STATUS::DONE
+	}
+	
+	transition fail {		
+		from GoToBehindBall
+		to Stop
+		condition allyIsPushingBallWithHisBack(robot, ball)
+		action nodeStatus = NODE_STATUS::FAILED
 	}
 }	
 
