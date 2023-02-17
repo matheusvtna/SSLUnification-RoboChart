@@ -1,62 +1,11 @@
-// Helpers
-enumeration NODE_STATUS {
-	RUNNING
-	FAILED
-	DONE
-}
+// Basics
+import geometry
+import point
 
-interface NodeStatusI {
-	var nodeStatus : NODE_STATUS
-}
+// Entities
+import ball
+import frame
+import robot
 
-datatype Point {
-	pos: real*real
-}
-
-datatype Ball {
-	pos: Point
-	vel: Point
-}
-
-datatype Robot {
-	pos: Point
-	vel: Point
-	id: int
-	angle: real
-}
-
-datatype Frame {
-	ball: Ball
-	robot: Robot
-	// TODO: mudar para ter mais de um robo de aliados e oponentes.
-}
-
-function getRobot(frame: Frame): Robot {}
- 
-function getRobotPosition(frame: Frame): Point {}
-
-function getPositionFromRobot(robot: Robot): Point {}
-
-function getRobotAngle(frame: Frame): real {}
-
-function getBall(frame: Frame): Ball {}
-
-function getPositionFromBall(ball: Ball): Point {}
-
-function getBallPosition(frame: Frame): Point {}
-
-function getDistance(source:Point, target: Point) : real {}
-
-function smallestAngleDiff(source: real, target: real): real {}
-
-function allyIsBehind(robot: Robot, targetPosition: Point, angleThreshold: real): boolean {}
-
-function allyHasBall(robot: Robot, ball: Ball): boolean {}
-
-function allyIsCloseToBall(robot: Robot, ball: Ball): boolean {}
-
-function allyIsPushingBallWithHisBack(robot: Robot, ball: Ball): boolean {}
-
-// TODO: As informacoes de target nao vem do frame, mas sim do Decision...
-function getTargetPosition(frame: Frame): Point {}
-function getTargetAngle(frame: Frame): real {}
+// Libs/Frameworks
+import behavior_tree

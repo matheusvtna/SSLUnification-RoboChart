@@ -24,11 +24,11 @@ getPositionFromBall(ball) = ((0,0))
 -- generate getTargetPosition
 getTargetPosition(frame) = ((0,0))
 
--- generate allyIsCloseToBall
-allyIsCloseToBall(robot,ball) = true
-
 -- generate const_goToPointAndStop_STOP_DIST_THRESHOLD
 const_goToPointAndStop_STOP_DIST_THRESHOLD = 0
+
+-- generate allyIsCloseToBall
+allyIsCloseToBall(robot,ball) = true
 
 -- generate Plus
 Plus(e1,e2,T) = if member(e1+e2,T) then e1+e2 else e1
@@ -54,18 +54,23 @@ getRobotAngle(frame) = 0
 
 -- BASIC TYPES
 
+-- VECTOR TYPES AND OPERATIONS
+
+
+-- CLOCKS
+
 -- generate nat
 nametype core_nat = union({0..2},{calc_type_min(Union(
-			{{30},{0..2}}))..calc_type_max(Union({{30},{0..2}}))})
-
--- generate allyIsPushingBallWithHisBack
-allyIsPushingBallWithHisBack(robot,ball) = true
+			{}))..calc_type_max(Union({}))})
 
 -- generate getDistance
 getDistance(source,target) = 0
 
 -- generate getTargetAngle
 getTargetAngle(frame) = 0
+
+-- generate allyIsPushingBallWithHisBack
+allyIsPushingBallWithHisBack(robot,ball) = true
 
 -- generate core_clock_type
 nametype core_clock_type = {0..10}
@@ -75,12 +80,15 @@ nametype core_clock_type = {0..10}
 -- generate smallestAngleDiff
 smallestAngleDiff(source,target) = 0
 
+-- generate getAngleFromRobot
+getAngleFromRobot(robot) = ((0,0))
+
 -- generate allyIsCollidingWithWall
 allyIsCollidingWithWall(robot,frame) = true
 
 -- generate real
 nametype core_real = union({ -2..2},{calc_type_min(Union(
-			{{ -2..2},{ -2..2},{ -2..2},{ -2..2},{150},{ -2..2},{500},{ -2..2},{200},{ -2..2},{60},{ -2..2},{30},{0..2},{ -2..2},{ -2..2},{ -2..2},{MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES|MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES <- { -2..2}},{DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED|DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED <- { -2..2}},{MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES|MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES <- { -2..2}},{DIST_THRESHOLD_BALL_TO_TARGET|DIST_THRESHOLD_BALL_TO_TARGET <- { -2..2}},{DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH|DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH <- { -2..2}}}))..calc_type_max(Union({{ -2..2},{ -2..2},{ -2..2},{ -2..2},{150},{ -2..2},{500},{ -2..2},{200},{ -2..2},{60},{ -2..2},{30},{0..2},{ -2..2},{ -2..2},{ -2..2},{MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES|MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES <- { -2..2}},{DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED|DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED <- { -2..2}},{MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES|MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES <- { -2..2}},{DIST_THRESHOLD_BALL_TO_TARGET|DIST_THRESHOLD_BALL_TO_TARGET <- { -2..2}},{DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH|DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH <- { -2..2}}}))}) 
+			{{ -2..2},{ -2..2},{ -2..2},{angleThreshold|angleThreshold <- { -2..2}},{angleThreshold|angleThreshold <- { -2..2}}}))..calc_type_max(Union({{ -2..2},{ -2..2},{ -2..2},{angleThreshold|angleThreshold <- { -2..2}},{angleThreshold|angleThreshold <- { -2..2}}}))}) 
 
 -- VECTOR TYPES AND OPERATIONS
 
@@ -88,11 +96,11 @@ nametype core_real = union({ -2..2},{calc_type_min(Union(
 -- CLOCKS
 
 -- generate getRobot
-getRobot(frame) = (((0,0)),((0,0)),0,0)
+getRobot(frame) = (0,((0,0)),((0,0)),0)
 
 -- generate int
 nametype core_int = union({ -2..2},{calc_type_min(Union(
-			{{30},{0..2}}))..calc_type_max(Union({{30},{0..2}}))})
+			{}))..calc_type_max(Union({}))})
 
 -- generate getRobotPosition
 getRobotPosition(frame) = ((0,0))
@@ -108,6 +116,12 @@ nametype core_boolean = Bool
 
 -- generate Mult
 Mult(e1,e2,T) = if member(e1*e2,T) then e1*e2 else e1
+
+-- generate getBallVelocity
+getBallVelocity(frame) = ((0,0))
+
+-- generate getVelocityFromBall
+getVelocityFromBall(ball) = ((0,0))
 
 -- generate Modulus
 Modulus(e1,e2,T) = if member(e1%e2,T) then e1%e2 else e1

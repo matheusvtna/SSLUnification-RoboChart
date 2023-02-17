@@ -1,0 +1,35 @@
+datatype Frame {
+	ball: Ball
+	robot: Robot
+	// TODO: mudar para ter mais de um robo de aliados e oponentes.
+}
+
+// Robot
+function getRobot(frame: Frame): Robot {
+	return frame[2]
+}
+  
+function getRobotPosition(frame: Frame): Point {
+	var robot = getRobot(frame)
+	return getPositionFromRobot(robot)
+}
+
+function getRobotAngle(frame: Frame): real {
+	var robot = getRobot(frame)
+	return getAngleFromRobot(robot) 
+}
+
+// Ball
+function getBall(frame: Frame): Ball {
+	return frame[1]
+}
+
+function getBallPosition(frame: Frame): Point {
+	var ball = getBall(frame)
+	return getPositionFromBall(ball)
+}
+
+function getBallVelocity(frame: Frame): Point {
+	var ball = getBall(frame)
+	return getVelocityFromBall(ball)
+}

@@ -1,0 +1,47 @@
+datatype Point {
+	pos: real*real
+}
+
+function fromPolar(length: real, angle: real): Point {
+	return Point(cos(angle) * length, sin(angle) * length)
+}
+
+function getDistance(source: Point, target: Point) : real {
+	var distance = sqrt((source[1] - target[1])^2 + (source[2] - target[2])^2)
+	return distance
+}
+
+function norm(point: Point): real {
+	var n = sqrt(point[1]^2 + point[2]^2)
+	return n
+}
+
+function unitVector(source: Point): Point {
+	var n = norm(source)
+	if(n > 0) {
+		return Point(source[1]/n, source[2]/n)
+	}
+	// TODO: Alguma forma de levantar um erro?
+	return source
+}
+
+function createVector(source: Point, target: Point): Point {
+	return Point(target[1] - source[1], target[2] - source[2])
+}
+
+function createUnitVector(source: Point, target: Point): Point {
+	var vec = createVector(source, target)
+	return unitVector(vec)
+}
+
+function dot(source: Point, target: Point): real {
+	return source[1]*target[1] + source[2]*target[2]
+}
+
+function cross(source: Point, target: Point): real {
+	reutrn (source[1] * target[2]) - (source[2] * target[1])
+}
+
+function angleBetween(source: Point, target: Point): real {
+	return atan2(cross(source, target), dot(source, target))
+}

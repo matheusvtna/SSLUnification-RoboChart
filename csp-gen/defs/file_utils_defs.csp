@@ -1,57 +1,12 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 09-02-2023 23:37:22
+-- Automatically generated on 16-02-2023 21:15:18
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
 -- data definitions used by platform:/resource/SSLUnification/utils/utils.rct
-datatype NODE_STATUS = NODE_STATUS_RUNNING | NODE_STATUS_FAILED | NODE_STATUS_DONE
-NODE_STATUS_is(NODE_STATUS_RUNNING,NODE_STATUS_RUNNING) = true
-NODE_STATUS_is(_,NODE_STATUS_RUNNING) = false
-NODE_STATUS_is(NODE_STATUS_FAILED,NODE_STATUS_FAILED) = true
-NODE_STATUS_is(_,NODE_STATUS_FAILED) = false
-NODE_STATUS_is(NODE_STATUS_DONE,NODE_STATUS_DONE) = true
-NODE_STATUS_is(_,NODE_STATUS_DONE) = false
 
-nametype Point = ({(x0__,x1__) | x0__ <- core_real,x1__ <- core_real})
-Point_pos((pos)) = pos
-update_Point_pos((pos),v__) = (v__)
-nametype Ball = (Point,Point)
-Ball_pos((pos,vel)) = pos
-update_Ball_pos((pos,vel),v__) = (v__,vel)
-Ball_vel((pos,vel)) = vel
-update_Ball_vel((pos,vel),v__) = (pos,v__)
-nametype Robot = (Point,Point,core_int,core_real)
-Robot_pos((pos,vel,id,angle)) = pos
-update_Robot_pos((pos,vel,id,angle),v__) = (v__,vel,id,angle)
-Robot_vel((pos,vel,id,angle)) = vel
-update_Robot_vel((pos,vel,id,angle),v__) = (pos,v__,id,angle)
-Robot_id((pos,vel,id,angle)) = id
-update_Robot_id((pos,vel,id,angle),v__) = (pos,vel,v__,angle)
-Robot_angle((pos,vel,id,angle)) = angle
-update_Robot_angle((pos,vel,id,angle),v__) = (pos,vel,id,v__)
-nametype Frame = (Ball,Robot)
-Frame_ball((ball,robot)) = ball
-update_Frame_ball((ball,robot),v__) = (v__,robot)
-Frame_robot((ball,robot)) = robot
-update_Frame_robot((ball,robot),v__) = (ball,v__)
-
-pre_getRobot(param_frame) = true
-pre_getRobotPosition(param_frame) = true
-pre_getPositionFromRobot(param_robot) = true
-pre_getRobotAngle(param_frame) = true
-pre_getBall(param_frame) = true
-pre_getPositionFromBall(param_ball) = true
-pre_getBallPosition(param_frame) = true
-pre_getDistance(param_source,param_target) = true
-pre_smallestAngleDiff(param_source,param_target) = true
-pre_allyIsBehind(param_robot,param_targetPosition,param_angleThreshold) = true
-pre_allyHasBall(param_robot,param_ball) = true
-pre_allyIsCloseToBall(param_robot,param_ball) = true
-pre_allyIsPushingBallWithHisBack(param_robot,param_ball) = true
-pre_getTargetPosition(param_frame) = true
-pre_getTargetAngle(param_frame) = true
 	

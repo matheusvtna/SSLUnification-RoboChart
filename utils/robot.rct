@@ -1,0 +1,81 @@
+datatype Feedback {
+	ir: boolean
+	battery: real
+	capacitor: real
+}
+
+datatype Robot {
+	id: int
+	pos: Point
+	vel: Point
+	angle: real
+	feedback: Feedback
+}
+
+function ROBOT_RADIUS(): real {
+	return 90
+}
+
+function getPositionFromRobot(robot: Robot): Point {
+	return robot[2]
+}
+
+function getAngleFromRobot(robot: Robot): Point {
+	return robot[4]
+}
+
+function getFeedbackFromRobot(robot: Robot): Feedback {
+	return robot[5]
+}
+
+function robotHasIR(robot: Robot): boolean {
+	var feedback = getFeedbackFromRobot(robot)
+	return feedback[1]
+}
+
+// FSM Utils
+function allyIsBehind(robot: Robot, point: Point, target: Point, angleThreshold: real): boolean {
+	var robotPosition = getPositionFromRobot(robot)
+	var pointToTargetUnitVector = createUnitVector(point, target)
+    var allyToPointUnitVector = createUnitVector(robot, point)
+    
+    var angle = angleBetween(pointToTargetUnitVector, allyToPointUnitVector)
+
+    return -angleThreshold < angle /\ angle < +angleThreshold;
+}
+
+function allyHasBall(robot: Robot, ball: Ball): boolean {
+	// TODO: utilizar a verificação por posição e angulo...
+	return robotHasIR(robot)
+}
+
+function allyIsCloseToBall(robot: Robot, ball: Ball): boolean {
+	var MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL: real = 111
+	
+	var robotPosition = getPositionFromRobot(robot)
+	var ballPosition = getPositionFromBall(ball)
+	return distance(robotPosition, ballPosition) < MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL
+}
+
+function allyIsLookingToBall(robot: Robot, ball: Ball): boolean {
+	var ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER: real = degreesToRadians(60)
+	
+	var robotCenter: Point = getPositionFromRobot(robot)
+	var robotAngle: real = getAngleFromRobot(robot)
+	var robotFront: Point = fromPolar(ROBOT_RADIUS(), robotAngle)
+	var ballPosition: Point = getPositionFromBall(ball)
+	
+	var robotCenterToFrontUnitVector: Point = createUnitVector(robotCenter, robotFront)
+	var robotToBallUnitVector: Point = createUnitVector(robotCenter, ballPosition)
+	
+	var angle = angleBetween(robotCenterToFrontUnitVector, robotToBallUnitVector)
+	return -ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER < angle /\ angle < +ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER;	
+}
+
+function allyCanHaveBallOnDribbler(robot: Robot, ball: Ball): boolean {
+	return allyIsLookingToBall(robot, ball) /\ allyIsCloseToBall(robot, ball)	
+}
+
+function allyIsPushingBallWithHisBack(robot: Robot, ball: Ball): boolean {
+	return (!allyIsLookingToBall(robot, ball)) /\ allyIsCloseToBall(robot, ball)
+}

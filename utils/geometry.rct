@@ -1,0 +1,11 @@
+function smallestAngleDiff(source: real, target: real): real {
+	// TODO: Fazer função de diferença angular...
+}
+
+function degreesToRadians(degrees: real): real {
+	return degrees * PI / 180
+}
+
+function radiansToDegrees(radians: real): real {
+	return radians / (PI / 180)
+}

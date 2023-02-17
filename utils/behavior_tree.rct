@@ -1,0 +1,9 @@
+enumeration NODE_STATUS {
+	RUNNING
+	FAILED
+	DONE
+}
+
+interface NodeStatusI {
+	var nodeStatus : NODE_STATUS
+}

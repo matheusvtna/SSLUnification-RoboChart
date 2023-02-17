@@ -1,0 +1,12 @@
+datatype Ball {
+	pos: Point
+	vel: Point
+}
+
+function getPositionFromBall(ball: Ball): Point {
+	return ball[1]
+}
+
+function getVelocityFromBall(ball: Ball): Point {
+	return ball[2]
+}

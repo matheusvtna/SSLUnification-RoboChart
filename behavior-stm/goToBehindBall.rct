@@ -19,7 +19,7 @@ operation goToBehindBall(targetPosition: Point, angleThreshold: real) {
 		to GoToBehindBall
 	}
 	
-	transition sucess {		
+	transition success {		
 		from GoToBehindBall
 		to Stop
 		condition (allyIsBehind(robot, targetPosition, angleThreshold) /\ allyIsCloseToBall(robot, ball)) 
