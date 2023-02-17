@@ -9,3 +9,10 @@ import robot
 
 // Libs/Frameworks
 import behavior_tree
+
+// Dummy Functions
+// The following functions does not exist in Unification as `utils`.
+// These informations came from decision, within each robot tactics.
+// TODO: Remove among goToPointAndStop FSM.
+function getTargetPosition(frame: Frame): Point {}
+function getTargetAngle(frame: Frame): real {}

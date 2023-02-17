@@ -1,0 +1,36 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 16-02-2023 21:20:41
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_approachBall.csp"
+
+
+-- generate OP_approachBall
+P_OP_approachBall = let
+	id__ = 0
+	
+	param_ball = (((0,0)),((0,0)))
+	param_angleThreshold = 0
+	
+	
+	
+within
+	OP_approachBall::O__(id__,
+				param_ball,
+				param_angleThreshold)
+assert P_OP_approachBall :[deadlock-free]	
+assert P_OP_approachBall;RUN({r__}) :[deadlock-free]
+assert P_OP_approachBall :[deterministic]
+assert P_OP_approachBall :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_OP_approachBall[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_OP_approachBall
+
+

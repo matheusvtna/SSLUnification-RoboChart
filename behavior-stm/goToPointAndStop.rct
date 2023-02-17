@@ -46,11 +46,11 @@ stm goToPointAndStop {
 	state sAdjustAngle {
 		entry robotPosition = getRobotPosition (frame);
 		robotAngle = getRobotAngle (frame);
-		targetPosition = getTargetPosition (frame);
-		targetAngle = getTargetAngle (frame);
+		targetPosition = getTargetPosition(frame);
+		targetAngle = getTargetAngle(frame);
 		distance = getDistance(robotPosition, targetPosition);
 		angleDiff = smallestAngleDiff(robotAngle, targetAngle);
-		IMove::move(linearVelocity, angularVelocity)  
+		IMove::move(linearVelocity, angularVelocity)
 		
 		exit IMove::stop()
 	}
