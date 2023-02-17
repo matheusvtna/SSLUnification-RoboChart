@@ -4,9 +4,9 @@ datatype Ball {
 }
 
 function getPositionFromBall(ball: Ball): Point {
-	return ball[1]
+	return ball.pos
 }
 
 function getVelocityFromBall(ball: Ball): Point {
-	return ball[2]
+	return ball.vel
 }

@@ -32,6 +32,12 @@
     <semanticResources>behavior-stm/approachBall.rct</semanticResources>
     <semanticResources>behavior-stm/carryBall.rct</semanticResources>
     <semanticResources>behavior-stm/moveAwayFromPosition.rct</semanticResources>
+    <semanticResources>utils/robot.rct</semanticResources>
+    <semanticResources>utils/frame.rct</semanticResources>
+    <semanticResources>utils/ball.rct</semanticResources>
+    <semanticResources>utils/behavior_tree.rct</semanticResources>
+    <semanticResources>utils/point.rct</semanticResources>
+    <semanticResources>utils/geometry.rct</semanticResources>
     <ownedViews xmi:type="viewpoint:DView" uid="_2OwR4EDIEe2C1peeTiObow">
       <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']"/>
       <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_2QtZsEDIEe2C1peeTiObow" name="main.rct" repPath="#_2QhMcEDIEe2C1peeTiObow" changeId="f39ea599-713f-4d06-bbe3-4dc7799b729b">
@@ -112,7 +118,6 @@
       </ownedRepresentationDescriptors>
       <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_AsmlIHzzEe2jNavmwUdSkQ" name="utils.rct" repPath="#_Asl-EHzzEe2jNavmwUdSkQ" changeId="6fa5ad65-7b3b-4d38-a05d-9f04415027d0">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']"/>
-        <target xmi:type="robochart:RCPackage" href="utils/utils.rct#/"/>
       </ownedRepresentationDescriptors>
       <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_ZPjecJqrEe2w1qqCv9LexQ" name="carryBallOnBallPlacement.rct" repPath="#_ZPhpQJqrEe2w1qqCv9LexQ" changeId="8342d35f-6cab-4ccb-bdd0-2f23bd543715">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']"/>
@@ -5180,8 +5185,6 @@
       <data xmi:type="diagram:ComputedStyleDescriptionRegistry" uid="_Ast54XzzEe2jNavmwUdSkQ"/>
     </ownedAnnotationEntries>
     <ownedDiagramElements xmi:type="diagram:DNodeList" uid="_AsnzQHzzEe2jNavmwUdSkQ" name="imports" width="20" height="10">
-      <target xmi:type="robochart:RCPackage" href="utils/utils.rct#/"/>
-      <semanticElements xmi:type="robochart:RCPackage" href="utils/utils.rct#/"/>
       <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_AsnzQXzzEe2jNavmwUdSkQ" labelSize="10" showIcon="false" borderSize="1" borderSizeComputationExpression="1" foregroundColor="255,255,255">
         <labelFormat>bold</labelFormat>
         <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@containerMappings[name='ImportsID']/@style"/>
@@ -5239,7 +5242,6 @@
     <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']"/>
     <filterVariableHistory xmi:type="diagram:FilterVariableHistory" uid="_Asl-EXzzEe2jNavmwUdSkQ"/>
     <activatedLayers xmi:type="description_1:Layer" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer"/>
-    <target xmi:type="robochart:RCPackage" href="utils/utils.rct#/"/>
   </diagram:DSemanticDiagram>
   <diagram:DSemanticDiagram uid="_ZPhpQJqrEe2w1qqCv9LexQ">
     <ownedAnnotationEntries xmi:type="description:AnnotationEntry" uid="_ZQJUUJqrEe2w1qqCv9LexQ" source="GMF_DIAGRAMS">

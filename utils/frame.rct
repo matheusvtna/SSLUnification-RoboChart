@@ -6,7 +6,7 @@ datatype Frame {
 
 // Robot
 function getRobot(frame: Frame): Robot {
-	return frame[2]
+	return frame.robot
 }
   
 function getRobotPosition(frame: Frame): Point {
@@ -21,7 +21,7 @@ function getRobotAngle(frame: Frame): real {
 
 // Ball
 function getBall(frame: Frame): Ball {
-	return frame[1]
+	return frame.ball
 }
 
 function getBallPosition(frame: Frame): Point {

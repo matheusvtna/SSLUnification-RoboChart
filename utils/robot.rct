@@ -12,25 +12,25 @@ datatype Robot {
 	feedback: Feedback
 }
 
-function ROBOT_RADIUS(): real {
+function ROBOT_RADIUS(): real {	
 	return 90
 }
 
 function getPositionFromRobot(robot: Robot): Point {
-	return robot[2]
+	return robot.pos
 }
 
 function getAngleFromRobot(robot: Robot): Point {
-	return robot[4]
+	return robot.angle
 }
 
 function getFeedbackFromRobot(robot: Robot): Feedback {
-	return robot[5]
+	return robot.feedback
 }
 
 function robotHasIR(robot: Robot): boolean {
 	var feedback = getFeedbackFromRobot(robot)
-	return feedback[1]
+	return feedback.ir
 }
 
 // FSM Utils
