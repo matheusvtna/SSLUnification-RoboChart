@@ -1,12 +1,76 @@
+// Datatype to represent a Ball in SSL Environment.
+// 
+// A Ball contains a Point to represent its position,
+// a Point to represents its velocity. Both are measured
+// in millimeters.
 datatype Ball {
 	pos: Point
 	vel: Point
 }
 
-function getPositionFromBall(ball: Ball): Point {
-	return ball.pos
+// --------------------------------------------
+//                BALL POSITION
+// --------------------------------------------
+interface GetPositionFromBallI {
+	var getPositionFromBallResult : Point
 }
 
-function getVelocityFromBall(ball: Ball): Point {
-	return ball.vel
+// This operation works as a function to get 
+// the position from a ball.
+//
+// @param ball: Ball
+//
+// @return [Point] The ball position vector. 
+operation getPositionFromBall(ball: Ball) {
+	requires GetPositionFromBallI
+	
+	// States.
+	initial Initial
+	state GetPositionFromBall {}	
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to GetPositionFromBall
+	}
+	transition finish {		
+		from GetPositionFromBall
+		to Stop
+		action getPositionFromBallResult = ball.pos
+	}
+}	
+
+
+// --------------------------------------------
+//                BALL VELOCITY
+// --------------------------------------------
+interface GetVelocityFromBallI {
+	var getVelocityFromBallResult : Point
 }
+
+// This operation works as a function to get 
+// the velocity from a ball.
+//
+// @param ball: Ball
+//
+// @return [Point] The ball velocity vector. 
+operation getVelocityFromBall(ball: Ball) {
+	requires GetVelocityFromBallI
+	
+	// States.
+	initial Initial
+	state GetVelocityFromBall {}	
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to GetVelocityFromBall
+	}
+	transition finish {		
+		from GetVelocityFromBall
+		to Stop
+		action getVelocityFromBallResult = ball.vel
+	}
+}	

@@ -2,6 +2,16 @@ function smallestAngleDiff(source: real, target: real): real {
 	// TODO: Fazer função de diferença angular...
 }
 
+// TODO: Inserir formula do cosseno
+function cos(angle: real) {
+	return angle
+}
+
+// TODO: Inserir formula do cosseno
+function sin(angle: real) {
+	return angle
+}
+
 function degreesToRadians(degrees: real): real {
 	return degrees * PI / 180
 }

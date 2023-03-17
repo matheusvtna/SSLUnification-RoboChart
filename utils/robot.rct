@@ -1,43 +1,172 @@
-datatype Feedback {
+// Datatype to represent a RobotFeedback in SSL Environment.
+// 
+// A RobotFeedback contains informations of a Robot. It contains
+// a boolean value to indicate whether the robot has the IR sensor
+// activated, a real value to represent the battery charge and a
+// real value to represent the capacitor charge.
+datatype RobotFeedback {
 	ir: boolean
 	battery: real
 	capacitor: real
 }
 
+// Datatype to represent a Robot in SSL Environment.
+// 
+// A Robot an integer value to represent the robot id,
+// a Point to represent its position in the field, a
+// Point value to represent its velocity, a real value
+// to represent its angle and a RobotFeedback which
+// contains physical informations of the robot
 datatype Robot {
 	id: int
 	pos: Point
 	vel: Point
 	angle: real
-	feedback: Feedback
+	feedback: RobotFeedback
 }
 
 function ROBOT_RADIUS(): real {	
 	return 90
 }
 
-function getPositionFromRobot(robot: Robot): Point {
-	return robot.pos
+// --------------------------------------------
+//               ROBOT POSITION
+// --------------------------------------------
+interface GetPositionFromRobotI {
+	var getPositionFromRobotResult : Point
 }
 
-function getAngleFromRobot(robot: Robot): Point {
-	return robot.angle
+// This operation works as a function to get 
+// the position from a robot.
+//
+// @param robot: Robot
+//
+// @return [Point] The robot position vector. 
+operation getPositionFromRobot(robot: Robot) {
+	requires GetPositionFromRobotI
+	
+	// States.
+	initial Initial
+	state GetPositionFromRobot {}	
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to GetPositionFromRobot
+	}
+	transition finish {		
+		from GetPositionFromRobot
+		to Stop
+		action getPositionFromRobotResult = robot.pos
+	}
+}	
+
+// --------------------------------------------
+//               ROBOT ANGLE
+// --------------------------------------------
+interface GetAngleFromRobotI {
+	var getAngleFromRobotResult : real
 }
 
-function getFeedbackFromRobot(robot: Robot): Feedback {
-	return robot.feedback
+// This operation works as a function to get 
+// the angle from a robot.
+//
+// @param robot: Robot
+//
+// @return [real] The robot angle. 
+operation getAngleFromRobot(robot: Robot) {
+	requires GetAngleFromRobotI
+	
+	// States.
+	initial Initial
+	state GetAngleFromRobot {}	
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to GetAngleFromRobot
+	}
+	transition finish {		
+		from GetAngleFromRobot
+		to Stop
+		action getAngleFromRobotResult = robot.angle
+	}
+}	
+
+// --------------------------------------------
+//               ROBOT FEEDBACK
+// --------------------------------------------
+interface GetFeedbackFromRobotI {
+	var getFeedbackFromRobotResult : RobotFeedback
 }
 
-function robotHasIR(robot: Robot): boolean {
-	var feedback = getFeedbackFromRobot(robot)
-	return feedback.ir
+// This operation works as a function to get 
+// the feedback from a robot.
+//
+// @param robot: Robot
+//
+// @return [RobotFeedback] The robot feedback. 
+operation getFeedbackFromRobot(robot: Robot) {
+	requires GetFeedbackFromRobotI
+	
+	// States.
+	initial Initial
+	state GetFeedbackFromRobot {}	
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to GetFeedbackFromRobot
+	}
+	transition finish {		
+		from GetFeedbackFromRobot
+		to Stop
+		action getFeedbackFromRobotResult = robot.feedback
+	}
+}	
+
+// --------------------------------------------
+//           ROBOT HAS BALL CONTACT
+// --------------------------------------------
+interface RobotHasBallContactI {
+	var robotHasBallContactResult : boolean
 }
+
+// This operation works as a function to check 
+// whether the current robot has ball contact.
+//
+// @param robot: Robot
+//
+// @return [boolean] A value which indicates if
+// the robot has ball contact or not. 
+operation robotHasBallContact(robot: Robot) {
+	requires RobotHasBallContactI
+	
+	// States.
+	initial Initial
+	state RobotHasBallContact {}	
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to RobotHasBallContact
+	}
+	transition finish {		
+		from RobotHasBallContact
+		to Stop
+		action robotHasBallContactResult = robot.feedback.ir
+	}
+}	
 
 // FSM Utils
 function allyIsBehind(robot: Robot, point: Point, target: Point, angleThreshold: real): boolean {
 	var robotPosition = getPositionFromRobot(robot)
 	var pointToTargetUnitVector = createUnitVector(point, target)
-    var allyToPointUnitVector = createUnitVector(robot, point)
+    var allyToPointUnitVector = createUnitVector(robotPosition, point)
     
     var angle = angleBetween(pointToTargetUnitVector, allyToPointUnitVector)
 

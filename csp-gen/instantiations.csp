@@ -17,25 +17,25 @@ norm(point) = 0
 angleBetween(source,target) = 0
 
 -- generate createVector
-createVector(source,target) = ((0,0))
+createVector(source,target) = (0,0)
 
 -- generate getTargetPosition
 getTargetPosition(frame) = ((0,0))
 
--- generate const_goToPointAndStop_STOP_DIST_THRESHOLD
-const_goToPointAndStop_STOP_DIST_THRESHOLD = 0
-
 -- generate allyIsCloseToBall
 allyIsCloseToBall(robot,ball) = true
+
+-- generate const_goToPointAndStop_STOP_DIST_THRESHOLD
+const_goToPointAndStop_STOP_DIST_THRESHOLD = 0
 
 -- generate Plus
 Plus(e1,e2,T) = if member(e1+e2,T) then e1+e2 else e1
 
--- generate getRobotAngle
-getRobotAngle(frame) = 0
-
 -- generate allyCanHaveBallOnDribbler
 allyCanHaveBallOnDribbler(robot,ball) = true
+
+-- generate getRobotAngle
+getRobotAngle(frame) = 0
 
 -- generate --
 
@@ -62,14 +62,14 @@ nametype core_clock_type = {0..10}
 smallestAngleDiff(source,target) = 0
 
 -- generate getAngleFromRobot
-getAngleFromRobot(robot) = ((0,0))
+getAngleFromRobot(robot) = (0,0)
 
 -- generate allyIsCollidingWithWall
 allyIsCollidingWithWall(robot,frame) = true
 
 -- generate real
 nametype core_real = union({ -2..2},{calc_type_min(Union(
-			{{ -2..2},{ -2..2}}))..calc_type_max(Union({{ -2..2},{ -2..2}}))}) 
+			{{Robot_angle(Frame_robot(frame))|frame <- Frame},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{angle|angle <- { -2..2}},{angle|angle <- { -2..2}}}))..calc_type_max(Union({{Robot_angle(Frame_robot(frame))|frame <- Frame},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{ -2..2},{angle|angle <- { -2..2}},{angle|angle <- { -2..2}}}))}) 
 
 -- VECTOR TYPES AND OPERATIONS
 
@@ -89,7 +89,7 @@ allyIsBehind(robot,point,target,angleThreshold) = true
 Minus(e1,e2,T) = if member(e1-e2,T) then e1-e2 else e1
 
 -- generate unitVector
-unitVector(source) = ((0,0))
+unitVector(source) = (0,0)
 
 -- generate string
 nametype core_string = LSeq(Char,2)
@@ -98,7 +98,7 @@ nametype core_string = LSeq(Char,2)
 dot(source,target) = 0
 
 -- generate getPositionFromRobot
-getPositionFromRobot(robot) = ((0,0))
+getPositionFromRobot(robot) = (0,0)
 
 -- generate fromPolar
 fromPolar(length,angle) = ((0,0))
@@ -126,14 +126,14 @@ getBallPosition(frame) = ((0,0))
 -- generate allyIsBehindBall
 allyIsBehindBall(robot,targetPosition) = true
 
--- generate getTargetAngle
-getTargetAngle(frame) = 0
-
 -- generate getDistance
 getDistance(source,target) = 0
 
 -- generate allyIsPushingBallWithHisBack
 allyIsPushingBallWithHisBack(robot,ball) = true
+
+-- generate getTargetAngle
+getTargetAngle(frame) = 0
 
 -- generate getFeedbackFromRobot
 getFeedbackFromRobot(robot) = (true,0,0)
@@ -175,7 +175,7 @@ const_carryBallOnBallPlacement_TIME_TO_PLACE_BALL_IN_SECONDS = 0
 -- BASIC TYPES
 
 -- generate createUnitVector
-createUnitVector(source,target) = ((0,0))
+createUnitVector(source,target) = (0,0)
 
 -- generate const_goToPointAndStop_STOP_ANGLE_THRESHOLD
 const_goToPointAndStop_STOP_ANGLE_THRESHOLD = 0

@@ -1,47 +1,312 @@
+// Datatype to represent a Point in SSL Environment.
+// 
+// A Point contains a `x` and a `y` coordinates.
+// Both properties are real values.
 datatype Point {
-	pos: real*real
+	x: real
+	y: real
 }
 
-function fromPolar(length: real, angle: real): Point {
-	return Point(cos(angle) * length, sin(angle) * length)
+// --------------------------------------------
+//                 FROM POLAR
+// --------------------------------------------
+interface FromPolarI {
+	var fromPolarResult : Point
 }
 
-function getDistance(source: Point, target: Point) : real {
-	var distance = sqrt((source.x - target.x)^2 + (source.y - target.y)^2)
-	return distance
-}
-
-function norm(point: Point): real {
-	var n = sqrt(point.x^2 + point.y^2)
-	return n
-}
-
-function unitVector(source: Point): Point {
-	var n = norm(source)
-	if(n > 0) {
-		return Point(source.x/n, source.y/n)
+// This operation works as a function to create a
+// vector from a length and an angle. 
+//
+// @param length: real
+// @param angle: real
+//
+// @return [Point] The vector with the respective
+// length and rotated with the respective angle. 
+operation fromPolar(length: real, angle: real) {
+	requires FromPolarI
+	
+	var vec: Point 
+	
+	// States.
+	initial Initial
+	state FromPolar {}	
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to FromPolar
 	}
-	// TODO: Alguma forma de levantar um erro?
-	return source
+	transition finish {		
+		from FromPolar
+		to Stop
+		// TODO: FIX COS AND SIN FUNCTIONS.
+		action fromPolarResult.x = cos(angle) * length; fromPolarResult.y = sin(angle) * length
+	}
+}	
+
+// --------------------------------------------
+//       GET DISTANCE BETWEEN TWO POINTS
+// --------------------------------------------
+interface GetDistanceBetweenTwoPointsI {
+	var getDistanceBetweenTwoPointsResult : nat
 }
 
-function createVector(source: Point, target: Point): Point {
-	return Point(target.x - source.x, target.y - source.y)
+// This operation works as a function to calculates
+// the distance between two Points. 
+//
+// @param source: Point
+// @param target: Point
+//
+// @return [nat] The distance between source and 
+// target points. 
+operation getDistanceBetweenTwoPoints(source: Point, target: Point) {
+	requires GetDistanceBetweenTwoPointsI
+		
+	// States.
+	initial Initial
+	state GetDistanceBetweenTwoPoints {}	
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to GetDistanceBetweenTwoPoints
+	}
+	transition finish {		
+		from GetDistanceBetweenTwoPoints
+		to Stop
+		// TODO: CREATE (OR FIND HOW TO USE) SQRT FUNCTION.
+		action getDistanceBetweenTwoPointsResult = sqrt((source.x - target.x)^2 + (source.y - target.y)^2)
+	}
 }
 
-function createUnitVector(source: Point, target: Point): Point {
-	var vec = createVector(source, target)
-	return unitVector(vec)
+// --------------------------------------------
+//          GET THE NORM OF A VECTOR
+// --------------------------------------------
+interface GetNormOfVectorI {
+	var getNormOfVectorResult : nat
 }
 
-function dot(source: Point, target: Point): real {
-	return source.x*target.x + source.y*target.y
+// This operation works as a function to calculates
+// the norm of a vector/point. 
+//
+// @param vec: Point
+//
+// @return [nat] The norm of the vector.
+operation getNormOfVector(vec: Point) {
+	requires GetNormOfVectorI
+		
+	// States.
+	initial Initial
+	state GetNormOfVector {}	
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to GetNormOfVector
+	}
+	transition finish {		
+		from GetNormOfVector
+		to Stop
+		// TODO: CREATE (OR FIND HOW TO USE) SQRT FUNCTION.
+		action getNormOfVectorResult = sqrt(vec.x^2 + vec.y^2)
+	}
+}		
+
+// --------------------------------------------
+//          CREATE AN UNIT VECTOR
+// --------------------------------------------
+interface CreateUnitVectorI {
+	var createUnitVectorResult : Point
 }
 
-function cross(source: Point, target: Point): real {
-	return (source.x * target.y) - (source.y * target.x)
+// This operation works as a function to calculates
+// the unit vector from a source vector. 
+//
+// @param vec: Point
+//
+// @return [Point] The unit vector with in the same 
+// direction of the source vector.
+operation createUnitVector(vec: Point) {
+	requires CreateUnitVectorI
+	requires GetNormOfVectorI
+			
+	// Intermediary variable to save vector norm.	
+	var norm: nat
+				
+	// States.
+	initial Initial
+	state GetNormOfVector {
+		entry getNormOfVector(vec)
+	}	
+	state CreateUnitVector {}
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to GetNormOfVector
+	}
+	transition calculateNorm {		
+		from GetNormOfVector
+		to CreateUnitVector
+		action norm = getNormOfVectorResult
+	}
+	transition finish {
+		from CreateUnitVector
+		to Stop
+		// TODO: action if (norm > 0) then createUnitVectorResult = Point(vec.x/norm, vec.y/norm) else createUnitVectorResult = Point(0,0)
+		action createUnitVectorResult.x = vec.x/norm; createUnitVectorResult.y = vec.y/norm
+	}
 }
 
-function angleBetween(source: Point, target: Point): real {
-	return atan2(cross(source, target), dot(source, target))
+// --------------------------------------------
+//              CREATE A VECTOR
+// --------------------------------------------
+interface CreateVectorI {
+	var createVectorResult : Point
+}
+
+// This operation works as a function to calculates
+// the vector from a source and a target point. 
+//
+// @param source: Point
+// @param target: Point
+//
+// @return [Point] The vector which starts in source
+// and finishes in target.
+operation createVector(source: Point, target: Point) {
+	requires CreateVectorI
+				
+	// States.
+	initial Initial
+	state CreateUnitVector {}
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to CreateUnitVector
+	}
+	transition finish {
+		from CreateUnitVector
+		to Stop
+		action createVectorResult.x = target.x - source.x; createVectorResult.y = target.y - source.y
+	}
+}
+
+// --------------------------------------------
+//                      DOT
+// --------------------------------------------
+interface DotI {
+	var dotResult : real
+}
+
+// This operation works as a function to calculates
+// the scalar product (called `dot`) between two 
+// vectors. 
+//
+// @param source: Point
+// @param target: Point
+//
+// @return [real] The scalar product between source 
+// and target vectors.
+operation dot(source: Point, target: Point) {
+	requires DotI
+				
+	// States.
+	initial Initial
+	state Dot {}
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to Dot
+	}
+	transition finish {
+		from Dot
+		to Stop
+		action dotResult = source.x*target.x + source.y*target.y
+	}
+}
+
+// --------------------------------------------
+//                   CROSS
+// --------------------------------------------
+interface CrossI {
+	var crossResult : real
+}
+
+// This operation works as a function to calculates
+// the vector product (called `cross`) between two 
+// vectors. 
+//
+// @param source: Point
+// @param target: Point
+//
+// @return [real] The vector product between source 
+// and target vectors.
+//
+// NOTE: cross(source, target) != cross(target, source) 
+operation cross(source: Point, target: Point) {
+	requires CrossI
+				
+	// States.
+	initial Initial
+	state Cross {}
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to Cross
+	}
+	transition finish {
+		from Cross
+		to Stop
+		action crossResult = (source.x * target.y) - (source.y * target.x)
+	}
+}
+
+// --------------------------------------------
+//            ANGLE BETWEEN VECTORS
+// --------------------------------------------
+interface AngleBetweenVectorsI {
+	var angleBetweenVectorsResult : real
+}
+
+// This operation works as a function to calculates
+// the angle between two vectors.
+//
+// @param source: Point
+// @param target: Point
+//
+// @return [real] The angle between source and target.
+// It returns values between [-PI, PI].
+operation angleBetweenVectors(source: Point, target: Point) {
+	requires DotI
+	requires CrossI
+	requires AngleBetweenVectorsI
+			
+	// States.
+	initial Initial
+	state DotAndCross {
+		entry dot(source, target); cross(source, target)
+	}
+	final Stop
+	
+	// Transitions.
+	transition start {
+		from Initial
+		to DotAndCross
+	}
+	transition finish {
+		from DotAndCross
+		to Stop
+		// TODO: CREATE (OR FIND HOW TO USE) ATAN2 FUNCTION.
+		action atan2(crossResult, dotResult)
+	}
 }
