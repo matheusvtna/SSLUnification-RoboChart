@@ -127,7 +127,7 @@
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']"/>
         <target xmi:type="robochart:RCPackage" href="behavior-stm/goToBehindBall.rct#/"/>
       </ownedRepresentationDescriptors>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_y_4LgKO3Ee2rrNXHAngVag" name="carryBall.rct" repPath="#_y_ei4KO3Ee2rrNXHAngVag" changeId="70a9f94b-e481-405f-b0ca-0254801e5d00">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_y_4LgKO3Ee2rrNXHAngVag" name="carryBall.rct" repPath="#_y_ei4KO3Ee2rrNXHAngVag" changeId="ca6cb73a-7916-404b-97ff-b1d72b8b02a4">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']"/>
         <target xmi:type="robochart:RCPackage" href="behavior-stm/carryBall.rct#/"/>
       </ownedRepresentationDescriptors>
@@ -7151,7 +7151,7 @@
       </ownedStyle>
       <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@edgeMappings[name='TransitionID']"/>
     </ownedDiagramElements>
-    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_DSJRhMRkEe2js61cgNU9Og" name="[not allyIsPushingBallWithHisBack(robot, ball)]/nodeStatus = NODE_STATUS::FAILED" sourceNode="_DSDK5cRkEe2js61cgNU9Og" targetNode="_DSFnIMRkEe2js61cgNU9Og">
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_DSJRhMRkEe2js61cgNU9Og" name="[not allyCanHaveBallOnDribbler(robot, ball)]/nodeStatus = NODE_STATUS::FAILED" sourceNode="_DSDK5cRkEe2js61cgNU9Og" targetNode="_DSFnIMRkEe2js61cgNU9Og">
       <target xmi:type="robochart:Transition" href="behavior-stm/carryBall.rct#//@operations.0/@transitions.3"/>
       <semanticElements xmi:type="robochart:Transition" href="behavior-stm/carryBall.rct#//@operations.0/@transitions.3"/>
       <ownedStyle xmi:type="diagram:EdgeStyle" uid="_DSJRhcRkEe2js61cgNU9Og" size="2" routingStyle="manhattan">

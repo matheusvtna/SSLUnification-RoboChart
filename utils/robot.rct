@@ -25,9 +25,35 @@ datatype Robot {
 	feedback: RobotFeedback
 }
 
+// --------------------------------------------
+//               ROBOT RADIUS
+// --------------------------------------------
+interface GetRobotRadiusI {
+	var robotRadius: int	
+}
+
+// This operation works as a function to get
+// the radius of a robot
+//
+// @return [int] The robot radius
+operation GetRobotRadius() {
+	requires GetRobotRadiusI
+	
+	// States
+	initial Initial
+	final Stop
+	transition finish {
+		from Initial
+		to Stop
+		action robotRadius = 90
+	}
+}
+
+/*
 function ROBOT_RADIUS(): real {	
 	return 90
 }
+*/
 
 // --------------------------------------------
 //               ROBOT POSITION
@@ -163,27 +189,143 @@ operation robotHasBallContact(robot: Robot) {
 }	
 
 // FSM Utils
-function allyIsBehind(robot: Robot, point: Point, target: Point, angleThreshold: real): boolean {
+interface AllyIsBehindI {
+	var allyIsBehindResult: boolean
+}
+
+operation AllyIsBehind(robot: Robot, point: Point, target: Point, angleThreshold: real) {
+	requires AllyIsBehindI
+	requires GetPositionFromRobotI
+	requires CreateVectorI
+	requires CreateUnitVectorI
+	requires AngleBetweenVectorsI
+	
+	var robotPosition: Point
+	var point2target: Point
+	var ally2target: Point 
+	var unitPoint2target: Point
+	var unitAlly2point: Point
+	var angleBetweenVectors: real
+	
+	initial Initial
+	state setRobotPosition {
+		entry getPositionFromRobot(robot)
+	}
+	state createVectorPointToTarget {
+		entry createVector(point, target)
+	}
+	state createUnitVectorPointToTarget {
+		entry createUnitVector(point2target)
+	}
+	state createVectorAllyToPoint {
+		entry createVector(robotPosition, point)
+	}
+	state createUnitVectorAllyToPoint {
+		entry createUnitVector(ally2target)
+	}
+	state getAngleBetweenVectors {
+		entry angleBetweenVectors(unitPoint2target, unitAlly2point)
+	}
+	
+	final stop
+	
+	transition calculateRobotPosition {
+		from Initial
+		to setRobotPosition
+		action robotPosition = getPositionFromRobotResult
+	}
+	transition calculateVectorPoint2Target {
+		from setRobotPosition
+		to createVectorPointToTarget
+		action point2target = createVectorResult
+	}
+	transition calculateUnitVectorPoint2Target {
+		from createVectorPointToTarget
+		to createUnitVectorPointToTarget
+		action unitPoint2target = createUnitVectorResult
+	}
+	transition calculateVectorAlly2Point {
+		from createUnitVectorPointToTarget
+		to createVectorAllyToPoint
+		action ally2target = createVectorResult
+	}
+	transition calculateUnitVectorAlly2target {
+		from createVectorAllyToPoint
+		to createUnitVectorAllyToPoint
+		action unitAlly2point = createUnitVectorResult 
+	}
+	transition calculateAngleBetweenVectors {
+		from createUnitVectorAllyToPoint
+		to getAngleBetweenVectors
+		action angleBetweenVectors = angleBetweenVectorsResult
+	}
+	transition finish {
+		from createUnitVectorAllyToPoint
+		to stop
+		action allyIsBehindResult = -angleThreshold < angleBetweenVectors /\ angleBetweenVectors < angleThreshold
+	}
+}
+
+/*function allyIsBehind(robot: Robot, point: Point, target: Point, angleThreshold: real): boolean {
 	var robotPosition = getPositionFromRobot(robot)
 	var pointToTargetUnitVector = createUnitVector(point, target)
     var allyToPointUnitVector = createUnitVector(robotPosition, point)
     
     var angle = angleBetween(pointToTargetUnitVector, allyToPointUnitVector)
 
-    return -angleThreshold < angle /\ angle < +angleThreshold;
-}
+    return -angleThreshold < angle /\ angle < +angleThreshold
+}*/
 
 function allyHasBall(robot: Robot, ball: Ball): boolean {
 	// TODO: utilizar a verificação por posição e angulo...
 	return robotHasIR(robot)
 }
 
-function allyIsCloseToBall(robot: Robot, ball: Ball): boolean {
+/*function allyIsCloseToBall(robot: Robot, ball: Ball): boolean {
 	var MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL: real = 111
 	
 	var robotPosition = getPositionFromRobot(robot)
 	var ballPosition = getPositionFromBall(ball)
 	return distance(robotPosition, ballPosition) < MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL
+}*/
+
+interface AllyIsCloseToBallI {
+	var allyIsCloseToBallResult: boolean
+}
+
+operation AllyIsCloseToBall(robot: Robot, ball: Ball) {
+	requires AllyIsCloseToBallI
+	requires GetPositionFromRobotI
+	requires GetPositionFromBallI
+	
+	var robotPosition: Point
+	var ballPosition: Point
+	var MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL: real = 111
+	
+	initial Initial
+	state setRobotPosition {
+		entry getPositionFromRobot(robot)
+	}
+	state setBallPosition {
+		entry getPositionFromBall(ball)
+	}
+	final stop
+	
+	transition calculateRobotPosition {
+		from Initial
+		to setRobotPosition
+		action robotPosition = getPositionFromRobotResult
+	}
+	transition calculateBallPosition {
+		from setRobotPosition
+		to setBallPosition
+		action ballPosition = getPositionFromBallResult
+	}
+	transition finish {
+		from setBallPosition
+		to stop
+		action allyIsCloseToBallResult = distance(robotPosition, ballPosition) < MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL
+	}
 }
 
 function allyIsLookingToBall(robot: Robot, ball: Ball): boolean {
