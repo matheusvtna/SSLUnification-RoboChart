@@ -2,25 +2,19 @@ import utils
 
 
 operation carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real) {
-	requires GetRobotFromFrameI
-	requires GetBallFromFrameI
-	requires GetBallPositionFromFrameI
 	requires GetDistanceBetweenTwoPointsI
+	requires AllyHasBallI
 	requires NodeStatusI	
 	
-	var robot: Robot
-	var ball: Ball
-	var ballPosition: Point
+	var robot: Robot = frame.robot
+	var ball: Ball = frame.ball
+	var ballPosition: Point = ball.pos
 	var distance: nat
 	
 	// States.
 	initial Initial
-	state GetRobotAndBallPositionFromFrame {
-		entry getRobotFromFrame(frame); getBallFromFrame(frame); getBallPositionFromFrame(frame)
-		exit robot = getRobotFromFrameResult; ball = getBallFromFrameResult; ballPosition = getBallPositionFromFrameResult		
-	}
 	state GetDistanceBetweenBallAndTarget {
-		entry getDistanceBetweenTwoPoints(ballPosition, targetPosition)
+		entry GetDistanceBetweenTwoPoints(ballPosition, targetPosition); AllyHasBall(robot, ball)
 		exit distance = getDistanceBetweenTwoPointsResult
 	}
 	final Stop
@@ -28,25 +22,20 @@ operation carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real
 	// Transitions.
 	transition start {
 		from Initial
-		to GetRobotAndBallPositionFromFrame
-	}
-	
-	transition calculate {
-		from GetRobotAndBallPositionFromFrame
 		to GetDistanceBetweenBallAndTarget
 	}
 	
 	transition success {		
 		from GetDistanceBetweenBallAndTarget
 		to Stop
-		condition distance < distanceThreshold
+		condition getDistanceBetweenTwoPointsResult < distanceThreshold
 		action nodeStatus = NODE_STATUS::DONE
 	}
 	
 	transition fail {		
 		from GetDistanceBetweenBallAndTarget
 		to Stop
-		condition not allyHasBall(robot, ball)
+		condition not allyHasBallResult
 		action nodeStatus = NODE_STATUS::FAILED
 	}
 }

@@ -1,6 +1,8 @@
 import utils
 
+//DUVIDA: Requires ou Uses??
 stm goToPointAndStop {
+	requires GetDistanceBetweenTwoPointsI
 	
 	// Frame
 	var frame: Frame
@@ -30,25 +32,29 @@ stm goToPointAndStop {
 	//FSM.
 	
 	// States.
+	
+	// TODO: CHECAR ESSE GET DISTANCE
+	// Sao varios calculos e eu queria comparar o calculo de cada estado, coloquei o resultado do calculo feito
+	// em cada estado na transicao para comparacao
 	initial i0
 	state sGoToPoint {
-		entry robot = getRobot(frame);
+		entry robot = frame.robot;
 		robotPosition = robot.pos;
 		robotAngle = robot.angle;
-		targetPosition = getTargetPosition (frame);
-		targetAngle = getTargetAngle (frame);
-		distance = getDistance(robotPosition, targetPosition);
+		targetPosition = getTargetPosition(frame);
+		targetAngle = getTargetAngle(frame);
+		GetDistanceBetweenTwoPoints(robotPosition, targetPosition);
 		angleDiff = smallestAngleDiff(robotAngle, targetAngle);
 		IMove::move(linearVelocity, angularVelocity) 
 		
 		exit IMove::stop()
 	}
 	state sAdjustAngle {
-		entry robotPosition = getRobotPosition (frame);
-		robotAngle = getRobotAngle (frame);
+		entry robotPosition = frame.robot.pos;
+		robotAngle = frame.robot.angle;
 		targetPosition = getTargetPosition(frame);
 		targetAngle = getTargetAngle(frame);
-		distance = getDistance(robotPosition, targetPosition);
+		GetDistanceBetweenTwoPoints(robotPosition, targetPosition);
 		angleDiff = smallestAngleDiff(robotAngle, targetAngle);
 		IMove::move(linearVelocity, angularVelocity)
 		
@@ -65,22 +71,22 @@ stm goToPointAndStop {
 	transition t1 {		
 		from sGoToPoint
 		to sAdjustAngle
-		condition distance <= STOP_DIST_THRESHOLD		
+		condition getDistanceBetweenTwoPointsResult <= STOP_DIST_THRESHOLD	
 	}
 	transition t2 {
 		from sGoToPoint
 		to f0
-		condition distance <= STOP_DIST_THRESHOLD /\ angleDiff <= STOP_ANGLE_THRESHOLD
+		condition getDistanceBetweenTwoPointsResult <= STOP_DIST_THRESHOLD /\ angleDiff <= STOP_ANGLE_THRESHOLD
 	}
 	transition t3 {
 		from sAdjustAngle
 		to f0
-		condition distance <= STOP_DIST_THRESHOLD /\ angleDiff <= STOP_ANGLE_THRESHOLD
+		condition getDistanceBetweenTwoPointsResult <= STOP_DIST_THRESHOLD /\ angleDiff <= STOP_ANGLE_THRESHOLD
 	}
 	transition t4 {
 		from sAdjustAngle
 		to sGoToPoint
-		condition distance > STOP_DIST_THRESHOLD
+		condition getDistanceBetweenTwoPointsResult > STOP_DIST_THRESHOLD
 	}
 
 }

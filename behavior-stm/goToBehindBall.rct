@@ -1,7 +1,9 @@
 import utils
+import robot
 
 operation goToBehindBall(targetPosition: Point, angleThreshold: real) {
-	
+	requires AllyIsBehindI
+	requires AllyIsCloseToBallI
 	requires NodeStatusI
 	
 	// Robot instance.
@@ -10,7 +12,10 @@ operation goToBehindBall(targetPosition: Point, angleThreshold: real) {
 	
 	// States.
 	initial Initial
-	state GoToBehindBall {}	
+	state GoToBehindBall {
+		entry AllyIsBehind(robot, ball.pos, targetPosition, angleThreshold); 
+			AllyIsCloseToBall(robot, ball)
+	}	
 	final Stop
 	
 	// Transitions.
@@ -22,7 +27,7 @@ operation goToBehindBall(targetPosition: Point, angleThreshold: real) {
 	transition success {		
 		from GoToBehindBall
 		to Stop
-		condition (allyIsBehind(robot, getPositionFromBall(ball), targetPosition, angleThreshold) /\ allyIsCloseToBall(robot, ball)) 
+		condition (allyIsBehindResult /\ allyIsCloseToBallResult) 
 		action nodeStatus = NODE_STATUS::DONE
 	}
 	

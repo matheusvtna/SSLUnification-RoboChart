@@ -60,7 +60,7 @@ interface GetDistanceBetweenTwoPointsI {
 //
 // @return [nat] The distance between source and 
 // target points. 
-operation getDistanceBetweenTwoPoints(source: Point, target: Point) {
+operation GetDistanceBetweenTwoPoints(source: Point, target: Point) {
 	requires GetDistanceBetweenTwoPointsI
 		
 	// States.
@@ -129,7 +129,7 @@ interface CreateUnitVectorI {
 //
 // @return [Point] The unit vector with in the same 
 // direction of the source vector.
-operation createUnitVector(vec: Point) {
+operation CreateUnitVector(vec: Point) {
 	requires CreateUnitVectorI
 	requires GetNormOfVectorI
 			
@@ -177,7 +177,7 @@ interface CreateVectorI {
 //
 // @return [Point] The vector which starts in source
 // and finishes in target.
-operation createVector(source: Point, target: Point) {
+operation CreateVector(source: Point, target: Point) {
 	requires CreateVectorI
 				
 	// States.
@@ -286,7 +286,7 @@ interface AngleBetweenVectorsI {
 //
 // @return [real] The angle between source and target.
 // It returns values between [-PI, PI].
-operation angleBetweenVectors(source: Point, target: Point) {
+operation AngleBetweenVectors(source: Point, target: Point) {
 	requires DotI
 	requires CrossI
 	requires AngleBetweenVectorsI

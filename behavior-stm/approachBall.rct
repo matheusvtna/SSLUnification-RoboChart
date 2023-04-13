@@ -1,7 +1,11 @@
 import utils
+import robot
 
 operation approachBall(ball: Ball, angleThreshold: real) {
 	requires NodeStatusI
+	requires AllyIsBehindI
+	requires AllyIsCloseToBallI
+	requires AllyHasBallI
 	
 	// Robot instance.
 	var robot: Robot
@@ -10,7 +14,9 @@ operation approachBall(ball: Ball, angleThreshold: real) {
 	
 	// States.
 	initial Initial
-	state Approach {}	
+	state Approach {
+		entry AllyIsBehind(robot, ball.pos, target, angleThreshold); AllyIsCloseToBall(robot, ball); AllyHasBall(robot, ball)
+	}	
 	final Stop
 	
 	// Transitions.
@@ -22,14 +28,14 @@ operation approachBall(ball: Ball, angleThreshold: real) {
 	transition success {		
 		from Approach
 		to Stop
-		condition allyHasBall(robot, ball)
+		condition allyHasBallResult
 		action nodeStatus = NODE_STATUS::DONE
 	}
 	
 	transition fail {
 		from Approach
 		to Stop
-		condition not allyIsBehind(robot, getPositionFromBall(ball), target, angleThreshold) \/ not allyIsCloseToBall(robot, ball)
+		condition (not allyIsBehindResult \/ not allyIsCloseToBallResult)
 		action nodeStatus = NODE_STATUS::FAILED
 	}
 }	

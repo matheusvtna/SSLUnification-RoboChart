@@ -1,3 +1,4 @@
+import ball
 // Datatype to represent a RobotFeedback in SSL Environment.
 // 
 // A RobotFeedback contains informations of a Robot. It contains
@@ -266,28 +267,22 @@ operation AllyIsBehind(robot: Robot, point: Point, target: Point, angleThreshold
 	}
 }
 
-/*function allyIsBehind(robot: Robot, point: Point, target: Point, angleThreshold: real): boolean {
-	var robotPosition = getPositionFromRobot(robot)
-	var pointToTargetUnitVector = createUnitVector(point, target)
-    var allyToPointUnitVector = createUnitVector(robotPosition, point)
-    
-    var angle = angleBetween(pointToTargetUnitVector, allyToPointUnitVector)
-
-    return -angleThreshold < angle /\ angle < +angleThreshold
-}*/
-
-function allyHasBall(robot: Robot, ball: Ball): boolean {
-	// TODO: utilizar a verificação por posição e angulo...
-	return robotHasIR(robot)
+interface AllyHasBallI {
+	var allyHasBallResult: boolean
 }
-
-/*function allyIsCloseToBall(robot: Robot, ball: Ball): boolean {
-	var MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL: real = 111
+// TODO: fazer metodo de verificacao por posicao e angulo
+operation AllyHasBall(robot: Robot, ball: Ball) {
+	requires AllyHasBallI
 	
-	var robotPosition = getPositionFromRobot(robot)
-	var ballPosition = getPositionFromBall(ball)
-	return distance(robotPosition, ballPosition) < MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL
-}*/
+	initial Initial
+	final stop
+	
+	transition finish {
+		from Initial
+		to stop
+		action allyHasBallResult = true
+	}
+}
 
 interface AllyIsCloseToBallI {
 	var allyIsCloseToBallResult: boolean
@@ -296,51 +291,99 @@ interface AllyIsCloseToBallI {
 operation AllyIsCloseToBall(robot: Robot, ball: Ball) {
 	requires AllyIsCloseToBallI
 	requires GetPositionFromRobotI
-	requires GetPositionFromBallI
+	requires GetDistanceBetweenTwoPointsI
 	
-	var robotPosition: Point
-	var ballPosition: Point
+	var robotPosition: Point = robot.pos
+	var ballPosition: Point = ball.pos
 	var MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL: real = 111
 	
-	initial Initial
-	state setRobotPosition {
-		entry getPositionFromRobot(robot)
-	}
-	state setBallPosition {
-		entry getPositionFromBall(ball)
+	initial Initial 
+	state sInitial {
+		entry GetDistanceBetweenTwoPoints(robotPosition, ballPosition)
 	}
 	final stop
 	
 	transition calculateRobotPosition {
 		from Initial
-		to setRobotPosition
-		action robotPosition = getPositionFromRobotResult
-	}
-	transition calculateBallPosition {
-		from setRobotPosition
-		to setBallPosition
-		action ballPosition = getPositionFromBallResult
+		to sInitial
 	}
 	transition finish {
-		from setBallPosition
+		from sInitial
 		to stop
-		action allyIsCloseToBallResult = distance(robotPosition, ballPosition) < MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL
+		action allyIsCloseToBallResult = getDistanceBetweenTwoPointsResult < MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL
 	}
 }
 
 function allyIsLookingToBall(robot: Robot, ball: Ball): boolean {
 	var ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER: real = degreesToRadians(60)
 	
-	var robotCenter: Point = getPositionFromRobot(robot)
-	var robotAngle: real = getAngleFromRobot(robot)
+	var robotCenter: Point = robot.pos
+	var robotAngle: real = robot.angle
 	var robotFront: Point = fromPolar(ROBOT_RADIUS(), robotAngle)
-	var ballPosition: Point = getPositionFromBall(ball)
+	var ballPosition: Point = ball.pos
 	
 	var robotCenterToFrontUnitVector: Point = createUnitVector(robotCenter, robotFront)
 	var robotToBallUnitVector: Point = createUnitVector(robotCenter, ballPosition)
 	
 	var angle = angleBetween(robotCenterToFrontUnitVector, robotToBallUnitVector)
 	return -ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER < angle /\ angle < +ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER;	
+}
+
+interface AllyIsLookingToBallI {
+	var allyIsLookingToBallResult: boolean
+}
+
+operation AllyIsLookingToBall(robot: Robot, ball: Ball) {
+	requires AllyIsLookingToBallI
+	requires CreateUnitVectorI
+	requires CreateVectorI
+	requires AngleBetweenVectorsI
+	requires FromPolarI
+	
+	var ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER: real = degreesToRadians(60)
+	
+	var robotCenter: Point = robot.pos
+	var robotAngle: real = robot.angle
+	var robotFront: Point
+	var ballPosition: Point = ball.pos
+	
+	var robotCenterToFrontUnitVector: Point
+	var robotToBallUnitVector: Point
+	
+	var angle: real
+	
+	initial Initial
+	state createRobotCenterAndFrontUnitVector {
+		entry FromPolar(ROBOT_RADIUS(), robotAngle);CreateVector(robotCenter, robotFront); CreateUnitVector(createVectorResult)
+	}
+	state createRobotCenterToBallUnitVector {
+		entry CreateVector(robotCenter, ballPosition); CreateUnitVector(createVectorResult)
+	}
+	state calculateAngleBetweenUnitVectors {
+		entry AngleBetweenVectors(robotCenterToFrontUnitVector, robotToBallUnitVector)
+	}
+	final stop
+	
+	transition robotCenterFrontUnitVetor {
+		from Initial
+		to createRobotCenterAndFrontUnitVector
+		action robotFront = fromPolarResult; robotCenterToFrontUnitVector = createUnitVectorResult
+	}
+	transition robotCenterToBallUnitVector {
+		from createRobotCenterAndFrontUnitVector
+		to createRobotCenterToBallUnitVector
+		action robotToBallUnitVector = createUnitVectorResult
+	}
+	transition calculateAngle {
+		from createRobotCenterToBallUnitVector
+		to calculateAngleBetweenUnitVectors
+		action angle = angleBetweenVectorsResult
+	}
+	transition finish {
+		from calculateAngleBetweenUnitVectors
+		to stop
+		action allyIsLookingToBallResult = (-ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER < angle) /\ (angle < ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER)
+	}
 }
 
 function allyCanHaveBallOnDribbler(robot: Robot, ball: Ball): boolean {

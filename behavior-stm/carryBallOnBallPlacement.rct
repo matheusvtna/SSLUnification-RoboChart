@@ -1,4 +1,5 @@
 import utils
+import point 
 
 // TODO: Para cada interface, adicionar o contexto de cada operação para evitar parametros.
 interface CarryBallI {
@@ -17,31 +18,34 @@ interface MoveAwayFromPositionI {
 	moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceThreshold: real)
 }
 
-operation carryBallOnBallPlacement(frame: Frame, targetPosition: Point) {
+operation carryBallOnBallPlacement (frame: Frame
+, targetPosition: Point
+) {
 	requires CarryBallI
 	requires GoToBehindBallI
 	requires ApproachBallI
 	requires MoveAwayFromPositionI
+	requires GetDistanceBetweenTwoPointsI
 	requires NodeStatusI
 	
 	// Robot instance.
-	var robot: Robot
-	var ball: Ball = getBall(frame)
-	
+	var robot: Robot = frame.robot
+	var ball: Ball = frame.ball
+
 	// Constants.
 	const DIST_THRESHOLD_BALL_TO_TARGET: real = 150
 	const DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH: real = 500
 	const DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED: real = 200
 	const MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES: real = 60
 	const TIME_TO_PLACE_BALL_IN_SECONDS: nat = 30
-		
+
 	// States.
 	initial Initial
 	state GoToBehindBall {
 		entry nodeStatus = NODE_STATUS::RUNNING; goToBehindBall(targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
 	}
 	state GiveSpaceToGetBall {
-		entry nodeStatus = NODE_STATUS::RUNNING; moveAwayFromPosition(frame, getPositionFromBall(ball), DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED)
+		entry nodeStatus = NODE_STATUS::RUNNING; moveAwayFromPosition(frame, ball.pos, DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED)
 	}
 	state ApproachBall {
 		entry nodeStatus = NODE_STATUS::RUNNING; approachBall(ball, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
@@ -50,83 +54,73 @@ operation carryBallOnBallPlacement(frame: Frame, targetPosition: Point) {
 		entry nodeStatus = NODE_STATUS::RUNNING; carryBall(frame, targetPosition, DIST_THRESHOLD_BALL_TO_TARGET)
 	}
 	state MoveAwayFromBall {
-		entry nodeStatus = NODE_STATUS::RUNNING; moveAwayFromPosition(frame, targetPosition, DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH)
+		entry nodeStatus = NODE_STATUS::RUNNING; moveAwayFromPosition(frame, targetPosition, DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH); 
+			GetDistanceBetweenTwoPoints(robot.pos, ball.pos)
 	}
 	final Final
-	
+
 	// Transitions.
-	// 
+	//
 	// SUCCESS PATHS.
 	transition AdjustToCarryBall {
 		from Initial
 		to GoToBehindBall
 	}
-	
 	transition AvoidBall {
 		from GoToBehindBall
 		to GiveSpaceToGetBall
 		condition nodeStatus == NODE_STATUS::FAILED
 	}
-	
-	transition TryGoToBehindBallAgain {		
+	transition TryGoToBehindBallAgain {
 		from GiveSpaceToGetBall
 		to GoToBehindBall
 		condition nodeStatus == NODE_STATUS::DONE
 	}
-	
-	transition GetBallControl {		
+	transition GetBallControl {
 		from GoToBehindBall
 		to ApproachBall
 		condition nodeStatus == NODE_STATUS::DONE
 	}
-	
 	transition PlaceBallInPosition {
 		from ApproachBall
 		to PlaceBall
 		condition nodeStatus == NODE_STATUS::DONE
 	}
-	
 	transition MoveAway {
-		from PlaceBall	
+		from PlaceBall
 		to MoveAwayFromBall
 		condition nodeStatus == NODE_STATUS::DONE
 	}
-	
 	transition Finish {
 		from MoveAwayFromBall
 		to Final
 		condition nodeStatus == NODE_STATUS::DONE
 	}
-	
 	// FAILURE PATHS.
-	transition ReadjustToCarryBall {		
+	transition ReadjustToCarryBall {
 		from ApproachBall
-		to GoToBehindBall		
+		to GoToBehindBall
 		condition nodeStatus == NODE_STATUS::FAILED
 	}
-	
-	transition LostBallOnCarry {		
+	transition LostBallOnCarry {
 		from PlaceBall
 		to GoToBehindBall
 		condition nodeStatus == NODE_STATUS::FAILED
 	}
-	
 	transition FinishWithFailOnMoveAway {
 		from MoveAwayFromBall
 		to Final
 		condition nodeStatus == NODE_STATUS::FAILED
 	}
-	
 	transition FinishWithFailOnAvoidBall {
 		from GiveSpaceToGetBall
 		to Final
 		condition nodeStatus == NODE_STATUS::FAILED
 	}
-	
 	transition BallIsOutOfPosition {
 		from MoveAwayFromBall
 		to GoToBehindBall
-		condition getDistance(getPositionFromRobot(robot), getPositionFromBall(ball)) > DIST_THRESHOLD_BALL_TO_TARGET
+		condition getDistanceBetweenTwoPointsResult > DIST_THRESHOLD_BALL_TO_TARGET
 	}
-}	
+}
 
