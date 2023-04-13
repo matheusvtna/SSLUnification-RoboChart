@@ -12,9 +12,9 @@ datatype Frame {
 // --------------------------------------------
 //                    ROBOT
 // --------------------------------------------
-interface GetRobotFromFrameI {
-	var getRobotFromFrameResult : Robot
-}
+//interface GetRobotFromFrameI {
+//	var getRobotFromFrameResult : Robot
+//}
 
 // This operation works as a function to get 
 // the robot from a frame.
@@ -22,33 +22,33 @@ interface GetRobotFromFrameI {
 // @param frame: Frame
 //
 // @return [Robot] The robot object. 
-operation getRobotFromFrame(frame: Frame) {
-	requires GetRobotFromFrameI
-	
-	// States.
-	initial Initial
-	state Run {}	
-	final Stop
-	
-	// Transitions.
-	transition start {
-		from Initial
-		to Run
-	}
-	transition finish {		
-		from Run
-		to Stop
-		action getRobotFromFrameResult = frame.robot
-	}
-}	
+//operation getRobotFromFrame(frame: Frame) {
+//	requires GetRobotFromFrameI
+//	
+//	// States.
+//	initial Initial
+//	state Run {}	
+//	final Stop
+//	
+//	// Transitions.
+//	transition start {
+//		from Initial
+//		to Run
+//	}
+//	transition finish {		
+//		from Run
+//		to Stop
+//		action getRobotFromFrameResult = frame.robot
+//	}
+//}	
 
 
 // --------------------------------------------
 //             ROBOT POSITION
 // --------------------------------------------
-interface GetRobotPositionFromFrameI {
-	var getRobotPositionFromFrameResult : Point
-}
+//interface GetRobotPositionFromFrameI {
+//	var getRobotPositionFromFrameResult : Point
+//}
 
 // This operation works as a function to get 
 // the robot position from a frame.
@@ -56,32 +56,32 @@ interface GetRobotPositionFromFrameI {
 // @param frame: Frame
 //
 // @return [Point] The robot position. 
-operation getRobotPositionFromFrame(frame: Frame) {
-	requires GetRobotPositionFromFrameI
-	
-	// States.
-	initial Initial
-	state Run {}	
-	final Stop
-	
-	// Transitions.
-	transition start {
-		from Initial
-		to Run
-	}
-	transition finish {		
-		from Run
-		to Stop
-		action getRobotPositionFromFrameResult = frame.robot.pos
-	}
-}	
+//operation getRobotPositionFromFrame(frame: Frame) {
+//	requires GetRobotPositionFromFrameI
+//	
+//	// States.
+//	initial Initial
+//	state Run {}	
+//	final Stop
+//	
+//	// Transitions.
+//	transition start {
+//		from Initial
+//		to Run
+//	}
+//	transition finish {		
+//		from Run
+//		to Stop
+//		action getRobotPositionFromFrameResult = frame.robot.pos
+//	}
+//}	
 
 // --------------------------------------------
 //                ROBOT ANGLE
 // --------------------------------------------
-interface GetRobotAngleFromFrameI {
-	var getRobotAngleFromFrameResult : real
-}
+//interface GetRobotAngleFromFrameI {
+//	var getRobotAngleFromFrameResult : real
+//}
 
 // This operation works as a function to get 
 // the robot angle from a frame.
@@ -89,32 +89,32 @@ interface GetRobotAngleFromFrameI {
 // @param frame: Frame
 //
 // @return [real] The robot angle. 
-operation getRobotAngleFromFrame(frame: Frame) {
-	requires GetRobotAngleFromFrameI
-	
-	// States.
-	initial Initial
-	state Run {}	
-	final Stop
-	
-	// Transitions.
-	transition start {
-		from Initial
-		to Run
-	}
-	transition finish {		
-		from Run
-		to Stop
-		action getRobotAngleFromFrameResult = frame.robot.angle
-	}
-}	
+//operation getRobotAngleFromFrame(frame: Frame) {
+//	requires GetRobotAngleFromFrameI
+//	
+//	// States.
+//	initial Initial
+//	state Run {}	
+//	final Stop
+//	
+//	// Transitions.
+//	transition start {
+//		from Initial
+//		to Run
+//	}
+//	transition finish {		
+//		from Run
+//		to Stop
+//		action getRobotAngleFromFrameResult = frame.robot.angle
+//	}
+//}	
 
 // --------------------------------------------
 //                    BALL
 // --------------------------------------------
-interface GetBallFromFrameI {
-	var getBallFromFrameResult : Ball
-}
+//interface GetBallFromFrameI {
+//	var getBallFromFrameResult : Ball
+//}
 
 // This operation works as a function to get 
 // the ball from a frame.
@@ -122,32 +122,32 @@ interface GetBallFromFrameI {
 // @param frame: Frame
 //
 // @return [Ball] The ball object. 
-operation getBallFromFrame(frame: Frame) {
-	requires GetBallFromFrameI
-	
-	// States.
-	initial Initial
-	state Run {}	
-	final Stop
-	
-	// Transitions.
-	transition start {
-		from Initial
-		to Run
-	}
-	transition finish {		
-		from Run
-		to Stop
-		action getBallFromFrameResult = frame.ball
-	}
-}	
+//operation getBallFromFrame(frame: Frame) {
+//	requires GetBallFromFrameI
+//	
+//	// States.
+//	initial Initial
+//	state Run {}	
+//	final Stop
+//	
+//	// Transitions.
+//	transition start {
+//		from Initial
+//		to Run
+//	}
+//	transition finish {		
+//		from Run
+//		to Stop
+//		action getBallFromFrameResult = frame.ball
+//	}
+//}	
 
 // --------------------------------------------
 //                BALL POSITION
 // --------------------------------------------
-interface GetBallPositionFromFrameI {
-	var getBallPositionFromFrameResult : Point
-}
+//interface GetBallPositionFromFrameI {
+//	var getBallPositionFromFrameResult : Point
+//}
 
 // This operation works as a function to get 
 // the ball position from a frame.
@@ -155,32 +155,32 @@ interface GetBallPositionFromFrameI {
 // @param frame: Frame
 //
 // @return [Point] The ball position vector. 
-operation getBallPositionFromFrame(frame: Frame) {
-	requires GetBallPositionFromFrameI
-	
-	// States.
-	initial Initial
-	state Run {}	
-	final Stop
-	
-	// Transitions.
-	transition start {
-		from Initial
-		to Run
-	}
-	transition finish {		
-		from Run
-		to Stop
-		action getBallPositionFromFrameResult = frame.ball.pos
-	}
-}	
+//operation getBallPositionFromFrame(frame: Frame) {
+//	requires GetBallPositionFromFrameI
+//	
+//	// States.
+//	initial Initial
+//	state Run {}	
+//	final Stop
+//	
+//	// Transitions.
+//	transition start {
+//		from Initial
+//		to Run
+//	}
+//	transition finish {		
+//		from Run
+//		to Stop
+//		action getBallPositionFromFrameResult = frame.ball.pos
+//	}
+//}	
 
 // --------------------------------------------
 //                BALL VELOCITY
 // --------------------------------------------
-interface GetBallVelocityFromFrameI {
-	var getBallVelocityFromFrameResult : Point
-}
+//interface GetBallVelocityFromFrameI {
+//	var getBallVelocityFromFrameResult : Point
+//}
 
 // This operation works as a function to get 
 // the ball velocity from a frame.
@@ -188,22 +188,22 @@ interface GetBallVelocityFromFrameI {
 // @param frame: Frame
 //
 // @return [Point] The ball velocity vector. 
-operation getBallVelocityFromFrame(frame: Frame) {
-	requires GetBallVelocityFromFrameI
-	
-	// States.
-	initial Initial
-	state Run {}	
-	final Stop
-	
-	// Transitions.
-	transition start {
-		from Initial
-		to Run
-	}
-	transition finish {		
-		from Run
-		to Stop
-		action getBallVelocityFromFrameResult = frame.ball.vel
-	}
-}	
+//operation getBallVelocityFromFrame(frame: Frame) {
+//	requires GetBallVelocityFromFrameI
+//	
+//	// States.
+//	initial Initial
+//	state Run {}	
+//	final Stop
+//	
+//	// Transitions.
+//	transition start {
+//		from Initial
+//		to Run
+//	}
+//	transition finish {		
+//		from Run
+//		to Stop
+//		action getBallVelocityFromFrameResult = frame.ball.vel
+//	}
+//}	
