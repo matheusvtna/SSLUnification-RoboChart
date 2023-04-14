@@ -1,0 +1,11 @@
+interface IRefereeVAR {
+	event receiveGameEvent: string
+	
+	event sendGameStatus: string
+}
+
+controller RefereeServiceController {
+	uses IRefereeVAR
+	// TODO: Desenvolver VisionSTM.
+	sref stm_ref0 = RefereeSTM
+}

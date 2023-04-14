@@ -1,0 +1,99 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 13-04-2023 23:58:52
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "core_timed_defs.csp"
+include "core_defs.csp"
+include "SSL_VAR.csp"
+include "file_var_defs.csp"
+include "state_timed_defs.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+
+transparent wbisim
+channel r__
+-- generate SSL_VAR
+P_SSL_VAR = let
+	id__ = 0
+	
+	
+	
+		
+	
+within
+	SSL_VAR::O__(id__)
+assert P_SSL_VAR :[deadlock-free]	
+assert P_SSL_VAR;RUN({r__}) :[deadlock-free]
+assert P_SSL_VAR :[deterministic]
+assert P_SSL_VAR :[divergence-free]
+
+-- generate SSL_VAR_visionServiceControllerRef
+P_SSL_VAR_visionServiceControllerRef = let
+	id__ = 0
+	
+	
+	
+		
+within
+	SSL_VAR::visionServiceControllerRef::O__(id__)
+
+assert P_SSL_VAR_visionServiceControllerRef :[deadlock-free]	
+assert P_SSL_VAR_visionServiceControllerRef;RUN({r__}) :[deadlock-free]
+assert P_SSL_VAR_visionServiceControllerRef :[deterministic]
+assert P_SSL_VAR_visionServiceControllerRef :[divergence-free]
+
+-- timed deadlock free
+assert prioritise(P_SSL_VAR_visionServiceControllerRef[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_SSL_VAR_visionServiceControllerRef
+-- generate SSL_VAR_refereeServiceControllerRef
+P_SSL_VAR_refereeServiceControllerRef = let
+	id__ = 0
+	
+	
+	
+		
+within
+	SSL_VAR::refereeServiceControllerRef::O__(id__)
+
+assert P_SSL_VAR_refereeServiceControllerRef :[deadlock-free]	
+assert P_SSL_VAR_refereeServiceControllerRef;RUN({r__}) :[deadlock-free]
+assert P_SSL_VAR_refereeServiceControllerRef :[deterministic]
+assert P_SSL_VAR_refereeServiceControllerRef :[divergence-free]
+
+-- timed deadlock free
+assert prioritise(P_SSL_VAR_refereeServiceControllerRef[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_SSL_VAR_refereeServiceControllerRef
+-- generate SSL_VAR_worldMessageHandlerControllerRef
+P_SSL_VAR_worldMessageHandlerControllerRef = let
+	id__ = 0
+	
+	
+	
+		
+within
+	SSL_VAR::worldMessageHandlerControllerRef::O__(id__)
+
+assert P_SSL_VAR_worldMessageHandlerControllerRef :[deadlock-free]	
+assert P_SSL_VAR_worldMessageHandlerControllerRef;RUN({r__}) :[deadlock-free]
+assert P_SSL_VAR_worldMessageHandlerControllerRef :[deterministic]
+assert P_SSL_VAR_worldMessageHandlerControllerRef :[divergence-free]
+
+-- timed deadlock free
+assert prioritise(P_SSL_VAR_worldMessageHandlerControllerRef[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_SSL_VAR_worldMessageHandlerControllerRef
+-- timed deadlock free
+assert prioritise(P_SSL_VAR[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_SSL_VAR

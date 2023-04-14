@@ -1,0 +1,30 @@
+interface VarRefereeI {
+	event sendGameEvent: string
+}
+
+interface VarVisionI {
+	event sendRawFrame: string
+}
+
+interface WorldMessageHandlerI {
+	event sendGameEventVision: string	
+}
+
+module SSL_VAR {
+	robotic platform VAREnv {
+		uses VarRefereeI 
+		uses VarVisionI	
+	}
+
+	// SSL VAR Module Controllers.
+	cref visionServiceControllerRef = VisionServiceController
+	cref refereeServiceControllerRef = RefereeServiceController 
+	cref worldMessageHandlerControllerRef = WorldMessageHandlerController
+	
+	// Controllers connections.
+	connection VAREnv on sendRawFrame to visionServiceControllerRef on receiveRawFrame ( _async )
+	connection VAREnv on sendGameEvent to refereeServiceControllerRef on receiveGameEvent ( _async )
+
+	connection refereeServiceControllerRef on sendGameStatus to worldMessageHandlerControllerRef on receiveGameStatus ( _async )
+	connection worldMessageHandlerControllerRef on sendGameStatusVision to visionServiceControllerRef on receiveGameStatus ( _async )
+}

@@ -1,0 +1,12 @@
+interface IWorldMessageHandler {
+	event receiveGameStatus: string
+	
+	event sendGameStatusVision: string
+}
+
+// Corresponde a estrutura de troca de mensagens utilizada...
+controller WorldMessageHandlerController {
+	uses IWorldMessageHandler
+	// TODO: Desenvolver VisionSTM.
+	sref stm_ref0 = WorldMessageHandlerSTM
+}

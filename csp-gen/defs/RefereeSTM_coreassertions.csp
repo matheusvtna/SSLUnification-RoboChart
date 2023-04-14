@@ -1,0 +1,30 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 13-04-2023 23:37:18
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_refereeSTM_defs.csp"
+include "core_defs.csp"
+include "RefereeSTM.csp"
+include "state_defs.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+channel r__
+-- generate RefereeSTM
+P_RefereeSTM = let
+	id__ = 0
+	
+	
+	
+within
+	RefereeSTM::O__(
+		id__
+	)
+assert P_RefereeSTM :[deadlock-free]	
+assert P_RefereeSTM;RUN({r__}) :[deadlock-free]
+assert P_RefereeSTM :[deterministic]
+assert P_RefereeSTM :[divergence-free]

@@ -1,0 +1,14 @@
+import frame
+
+interface IVisionVAR {
+	event receiveGameStatus: string
+	event receiveRawFrame: string
+	
+	event setProcessedFrame: Frame
+}
+
+controller VisionServiceController {
+	uses IVisionVAR
+	// TODO: Desenvolver VisionSTM.
+	sref stm_ref0 = VisionSTM
+}

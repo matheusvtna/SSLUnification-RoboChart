@@ -1,0 +1,53 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 13-04-2023 23:55:47
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_visionServiceController.csp"
+
+
+
+-- generate VisionServiceController
+P_VisionServiceController = let
+	id__ = 0
+	
+	
+	
+		
+within
+	VisionServiceController::O__(id__)
+
+assert P_VisionServiceController :[deadlock-free]	
+assert P_VisionServiceController;RUN({r__}) :[deadlock-free]
+assert P_VisionServiceController :[deterministic]
+assert P_VisionServiceController :[divergence-free]
+
+-- generate VisionServiceController_stm_ref0
+P_VisionServiceController_stm_ref0 = let
+	id__ = 0
+	
+	
+	
+within
+	VisionServiceController::stm_ref0::O__(
+		id__
+	)
+assert P_VisionServiceController_stm_ref0 :[deadlock-free]	
+assert P_VisionServiceController_stm_ref0;RUN({r__}) :[deadlock-free]
+assert P_VisionServiceController_stm_ref0 :[deterministic]
+assert P_VisionServiceController_stm_ref0 :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_VisionServiceController_stm_ref0[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_VisionServiceController_stm_ref0
+-- timed deadlock free
+assert prioritise(P_VisionServiceController[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_VisionServiceController
+

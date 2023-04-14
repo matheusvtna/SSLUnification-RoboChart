@@ -1,0 +1,45 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 13-04-2023 23:53:20
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "core_defs.csp"
+include "state_defs.csp"
+include "RefereeServiceController.csp"
+include "file_refereeServiceController_defs.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+channel r__
+-- generate RefereeServiceController
+P_RefereeServiceController = let
+	id__ = 0
+	
+	
+	
+		
+within
+	RefereeServiceController::O__(id__)
+
+assert P_RefereeServiceController :[deadlock-free]	
+assert P_RefereeServiceController;RUN({r__}) :[deadlock-free]
+assert P_RefereeServiceController :[deterministic]
+assert P_RefereeServiceController :[divergence-free]
+
+-- generate RefereeServiceController_stm_ref0
+P_RefereeServiceController_stm_ref0 = let
+	id__ = 0
+	
+	
+	
+within
+	RefereeServiceController::stm_ref0::O__(
+		id__
+	)
+assert P_RefereeServiceController_stm_ref0 :[deadlock-free]	
+assert P_RefereeServiceController_stm_ref0;RUN({r__}) :[deadlock-free]
+assert P_RefereeServiceController_stm_ref0 :[deterministic]
+assert P_RefereeServiceController_stm_ref0 :[divergence-free]

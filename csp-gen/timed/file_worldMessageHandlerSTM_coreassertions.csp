@@ -1,0 +1,33 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 13-04-2023 23:40:49
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_worldMessageHandlerSTM.csp"
+
+-- generate WorldMessageHandlerSTM
+P_WorldMessageHandlerSTM = let
+	id__ = 0
+	
+	
+	
+within
+	WorldMessageHandlerSTM::O__(
+		id__
+	)
+assert P_WorldMessageHandlerSTM :[deadlock-free]	
+assert P_WorldMessageHandlerSTM;RUN({r__}) :[deadlock-free]
+assert P_WorldMessageHandlerSTM :[deterministic]
+assert P_WorldMessageHandlerSTM :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_WorldMessageHandlerSTM[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_WorldMessageHandlerSTM
+
+
+

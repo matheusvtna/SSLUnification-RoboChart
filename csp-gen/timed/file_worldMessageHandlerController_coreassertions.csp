@@ -1,0 +1,53 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 13-04-2023 23:54:59
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_worldMessageHandlerController.csp"
+
+
+
+-- generate WorldMessageHandlerController
+P_WorldMessageHandlerController = let
+	id__ = 0
+	
+	
+	
+		
+within
+	WorldMessageHandlerController::O__(id__)
+
+assert P_WorldMessageHandlerController :[deadlock-free]	
+assert P_WorldMessageHandlerController;RUN({r__}) :[deadlock-free]
+assert P_WorldMessageHandlerController :[deterministic]
+assert P_WorldMessageHandlerController :[divergence-free]
+
+-- generate WorldMessageHandlerController_stm_ref0
+P_WorldMessageHandlerController_stm_ref0 = let
+	id__ = 0
+	
+	
+	
+within
+	WorldMessageHandlerController::stm_ref0::O__(
+		id__
+	)
+assert P_WorldMessageHandlerController_stm_ref0 :[deadlock-free]	
+assert P_WorldMessageHandlerController_stm_ref0;RUN({r__}) :[deadlock-free]
+assert P_WorldMessageHandlerController_stm_ref0 :[deterministic]
+assert P_WorldMessageHandlerController_stm_ref0 :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_WorldMessageHandlerController_stm_ref0[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_WorldMessageHandlerController_stm_ref0
+-- timed deadlock free
+assert prioritise(P_WorldMessageHandlerController[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_WorldMessageHandlerController
+
