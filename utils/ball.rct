@@ -25,18 +25,18 @@ datatype Ball {
 //	requires GetPositionFromBallI
 //	
 //	// States.
-//	initial Initial
+//	initial sInitial
 //	state GetPositionFromBall {}	
-//	final Stop
+//	final sFinal
 //	
 //	// Transitions.
 //	transition start {
-//		from Initial
+//		from sInitial
 //		to GetPositionFromBall
 //	}
 //	transition finish {		
 //		from GetPositionFromBall
-//		to Stop
+//		to sFinal
 //		action getPositionFromBallResult = ball.pos
 //	}
 //}	
@@ -59,18 +59,18 @@ datatype Ball {
 //	requires GetVelocityFromBallI
 //	
 //	// States.
-//	initial Initial
+//	initial sInitial
 //	state GetVelocityFromBall {}	
-//	final Stop
+//	final sFinal
 //	
 //	// Transitions.
 //	transition start {
-//		from Initial
+//		from sInitial
 //		to GetVelocityFromBall
 //	}
 //	transition finish {		
 //		from GetVelocityFromBall
-//		to Stop
+//		to sFinal
 //		action getVelocityFromBallResult = ball.vel
 //	}
 //}	

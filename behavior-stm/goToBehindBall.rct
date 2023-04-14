@@ -1,40 +1,56 @@
 import utils
 import robot
 
+// --------------------------------------------
+//              GO TO BEHIND BALL
+// --------------------------------------------
+interface GoToBehindBallI {
+	goToBehindBall(targetPosition: Point, angleThreshold: real)
+}
+
+// This operation makes robot move to behind the
+// ball. It succeeds when the robot is at the point
+// behind the ball looking to targetPosition.
+//
+// @param targetPosition: Point.
+// @param angleThreshold: real.
+//
+// TODO: Add a FSM output -> makes robot move...
 operation goToBehindBall(targetPosition: Point, angleThreshold: real) {
 	requires AllyIsBehindI
 	requires AllyIsCloseToBallI
+	requires AllyIsPushingBallWithHisBackI
 	requires NodeStatusI
 	
-	// Robot instance.
+	// Entities instances.
 	var robot: Robot	
 	var ball: Ball
-	
+
 	// States.
-	initial Initial
-	state GoToBehindBall {
-		entry AllyIsBehind(robot, ball.pos, targetPosition, angleThreshold); 
-			AllyIsCloseToBall(robot, ball)
+	initial sInitial
+	state sGoToBehindBall {
+		entry AllyIsBehind(robot, ball.pos, targetPosition, angleThreshold); AllyIsCloseToBall(robot, ball); AllyIsPushingBallWithHisBack(robot, ball)
 	}	
-	final Stop
+	final sFinal
 	
 	// Transitions.
 	transition goToBehindBall {
-		from Initial
-		to GoToBehindBall
+		from sInitial
+		to sGoToBehindBall
+		// action moveToBehindBall()
 	}
 	
 	transition success {		
-		from GoToBehindBall
-		to Stop
+		from sGoToBehindBall
+		to sFinal
 		condition (allyIsBehindResult /\ allyIsCloseToBallResult) 
 		action nodeStatus = NODE_STATUS::DONE
 	}
 	
 	transition fail {		
-		from GoToBehindBall
-		to Stop
-		condition allyIsPushingBallWithHisBack(robot, ball)
+		from sGoToBehindBall
+		to sFinal
+		condition allyIsPushingBallWithHisBackResult
 		action nodeStatus = NODE_STATUS::FAILED
 	}
 }	

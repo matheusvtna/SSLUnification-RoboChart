@@ -1,6 +1,21 @@
 import utils
 
+// --------------------------------------------
+//                 CARRY BALL
+// --------------------------------------------
+interface CarryBallI {
+	carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real)
+}
 
+// This operation makes robot move to a target position
+// by carrying the ball. It succeeds when the ball is
+// at the target position and it fails if the robot
+// loses the ball on carry.
+//
+// @param ball: Ball.
+// @param angleThreshold: real.
+//
+// TODO: Add a FSM output -> makes robot move...
 operation carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real) {
 	requires GetDistanceBetweenTwoPointsI
 	requires AllyHasBallI
@@ -12,29 +27,29 @@ operation carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real
 	var distance: nat
 	
 	// States.
-	initial Initial
+	initial sInitial
 	state GetDistanceBetweenBallAndTarget {
 		entry GetDistanceBetweenTwoPoints(ballPosition, targetPosition); AllyHasBall(robot, ball)
 		exit distance = getDistanceBetweenTwoPointsResult
 	}
-	final Stop
+	final sFinal
 	
 	// Transitions.
 	transition start {
-		from Initial
+		from sInitial
 		to GetDistanceBetweenBallAndTarget
 	}
 	
 	transition success {		
 		from GetDistanceBetweenBallAndTarget
-		to Stop
+		to sFinal
 		condition getDistanceBetweenTwoPointsResult < distanceThreshold
 		action nodeStatus = NODE_STATUS::DONE
 	}
 	
 	transition fail {		
 		from GetDistanceBetweenBallAndTarget
-		to Stop
+		to sFinal
 		condition not allyHasBallResult
 		action nodeStatus = NODE_STATUS::FAILED
 	}

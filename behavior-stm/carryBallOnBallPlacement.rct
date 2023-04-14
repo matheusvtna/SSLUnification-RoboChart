@@ -1,30 +1,25 @@
-import utils
-import point 
+import goToBehindBall
+import approachBall
+import carryBall
+import moveAwayFromPosition
 
-// TODO: Para cada interface, adicionar o contexto de cada operação para evitar parametros.
-interface CarryBallI {
-	carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real)
-}
+// --------------------------------------------
+//         CARRY BALL ON BALL PLACEMENT
+// --------------------------------------------
 
-interface GoToBehindBallI {
-	goToBehindBall(targetPosition: Point, angleThreshold: real)
-}
-
-interface ApproachBallI {
-	approachBall(ball: Ball, angleThreshold: real)
-}
-
-interface MoveAwayFromPositionI {
-	moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceThreshold: real)
-}
-
-operation carryBallOnBallPlacement (frame: Frame
-, targetPosition: Point
-) {
-	requires CarryBallI
+// This operation makes the robot execute the
+// Ball Placement procedure by carrying the ball.
+//
+// @param frame: Frame.
+// @param targetPosition: Point.
+//
+// TODO: Add a FSM output -> makes robot move...
+operation carryBallOnBallPlacement (frame: Frame, targetPosition: Point) {
 	requires GoToBehindBallI
 	requires ApproachBallI
+	requires CarryBallI
 	requires MoveAwayFromPositionI
+	
 	requires GetDistanceBetweenTwoPointsI
 	requires NodeStatusI
 	
@@ -40,86 +35,84 @@ operation carryBallOnBallPlacement (frame: Frame
 	const TIME_TO_PLACE_BALL_IN_SECONDS: nat = 30
 
 	// States.
-	initial Initial
+	initial sInitial
 	state GoToBehindBall {
 		entry nodeStatus = NODE_STATUS::RUNNING; goToBehindBall(targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
 	}
-	state GiveSpaceToGetBall {
+	state sGiveSpaceToGetBall {
 		entry nodeStatus = NODE_STATUS::RUNNING; moveAwayFromPosition(frame, ball.pos, DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED)
 	}
-	state ApproachBall {
+	state sApproachBall {
 		entry nodeStatus = NODE_STATUS::RUNNING; approachBall(ball, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
 	}
-	state PlaceBall {
+	state sPlaceBall {
 		entry nodeStatus = NODE_STATUS::RUNNING; carryBall(frame, targetPosition, DIST_THRESHOLD_BALL_TO_TARGET)
 	}
-	state MoveAwayFromBall {
-		entry nodeStatus = NODE_STATUS::RUNNING; moveAwayFromPosition(frame, targetPosition, DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH); 
-			GetDistanceBetweenTwoPoints(robot.position, ball.pos)
+	state sMoveAwayFromBall {
+		entry nodeStatus = NODE_STATUS::RUNNING; moveAwayFromPosition(frame, targetPosition, DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH); GetDistanceBetweenTwoPoints(robot.position, ball.pos)
 	}
-	final Final
-
-	// Transitions.
-	//
-	// SUCCESS PATHS.
+	final sFinal
+	
+	// SUccess Transitions.
 	transition AdjustToCarryBall {
-		from Initial
-		to GoToBehindBall
-	}
-	transition AvoidBall {
-		from GoToBehindBall
-		to GiveSpaceToGetBall
-		condition nodeStatus == NODE_STATUS::FAILED
-	}
+		from sInitial
+		to sGoToBehindBall
+	}	
 	transition TryGoToBehindBallAgain {
-		from GiveSpaceToGetBall
-		to GoToBehindBall
+		from sGiveSpaceToGetBall
+		to sGoToBehindBall
 		condition nodeStatus == NODE_STATUS::DONE
 	}
 	transition GetBallControl {
-		from GoToBehindBall
-		to ApproachBall
+		from sGoToBehindBall
+		to sApproachBall
 		condition nodeStatus == NODE_STATUS::DONE
 	}
 	transition PlaceBallInPosition {
-		from ApproachBall
-		to PlaceBall
+		from sApproachBall
+		to sPlaceBall
 		condition nodeStatus == NODE_STATUS::DONE
 	}
 	transition MoveAway {
-		from PlaceBall
-		to MoveAwayFromBall
+		from sPlaceBall
+		to sMoveAwayFromBall
 		condition nodeStatus == NODE_STATUS::DONE
 	}
 	transition Finish {
-		from MoveAwayFromBall
-		to Final
+		from sMoveAwayFromBall
+		to sFinal
 		condition nodeStatus == NODE_STATUS::DONE
 	}
-	// FAILURE PATHS.
+
+	// Failure Transitions.
+	transition AvoidBall {
+		from sGoToBehindBall
+		to sGiveSpaceToGetBall
+		condition nodeStatus == NODE_STATUS::FAILED
+	}
 	transition ReadjustToCarryBall {
-		from ApproachBall
-		to GoToBehindBall
+		from sApproachBall
+		to sGoToBehindBall
 		condition nodeStatus == NODE_STATUS::FAILED
 	}
 	transition LostBallOnCarry {
-		from PlaceBall
-		to GoToBehindBall
+		from sPlaceBall
+		to sGoToBehindBall
 		condition nodeStatus == NODE_STATUS::FAILED
 	}
 	transition FinishWithFailOnMoveAway {
-		from MoveAwayFromBall
-		to Final
+		from sMoveAwayFromBall
+		to sFinal
 		condition nodeStatus == NODE_STATUS::FAILED
 	}
 	transition FinishWithFailOnAvoidBall {
-		from GiveSpaceToGetBall
-		to Final
+		from sGiveSpaceToGetBall
+		to sFinal
 		condition nodeStatus == NODE_STATUS::FAILED
 	}
 	transition BallIsOutOfPosition {
-		from MoveAwayFromBall
-		to GoToBehindBall
+		from sMoveAwayFromBall
+		to sGoToBehindBall
 		condition getDistanceBetweenTwoPointsResult > DIST_THRESHOLD_BALL_TO_TARGET
 	}
 }

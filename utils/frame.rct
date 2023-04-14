@@ -26,18 +26,18 @@ datatype Frame {
 //	requires GetRobotFromFrameI
 //	
 //	// States.
-//	initial Initial
+//	initial sInitial
 //	state Run {}	
-//	final Stop
+//	final sFinal
 //	
 //	// Transitions.
 //	transition start {
-//		from Initial
+//		from sInitial
 //		to Run
 //	}
 //	transition finish {		
 //		from Run
-//		to Stop
+//		to sFinal
 //		action getRobotFromFrameResult = frame.robot
 //	}
 //}	
@@ -60,18 +60,18 @@ datatype Frame {
 //	requires GetRobotPositionFromFrameI
 //	
 //	// States.
-//	initial Initial
+//	initial sInitial
 //	state Run {}	
-//	final Stop
+//	final sFinal
 //	
 //	// Transitions.
 //	transition start {
-//		from Initial
+//		from sInitial
 //		to Run
 //	}
 //	transition finish {		
 //		from Run
-//		to Stop
+//		to sFinal
 //		action getRobotPositionFromFrameResult = frame.robot.position
 //	}
 //}	
@@ -93,18 +93,18 @@ datatype Frame {
 //	requires GetRobotAngleFromFrameI
 //	
 //	// States.
-//	initial Initial
+//	initial sInitial
 //	state Run {}	
-//	final Stop
+//	final sFinal
 //	
 //	// Transitions.
 //	transition start {
-//		from Initial
+//		from sInitial
 //		to Run
 //	}
 //	transition finish {		
 //		from Run
-//		to Stop
+//		to sFinal
 //		action getRobotAngleFromFrameResult = frame.robot.angle
 //	}
 //}	
@@ -126,18 +126,18 @@ datatype Frame {
 //	requires GetBallFromFrameI
 //	
 //	// States.
-//	initial Initial
+//	initial sInitial
 //	state Run {}	
-//	final Stop
+//	final sFinal
 //	
 //	// Transitions.
 //	transition start {
-//		from Initial
+//		from sInitial
 //		to Run
 //	}
 //	transition finish {		
 //		from Run
-//		to Stop
+//		to sFinal
 //		action getBallFromFrameResult = frame.ball
 //	}
 //}	
@@ -159,18 +159,18 @@ datatype Frame {
 //	requires GetBallPositionFromFrameI
 //	
 //	// States.
-//	initial Initial
+//	initial sInitial
 //	state Run {}	
-//	final Stop
+//	final sFinal
 //	
 //	// Transitions.
 //	transition start {
-//		from Initial
+//		from sInitial
 //		to Run
 //	}
 //	transition finish {		
 //		from Run
-//		to Stop
+//		to sFinal
 //		action getBallPositionFromFrameResult = frame.ball.pos
 //	}
 //}	
@@ -192,18 +192,18 @@ datatype Frame {
 //	requires GetBallVelocityFromFrameI
 //	
 //	// States.
-//	initial Initial
+//	initial sInitial
 //	state Run {}	
-//	final Stop
+//	final sFinal
 //	
 //	// Transitions.
 //	transition start {
-//		from Initial
+//		from sInitial
 //		to Run
 //	}
 //	transition finish {		
 //		from Run
-//		to Stop
+//		to sFinal
 //		action getBallVelocityFromFrameResult = frame.ball.vel
 //	}
 //}	

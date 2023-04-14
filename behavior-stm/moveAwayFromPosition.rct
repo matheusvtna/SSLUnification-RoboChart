@@ -1,36 +1,54 @@
 import utils
-import point
 
+// --------------------------------------------
+//           MOVE AWAY FROM POSITION
+// --------------------------------------------
+interface MoveAwayFromPositionI {
+	moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceThreshold: real)
+}
+
+// This operation makes robot move away to
+// a dangerous position, which can be any point
+// in the field. It succeeds when the robot
+// is at a certain distance from this point 
+// and fails if the robot takes too long to
+// move away from position.
+//
+// @param frame: Frame.
+// @param dangerousPosition: Point.
+// @param distanceThreshold: real.
+//
+// TODO: Add a FSM output -> makes robot move...
 operation moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceThreshold: real) {
 	requires NodeStatusI
 	requires GetDistanceBetweenTwoPointsI
 	
-	var robotPosition: Point 
+	var robotPosition: Point  
 	const TIME_LIMIT_TO_BEHAVE: nat = 30
 		
 	// States.
-	initial Initial
+	initial sInitial
 	state MoveAway {
 		entry robotPosition = frame.robot.position; GetDistanceBetweenTwoPoints(robotPosition, dangerousPosition)
 	}	
-	final Stop
+	final sFinal
 	
 	// Transitions.
 	transition start {
-		from Initial
+		from sInitial
 		to MoveAway
 	}
 	
 	transition success {		
 		from MoveAway
-		to Stop
+		to sFinal
 		condition getDistanceBetweenTwoPointsResult >= distanceThreshold
 		action nodeStatus = NODE_STATUS::DONE
 	}
 	
 	transition fail {		
 		from MoveAway
-		to Stop
+		to sFinal
 		// Como remover esse warning? O que isso significa? 
 		condition sinceEntry(MoveAway) > TIME_LIMIT_TO_BEHAVE /\ getDistanceBetweenTwoPointsResult < distanceThreshold
 		action nodeStatus = NODE_STATUS::FAILED

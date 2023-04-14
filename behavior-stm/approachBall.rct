@@ -1,6 +1,22 @@
 import utils
 import robot
 
+// --------------------------------------------
+//              APPROACH BALL
+// --------------------------------------------
+interface ApproachBallI {
+	approachBall(ball: Ball, angleThreshold: real)
+}
+
+// This operation makes robot move to ball smoothly.
+// It succeeds when the robot touches the ball and
+// fails when the robot is not behind the ball or
+// close to it.
+//
+// @param ball: Ball.
+// @param angleThreshold: real.
+//
+// TODO: Add a FSM output -> makes robot move...
 operation approachBall(ball: Ball, angleThreshold: real) {
 	requires NodeStatusI
 	requires AllyIsBehindI
@@ -13,28 +29,28 @@ operation approachBall(ball: Ball, angleThreshold: real) {
 	var target: Point
 	
 	// States.
-	initial Initial
+	initial sInitial
 	state Approach {
 		entry AllyIsBehind(robot, ball.pos, target, angleThreshold); AllyIsCloseToBall(robot, ball); AllyHasBall(robot, ball)
 	}	
-	final Stop
+	final sFinal
 	
 	// Transitions.
 	transition start {
-		from Initial
+		from sInitial
 		to Approach
 	}
 	
 	transition success {		
 		from Approach
-		to Stop
+		to sFinal
 		condition allyHasBallResult
 		action nodeStatus = NODE_STATUS::DONE
 	}
 	
 	transition fail {
 		from Approach
-		to Stop
+		to sFinal
 		condition (not allyIsBehindResult \/ not allyIsCloseToBallResult)
 		action nodeStatus = NODE_STATUS::FAILED
 	}

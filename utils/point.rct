@@ -1,3 +1,7 @@
+// ============================================
+// =                DATATYPES                 =
+// ============================================
+//
 // Datatype to represent a Point in SSL Environment.
 // 
 // A Point contains a `x` and a `y` coordinates.
@@ -7,6 +11,10 @@ datatype Point {
 	y: real
 }
 
+// ============================================
+// =               OPERATIONS                 =
+// ============================================
+//
 // --------------------------------------------
 //                 FROM POLAR
 // --------------------------------------------
@@ -28,18 +36,13 @@ operation FromPolar(length: real, angle: real) {
 	var vec: Point 
 	
 	// States.
-	initial Initial
-	state FromPolar {}	
-	final Stop
+	initial sInitial
+	final sFinal
 	
 	// Transitions.
-	transition start {
-		from Initial
-		to FromPolar
-	}
-	transition finish {		
-		from FromPolar
-		to Stop
+	transition calculate {
+		from sInitial		
+		to sFinal
 		// TODO: FIX COS AND SIN FUNCTIONS.
 		action FromPolarResult.x = cos(angle) * length; FromPolarResult.y = sin(angle) * length
 	}
@@ -64,18 +67,13 @@ operation GetDistanceBetweenTwoPoints(source: Point, target: Point) {
 	requires GetDistanceBetweenTwoPointsI
 		
 	// States.
-	initial Initial
-	state GetDistanceBetweenTwoPoints {}	
-	final Stop
+	initial sInitial
+	final sFinal
 	
 	// Transitions.
-	transition start {
-		from Initial
-		to GetDistanceBetweenTwoPoints
-	}
-	transition finish {		
-		from GetDistanceBetweenTwoPoints
-		to Stop
+	transition calculate {
+		from sInitial		
+		to sFinal
 		// TODO: CREATE (OR FIND HOW TO USE) SQRT FUNCTION.
 		action getDistanceBetweenTwoPointsResult = sqrt((source.x - target.x)^2 + (source.y - target.y)^2)
 	}
@@ -98,18 +96,13 @@ operation getNormOfVector(vec: Point) {
 	requires GetNormOfVectorI
 		
 	// States.
-	initial Initial
-	state GetNormOfVector {}	
-	final Stop
+	initial sInitial
+	final sFinal
 	
 	// Transitions.
-	transition start {
-		from Initial
-		to GetNormOfVector
-	}
-	transition finish {		
-		from GetNormOfVector
-		to Stop
+	transition calculate {
+		from sInitial
+		to sFinal
 		// TODO: CREATE (OR FIND HOW TO USE) SQRT FUNCTION.
 		action getNormOfVectorResult = sqrt(vec.x^2 + vec.y^2)
 	}
@@ -137,28 +130,15 @@ operation CreateUnitVector(vec: Point) {
 	var norm: nat
 				
 	// States.
-	initial Initial
-	state GetNormOfVector {
-		entry getNormOfVector(vec)
-	}	
-	state CreateUnitVector {}
-	final Stop
+	initial sInitial	
+	final sFinal
 	
 	// Transitions.
-	transition start {
-		from Initial
-		to GetNormOfVector
-	}
-	transition calculateNorm {		
-		from GetNormOfVector
-		to CreateUnitVector
-		action norm = getNormOfVectorResult
-	}
-	transition finish {
-		from CreateUnitVector
-		to Stop
+	transition create {
+		from sInitial				
+		to sFinal
 		// TODO: action if (norm > 0) then createUnitVectorResult = Point(vec.x/norm, vec.y/norm) else createUnitVectorResult = Point(0,0)
-		action createUnitVectorResult.x = vec.x/norm; createUnitVectorResult.y = vec.y/norm
+		action getNormOfVector(vec); norm = getNormOfVectorResult; createUnitVectorResult.x = vec.x/norm; createUnitVectorResult.y = vec.y/norm
 	}
 }
 
@@ -181,18 +161,13 @@ operation CreateVector(source: Point, target: Point) {
 	requires CreateVectorI
 				
 	// States.
-	initial Initial
-	state CreateUnitVector {}
-	final Stop
+	initial sInitial
+	final sFinal
 	
 	// Transitions.
-	transition start {
-		from Initial
-		to CreateUnitVector
-	}
-	transition finish {
-		from CreateUnitVector
-		to Stop
+	transition create {
+		from sInitial
+		to sFinal
 		action createVectorResult.x = target.x - source.x; createVectorResult.y = target.y - source.y
 	}
 }
@@ -217,18 +192,13 @@ operation dot(source: Point, target: Point) {
 	requires DotI
 				
 	// States.
-	initial Initial
-	state Dot {}
-	final Stop
+	initial sInitial
+	final sFinal
 	
 	// Transitions.
-	transition start {
-		from Initial
-		to Dot
-	}
-	transition finish {
-		from Dot
-		to Stop
+	transition calculate {
+		from sInitial		
+		to sFinal
 		action dotResult = source.x*target.x + source.y*target.y
 	}
 }
@@ -255,18 +225,13 @@ operation cross(source: Point, target: Point) {
 	requires CrossI
 				
 	// States.
-	initial Initial
-	state Cross {}
-	final Stop
+	initial sInitial
+	final sFinal
 	
 	// Transitions.
-	transition start {
-		from Initial
-		to Cross
-	}
-	transition finish {
-		from Cross
-		to Stop
+	transition calculate {
+		from sInitial
+		to sFinal
 		action crossResult = (source.x * target.y) - (source.y * target.x)
 	}
 }
@@ -292,21 +257,14 @@ operation AngleBetweenVectors(source: Point, target: Point) {
 	requires AngleBetweenVectorsI
 			
 	// States.
-	initial Initial
-	state DotAndCross {
-		entry dot(source, target); cross(source, target)
-	}
-	final Stop
+	initial sInitial	
+	final sFinal
 	
 	// Transitions.
 	transition start {
-		from Initial
-		to DotAndCross
-	}
-	transition finish {
-		from DotAndCross
-		to Stop
+		from sInitial		
+		to sFinal
 		// TODO: CREATE (OR FIND HOW TO USE) ATAN2 FUNCTION.
-		action atan2(crossResult, dotResult)
+		action dot(source, target); cross(source, target); atan2(crossResult, dotResult)
 	}
 }

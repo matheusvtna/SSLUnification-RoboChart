@@ -3,6 +3,7 @@ import ball
 // ============================================
 // =                DATATYPES                 =
 // ============================================
+//
 // Datatype to represent a RobotFeedback in SSL Environment.
 // 
 // A RobotFeedback contains informations of a Robot. It contains
@@ -82,12 +83,9 @@ interface AllyIsBehindI {
 // looking to a target.
 //
 // @param robot: Robot.
-// @param point: Point which robot may be behind.
-// @param target: Target point which robot must be
-// 		  looking at when robot is behind the point.
-// @param angleThreshold: Max angular difference
-// 		  between robotPoint and pointTarget to
-//        be considered aligned.
+// @param point: Point.
+// @param target: Point.
+// @param angleThreshold: real.
 //
 // @return [boolean] A value which indicates if
 // the robot is behind the point looking to target.
@@ -153,12 +151,12 @@ interface AllyHasBallI {
 operation AllyHasBall(robot: Robot, ball: Ball) {
 	requires AllyHasBallI
 	
-	initial Initial
-	final stop
+	initial sInitial
+	final sFinal
 	
 	transition finish {
-		from Initial
-		to stop
+		from sInitial
+		to sFinal
 		action allyHasBallResult = true
 	}
 }
