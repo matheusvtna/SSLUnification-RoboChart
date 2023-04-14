@@ -318,17 +318,9 @@ operation AllyIsPushingBallWithHisBack(robot: Robot, ball: Ball) {
 		from sInitial
 		to sFinal
 		// TODO: Como é o NOT em RoboChart?
-		action AllyIsLookingToBall(robot, ball) ; AllyIsCloseToBall(robot, ball); allyIsPushingBallWithHisBackResult = !allyIsLookingToBallResult /\ allyIsCloseToBallResult
+		action AllyIsLookingToBall(robot, ball) ; AllyIsCloseToBall(robot, ball); allyIsPushingBallWithHisBackResult = (not allyIsLookingToBallResult) /\ allyIsCloseToBallResult
 	}
 }
-
-// ============================================
-// =                CONSTANTS                 =
-// ============================================
-// --------------------------------------------
-//               ROBOT RADIUS
-// --------------------------------------------
-const ROBOT_RADIUS: real = 90
 
 
 // ============================================
