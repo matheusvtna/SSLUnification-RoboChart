@@ -26,7 +26,7 @@ operation cos(angle: real) {
 	}
 	final sFinal
 
-	transition calculates {
+	transition calculate {
 		from sInitial
 		to sSeries
 	}
@@ -58,11 +58,11 @@ operation sin(angle: real) {
 
 	initial sInitial
 	state sSeries {
-		entry term = term * ((-1.0) * angle * angle / ((2.0 * count) * (2.0 * count + 1.0))); seno = seno + term; count = count + 1
+		entry term = term * (-1.0) * angle * angle / ((2.0 * count) * (2.0 * count + 1.0)); seno = seno + term; count = count + 1
 	}
 	final sFinal
 
-	transition calculates {
+	transition calculate {
 		from sInitial
 		to sSeries
 	}
@@ -143,5 +143,67 @@ operation sqrt(n: real) {
 		to sFinal
 		condition (x1 - x0) * (x1 - x0) < precision * precision
 		action sqrtResult = x1
+	}
+}
+
+interface atanI {
+	var atanResult: real
+}
+
+operation atan(angle: real) {
+	requires atanI
+
+	var number_of_terms: int = 100000
+
+	var count: int = 0
+	var res: real = 0
+	var offset: real = 0
+
+	initial sInitial
+	state sLoop {
+		entry offset = ((angle^(2 * count + 1)) / (2 * count + 1)); if (count % 2 == 0) then res = res + offset else res = res - offset
+	}
+	final sFinal
+
+	transition calculate {
+		from sInitial
+		to sLoop
+	}
+	transition finish {
+		from sLoop
+		to sFinal
+		condition count >= number_of_terms
+		action atanResult = res
+	}
+} 
+
+interface atan2I {
+	var atan2Result: real
+}
+
+operation atan2(y: real, x: real) {
+	requires atanI
+	requires atan2I
+
+	var number_of_terms: int = 100000
+
+	var count: int = 0
+	var res: real = 0
+	var offset: real = 0
+
+	var PI: real = 3.14159
+
+	initial sInitial	
+	final sFinal
+
+	transition finish {
+		from sInitial
+		to sFinal
+		action atan(y/x); if(x > 0) then atan2Result = atanResult
+						else if(y >= 0 /\ x < 0) then atan2Result = atanResult + PI
+						else if(y < 0 /\ x < 0) then atan2Result = atanResult - PI
+						else if(y > 0 /\ x == 0) then atan2Result = PI/2
+						else if(y < 0 /\ x == 0) then atan2Result = -PI/2
+						else atan2Result = 0
 	}
 }

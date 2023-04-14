@@ -32,6 +32,8 @@ interface FromPolarI {
 // length and rotated with the respective angle. 
 operation FromPolar(length: real, angle: real) {
 	requires FromPolarI
+	requires cosI
+	requires sinI
 	
 	var vec: Point 
 	
@@ -43,8 +45,7 @@ operation FromPolar(length: real, angle: real) {
 	transition calculate {
 		from sInitial		
 		to sFinal
-		// TODO: FIX COS AND SIN FUNCTIONS.
-		action FromPolarResult.x = cos(angle) * length; FromPolarResult.y = sin(angle) * length
+		action cos(angle); sin(angle); FromPolarResult.x = cosResult * length; FromPolarResult.y = sinResult * length
 	}
 }	
 
@@ -52,7 +53,7 @@ operation FromPolar(length: real, angle: real) {
 //       GET DISTANCE BETWEEN TWO POINTS
 // --------------------------------------------
 interface GetDistanceBetweenTwoPointsI {
-	var getDistanceBetweenTwoPointsResult : nat
+	var getDistanceBetweenTwoPointsResult : real
 }
 
 // This operation works as a function to calculates
@@ -61,11 +62,12 @@ interface GetDistanceBetweenTwoPointsI {
 // @param source: Point
 // @param target: Point
 //
-// @return [nat] The distance between source and 
+// @return [real] The distance between source and 
 // target points. 
 operation GetDistanceBetweenTwoPoints(source: Point, target: Point) {
 	requires GetDistanceBetweenTwoPointsI
-		
+	requires sqrtI	
+
 	// States.
 	initial sInitial
 	final sFinal
@@ -74,8 +76,7 @@ operation GetDistanceBetweenTwoPoints(source: Point, target: Point) {
 	transition calculate {
 		from sInitial		
 		to sFinal
-		// TODO: CREATE (OR FIND HOW TO USE) SQRT FUNCTION.
-		action getDistanceBetweenTwoPointsResult = sqrt((source.x - target.x)^2 + (source.y - target.y)^2)
+		action sqrt((source.x - target.x)^2 + (source.y - target.y)^2); getDistanceBetweenTwoPointsResult = sqrtResult
 	}
 }
 
@@ -103,8 +104,7 @@ operation getNormOfVector(vec: Point) {
 	transition calculate {
 		from sInitial
 		to sFinal
-		// TODO: CREATE (OR FIND HOW TO USE) SQRT FUNCTION.
-		action getNormOfVectorResult = sqrt(vec.x^2 + vec.y^2)
+		action sqrt(vec.x^2 + vec.y^2); getNormOfVectorResult = sqrtResult
 	}
 }		
 
@@ -264,7 +264,6 @@ operation AngleBetweenVectors(source: Point, target: Point) {
 	transition start {
 		from sInitial		
 		to sFinal
-		// TODO: CREATE (OR FIND HOW TO USE) ATAN2 FUNCTION.
 		action dot(source, target); cross(source, target); atan2(crossResult, dotResult)
 	}
 }
