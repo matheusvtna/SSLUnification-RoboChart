@@ -4307,7 +4307,7 @@
               <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@containerMappings[name='ActionsID']/@style"/>
             </ownedStyle>
             <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@containerMappings[name='ActionsID']"/>
-            <ownedElements xmi:type="diagram:DNodeListElement" uid="_uRiYA3zyEe2jNavmwUdSkQ" name="entry robot = getBall(frame); robotPosition = robot.pos; robotAngle = robot.angle; targetPosition = getTargetPosition(frame); targetAngle = getTargetAngle(frame); distance = angleBetween(robotPosition, targetPosition); angleDiff = smallestAngleDiff(robotAngle, targetAngle); move(linearVelocity, angularVelocity)">
+            <ownedElements xmi:type="diagram:DNodeListElement" uid="_uRiYA3zyEe2jNavmwUdSkQ" name="entry robot = getBall(frame); robotPosition = robot.position; robotAngle = robot.angle; targetPosition = getTargetPosition(frame); targetAngle = getTargetAngle(frame); distance = angleBetween(robotPosition, targetPosition); angleDiff = smallestAngleDiff(robotAngle, targetAngle); move(linearVelocity, angularVelocity)">
               <target xmi:type="robochart:EntryAction" href="behavior-stm/goToPointAndStop.rct#//@machines.0/@nodes.1/@actions.0"/>
               <semanticElements xmi:type="robochart:EntryAction" href="behavior-stm/goToPointAndStop.rct#//@machines.0/@nodes.1/@actions.0"/>
               <ownedStyle xmi:type="diagram:Square" uid="_uRi_EHzyEe2jNavmwUdSkQ" labelSize="10" showIcon="false" labelAlignment="LEFT" labelPosition="node" color="255,255,255">
@@ -10408,7 +10408,7 @@
       </ownedStyle>
       <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@edgeMappings[name='TransitionID']"/>
     </ownedDiagramElements>
-    <ownedDiagramElements xmi:type="diagram:DEdge" uid="__neOQNmmEe2ajtrQbnBHVA" name="/getPositionFromRobotResult = robot.pos" sourceNode="__kJ0gNmmEe2ajtrQbnBHVA" targetNode="__kRJQdmmEe2ajtrQbnBHVA">
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="__neOQNmmEe2ajtrQbnBHVA" name="/getPositionFromRobotResult = robot.position" sourceNode="__kJ0gNmmEe2ajtrQbnBHVA" targetNode="__kRJQdmmEe2ajtrQbnBHVA">
       <target xmi:type="robochart:Transition" href="utils/robot.rct#//@operations.1/@transitions.1"/>
       <semanticElements xmi:type="robochart:Transition" href="utils/robot.rct#//@operations.1/@transitions.1"/>
       <ownedStyle xmi:type="diagram:EdgeStyle" uid="__neOQdmmEe2ajtrQbnBHVA" size="2" routingStyle="manhattan">
@@ -10589,7 +10589,7 @@
           </ownedStyle>
           <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@containerMappings[name='RoboticPlatformDefID']/@subNodeMappings[name='RequiredID']"/>
         </ownedElements>
-        <ownedElements xmi:type="diagram:DNodeListElement" uid="_boPl19mxEe2ajtrQbnBHVA" name="robotPosition: Point = robot.pos">
+        <ownedElements xmi:type="diagram:DNodeListElement" uid="_boPl19mxEe2ajtrQbnBHVA" name="robotPosition: Point = robot.position">
           <target xmi:type="robochart:VariableList" href="utils/robot.rct#//@operations.7/@variableList.0"/>
           <semanticElements xmi:type="robochart:VariableList" href="utils/robot.rct#//@operations.7/@variableList.0"/>
           <ownedStyle xmi:type="diagram:Square" uid="_boQM4NmxEe2ajtrQbnBHVA" labelSize="10" iconPath="/circus.robocalc.robochart.graphical/icons/variable.png" labelAlignment="LEFT" labelPosition="node">
@@ -10782,7 +10782,7 @@
           </ownedStyle>
           <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@containerMappings[name='InterfaceID']/@subNodeMappings[name='VariableID']"/>
         </ownedElements>
-        <ownedElements xmi:type="diagram:DNodeListElement" uid="_Amd6PNm0Ee2ajtrQbnBHVA" name="robotCenter: Point = robot.pos">
+        <ownedElements xmi:type="diagram:DNodeListElement" uid="_Amd6PNm0Ee2ajtrQbnBHVA" name="robotCenter: Point = robot.position">
           <target xmi:type="robochart:VariableList" href="utils/robot.rct#//@operations.8/@variableList.1"/>
           <semanticElements xmi:type="robochart:VariableList" href="utils/robot.rct#//@operations.8/@variableList.1"/>
           <ownedStyle xmi:type="diagram:Square" uid="_AmehQNm0Ee2ajtrQbnBHVA" labelSize="10" iconPath="/circus.robocalc.robochart.graphical/icons/variable.png" labelAlignment="LEFT" labelPosition="node">
@@ -10969,7 +10969,7 @@
         </ownedDiagramElements>
       </ownedDiagramElements>
     </ownedDiagramElements>
-    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_6GzdNNm1Ee2ajtrQbnBHVA" name="/robotFront = fromPolarResult; robotCenterToFrontUnitVector = createUnitVectorResult" sourceNode="_AmfvZNm0Ee2ajtrQbnBHVA" targetNode="_AmfIUNm0Ee2ajtrQbnBHVA">
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_6GzdNNm1Ee2ajtrQbnBHVA" name="/robotFront = FromPolarResult; robotCenterToFrontUnitVector = createUnitVectorResult" sourceNode="_AmfvZNm0Ee2ajtrQbnBHVA" targetNode="_AmfIUNm0Ee2ajtrQbnBHVA">
       <target xmi:type="robochart:Transition" href="utils/robot.rct#//@operations.8/@transitions.0"/>
       <semanticElements xmi:type="robochart:Transition" href="utils/robot.rct#//@operations.8/@transitions.0"/>
       <ownedStyle xmi:type="diagram:EdgeStyle" uid="_6GzdNdm1Ee2ajtrQbnBHVA" size="2" routingStyle="manhattan">

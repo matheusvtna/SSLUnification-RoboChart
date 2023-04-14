@@ -1,4 +1,8 @@
 import ball
+
+// ============================================
+// =                DATATYPES                 =
+// ============================================
 // Datatype to represent a RobotFeedback in SSL Environment.
 // 
 // A RobotFeedback contains informations of a Robot. It contains
@@ -20,42 +24,319 @@ datatype RobotFeedback {
 // contains physical informations of the robot
 datatype Robot {
 	id: int
-	pos: Point
+	position: Point
 	vel: Point
 	angle: real
 	feedback: RobotFeedback
 }
 
+// ============================================
+// =                FSM UTILS                 =
+// ============================================
+//
 // --------------------------------------------
-//               ROBOT RADIUS
+//           ROBOT HAS BALL CONTACT
 // --------------------------------------------
-interface GetRobotRadiusI {
-	var robotRadius: int	
+interface RobotHasBallContactI {
+	var robotHasBallContactResult : boolean
 }
 
-// This operation works as a function to get
-// the radius of a robot
+// This operation works as a function to check 
+// whether the current robot has ball contact.
 //
-// @return [int] The robot radius
-operation GetRobotRadius() {
-	requires GetRobotRadiusI
+// @param robot: Robot
+//
+// @return [boolean] A value which indicates if
+// the robot has ball contact or not. 
+operation robotHasBallContact(robot: Robot) {
+	requires RobotHasBallContactI
 	
-	// States
-	initial Initial
-	final Stop
+	// States.
+	initial sInitial
+	state sRobotHasBallContact {}	
+	final sFinal
+	
+	// Transitions.
+	transition start {
+		from sInitial
+		to sRobotHasBallContact
+	}
+	transition finish {		
+		from sRobotHasBallContact
+		to sFinal
+		action robotHasBallContactResult = robot.feedback.ir
+	}
+}	
+
+// FSM Utils
+
+// --------------------------------------------
+//   ROBOT IS BEHIND A POINT LOOKING TO TARGET
+// --------------------------------------------
+interface AllyIsBehindI {
+	var allyIsBehindResult: boolean
+}
+
+// This operation works as a function to check 
+// whether the current robot is behind a point
+// looking to a target.
+//
+// @param robot: Robot.
+// @param point: Point which robot may be behind.
+// @param target: Target point which robot must be
+// 		  looking at when robot is behind the point.
+// @param angleThreshold: Max angular difference
+// 		  between robotPoint and pointTarget to
+//        be considered aligned.
+//
+// @return [boolean] A value which indicates if
+// the robot is behind the point looking to target.
+operation AllyIsBehind(robot: Robot, point: Point, target: Point, angleThreshold: real) {
+	requires AllyIsBehindI
+	requires CreateVectorI
+	requires CreateUnitVectorI
+	requires AngleBetweenVectorsI
+	
+	var point2target: Point
+	var ally2target: Point 	
+	var angleBetweenVectors: real
+	
+	initial sInitial
+	state sGetVectorPointToTarget {
+		entry point2target = createUnitVectorResult
+	}
+	state sGetVectorAllyToPoint {
+		entry ally2target = createUnitVectorResult
+	}	
+	state sGetAngleBetweenVectors {
+		entry angleBetweenVectors = angleBetweenVectorsResult
+	}
+	final sFinal
+	
+	transition calculateVectorPointToTarget{
+		from sInitial
+		to sGetVectorPointToTarget
+		action CreateVector(point, target); CreateUnitVector(createVectorResult)
+	}
+	transition calculateVectorAlly2Point {
+		from sGetVectorPointToTarget
+		to sGetVectorAllyToPoint
+		action CreateVector(robot.position, point); CreateUnitVector(createVectorResult)
+	}	
+	transition calculateAngleBetweenVectors {
+		from sGetVectorAllyToPoint
+		to sGetAngleBetweenVectors
+		action AngleBetweenVectors(point2target, ally2target)
+	}
 	transition finish {
-		from Initial
-		to Stop
-		action robotRadius = 90
+		from sGetAngleBetweenVectors
+		to sFinal
+		action allyIsBehindResult = -angleThreshold < angleBetweenVectors /\ angleBetweenVectors < angleThreshold
 	}
 }
 
-/*
-function ROBOT_RADIUS(): real {	
-	return 90
+// --------------------------------------------
+//   			ROBOT HAS BALL
+// --------------------------------------------
+interface AllyHasBallI {
+	var allyHasBallResult: boolean
 }
-*/
 
+// This operation works as a function to ...
+//
+// @param robot: Robot.
+// @param ball: Ball.
+//
+// @return [boolean] A value which indicates if
+// the robot has ball or not.
+// TODO: Fazer metodo de verificacao por posicao e angulo
+operation AllyHasBall(robot: Robot, ball: Ball) {
+	requires AllyHasBallI
+	
+	initial Initial
+	final stop
+	
+	transition finish {
+		from Initial
+		to stop
+		action allyHasBallResult = true
+	}
+}
+
+// --------------------------------------------
+//   	     ROBOT IS CLOSE TO BALL
+// --------------------------------------------
+interface AllyIsCloseToBallI {
+	var allyIsCloseToBallResult: boolean
+}
+
+// This operation works as a function to ...
+//
+// @param robot: Robot.
+// @param ball: Ball.
+//
+// @return [boolean] A value which indicates if
+// the robot is close to ball or not.
+operation AllyIsCloseToBall(robot: Robot, ball: Ball) {
+	requires AllyIsCloseToBallI
+	requires GetDistanceBetweenTwoPointsI
+	
+	var robotPosition: Point = robot.position
+	var ballPosition: Point = ball.pos
+	var distance: real
+	var MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL: real = 111
+	
+	initial sInitial 	
+	final sFinal
+	
+	transition finish {
+		from sInitial
+		to sFinal
+		action GetDistanceBetweenTwoPoints(robotPosition, ballPosition); distance = getDistanceBetweenTwoPointsResult; allyIsCloseToBallResult = distance < MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL
+	}
+}
+
+// --------------------------------------------
+//   	     ROBOT IS CLOSE TO BALL
+// --------------------------------------------
+interface AllyIsLookingToBallI {
+	var allyIsLookingToBallResult: boolean
+}
+
+// This operation works as a function to ...
+//
+// @param robot: Robot.
+// @param ball: Ball.
+//
+// @return [boolean] A value which indicates if
+// the robot is looking to ball or not.
+operation AllyIsLookingToBall(robot: Robot, ball: Ball) {
+	requires AllyIsLookingToBallI
+	requires CreateVectorI
+	requires CreateUnitVectorI
+	requires AngleBetweenVectorsI
+	requires FromPolarI
+	
+	var ROBOT_RADIUS: real = 90.0
+	var ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER: real = degreesToRadians(60)
+	
+	var robotCenter: Point = robot.position
+	var robotAngle: real = robot.angle
+	var robotFront: Point
+	var ballPosition: Point = ball.pos
+	
+	var robotCenterToFrontUnitVector: Point
+	var robotToBallUnitVector: Point
+	
+	var angle: real
+	
+	initial sInitial
+	state sGetRobotCenterToFrontUnitVector {
+		entry robotCenterToFrontUnitVector = createUnitVectorResult
+	}
+	state sGetRobotCenterToBallUnitVector {
+		entry robotToBallUnitVector = createUnitVectorResult
+	}
+	state sGetAngleBetweenUnitVectors {
+		entry angle = angleBetweenVectorsResult
+	}
+	final sFinal
+
+	transition calculateRobotCenterToFrontUnitVector {
+		from sInitial
+		to sGetRobotCenterToFrontUnitVector
+		action FromPolar(ROBOT_RADIUS, robotAngle); CreateVector(robotCenter, FromPolarResult); CreateUnitVector(createVectorResult)
+	}
+	
+	transition calculateRobotCenterToBallUnitVector {
+		from sGetRobotCenterToFrontUnitVector
+		to sGetRobotCenterToBallUnitVector
+		action CreateVector(robotCenter, ballPosition); CreateUnitVector(createVectorResult)
+	}
+	transition calculateAngleBetweenVectors {
+		from sGetRobotCenterToBallUnitVector
+		to sGetAngleBetweenUnitVectors
+		action AngleBetweenVectors(robotCenterToFrontUnitVector, robotToBallUnitVector)
+	}
+	transition finish {
+		from sGetAngleBetweenUnitVectors
+		to sFinal
+		action allyIsLookingToBallResult = (-ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER < angle) /\ (angle < ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER)
+	}
+}
+
+// --------------------------------------------
+//   	 ROBOT CAN HAVE BALL ON DRIBBLER
+// --------------------------------------------
+interface AllyCanHaveBallOnDribblerI {
+	var allyCanHaveBallOnDribblerResult: boolean
+}
+
+// This operation works as a function to ...
+//
+// @param robot: Robot.
+// @param ball: Ball.
+//
+// @return [boolean] A value which indicates if
+// the robot has the ball on dribbler or not.
+operation AllyCanHaveBallOnDribbler(robot: Robot, ball: Ball) {
+	requires AllyCanHaveBallOnDribblerI
+	requires AllyIsLookingToBallI
+	requires AllyIsCloseToBallI
+
+	initial sInitial
+	final sFinal
+
+	transition sCheck {
+		from sInitial
+		to sFinal
+		action AllyIsLookingToBall(robot, ball) ; AllyIsCloseToBall(robot, ball); allyCanHaveBallOnDribblerResult = allyIsLookingToBallResult /\ allyIsCloseToBallResult
+	}
+}
+
+// --------------------------------------------
+//     ROBOT IS PUSHING BALL WITH HIS BACK
+// --------------------------------------------
+interface AllyIsPushingBallWithHisBackI {
+	var allyIsPushingBallWithHisBackResult: boolean
+}
+
+// This operation works as a function to ...
+//
+// @param robot: Robot.
+// @param ball: Ball.
+//
+// @return [boolean] A value which indicates if
+// the robot has the ball on dribbler or not.
+operation AllyIsPushingBallWithHisBack(robot: Robot, ball: Ball) {
+	requires AllyIsPushingBallWithHisBackI
+	requires AllyIsLookingToBallI
+	requires AllyIsCloseToBallI
+
+	initial sInitial
+	final sFinal
+
+	transition sCheck {
+		from sInitial
+		to sFinal
+		// TODO: Como é o NOT em RoboChart?
+		action AllyIsLookingToBall(robot, ball) ; AllyIsCloseToBall(robot, ball); allyIsPushingBallWithHisBackResult = !allyIsLookingToBallResult /\ allyIsCloseToBallResult
+	}
+}
+
+// ============================================
+// =                CONSTANTS                 =
+// ============================================
+// --------------------------------------------
+//               ROBOT RADIUS
+// --------------------------------------------
+const ROBOT_RADIUS: real = 90
+
+
+// ============================================
+// =           GETTERS AND SETTERS            =
+// ============================================
+//
 // --------------------------------------------
 //               ROBOT POSITION
 // --------------------------------------------
@@ -73,19 +354,19 @@ operation getPositionFromRobot(robot: Robot) {
 	requires GetPositionFromRobotI
 	
 	// States.
-	initial Initial
-	state GetPositionFromRobot {}	
-	final Stop
+	initial sInitial
+	state sGetPositionFromRobot {}	
+	final sFinal
 	
 	// Transitions.
 	transition start {
-		from Initial
-		to GetPositionFromRobot
+		from sInitial
+		to sGetPositionFromRobot
 	}
 	transition finish {		
-		from GetPositionFromRobot
-		to Stop
-		action getPositionFromRobotResult = robot.pos
+		from sGetPositionFromRobot
+		to sFinal
+		action getPositionFromRobotResult = robot.position
 	}
 }	
 
@@ -106,18 +387,18 @@ operation getAngleFromRobot(robot: Robot) {
 	requires GetAngleFromRobotI
 	
 	// States.
-	initial Initial
-	state GetAngleFromRobot {}	
-	final Stop
+	initial sInitial
+	state sGetAngleFromRobot {}	
+	final sFinal
 	
 	// Transitions.
 	transition start {
-		from Initial
-		to GetAngleFromRobot
+		from sInitial
+		to sGetAngleFromRobot
 	}
 	transition finish {		
-		from GetAngleFromRobot
-		to Stop
+		from sGetAngleFromRobot
+		to sFinal
 		action getAngleFromRobotResult = robot.angle
 	}
 }	
@@ -139,257 +420,18 @@ operation getFeedbackFromRobot(robot: Robot) {
 	requires GetFeedbackFromRobotI
 	
 	// States.
-	initial Initial
-	state GetFeedbackFromRobot {}	
-	final Stop
+	initial sInitial
+	state sGetFeedbackFromRobot {}	
+	final sFinal
 	
 	// Transitions.
 	transition start {
-		from Initial
-		to GetFeedbackFromRobot
+		from sInitial
+		to sGetFeedbackFromRobot
 	}
 	transition finish {		
-		from GetFeedbackFromRobot
-		to Stop
+		from sGetFeedbackFromRobot
+		to sFinal
 		action getFeedbackFromRobotResult = robot.feedback
 	}
 }	
-
-// --------------------------------------------
-//           ROBOT HAS BALL CONTACT
-// --------------------------------------------
-interface RobotHasBallContactI {
-	var robotHasBallContactResult : boolean
-}
-
-// This operation works as a function to check 
-// whether the current robot has ball contact.
-//
-// @param robot: Robot
-//
-// @return [boolean] A value which indicates if
-// the robot has ball contact or not. 
-operation robotHasBallContact(robot: Robot) {
-	requires RobotHasBallContactI
-	
-	// States.
-	initial Initial
-	state RobotHasBallContact {}	
-	final Stop
-	
-	// Transitions.
-	transition start {
-		from Initial
-		to RobotHasBallContact
-	}
-	transition finish {		
-		from RobotHasBallContact
-		to Stop
-		action robotHasBallContactResult = robot.feedback.ir
-	}
-}	
-
-// FSM Utils
-interface AllyIsBehindI {
-	var allyIsBehindResult: boolean
-}
-
-operation AllyIsBehind(robot: Robot, point: Point, target: Point, angleThreshold: real) {
-	requires AllyIsBehindI
-	requires GetPositionFromRobotI
-	requires CreateVectorI
-	requires CreateUnitVectorI
-	requires AngleBetweenVectorsI
-	
-	var robotPosition: Point
-	var point2target: Point
-	var ally2target: Point 
-	var unitPoint2target: Point
-	var unitAlly2point: Point
-	var angleBetweenVectors: real
-	
-	initial Initial
-	state setRobotPosition {
-		entry getPositionFromRobot(robot)
-	}
-	state createVectorPointToTarget {
-		entry createVector(point, target)
-	}
-	state createUnitVectorPointToTarget {
-		entry createUnitVector(point2target)
-	}
-	state createVectorAllyToPoint {
-		entry createVector(robotPosition, point)
-	}
-	state createUnitVectorAllyToPoint {
-		entry createUnitVector(ally2target)
-	}
-	state getAngleBetweenVectors {
-		entry angleBetweenVectors(unitPoint2target, unitAlly2point)
-	}
-	
-	final stop
-	
-	transition calculateRobotPosition {
-		from Initial
-		to setRobotPosition
-		action robotPosition = getPositionFromRobotResult
-	}
-	transition calculateVectorPoint2Target {
-		from setRobotPosition
-		to createVectorPointToTarget
-		action point2target = createVectorResult
-	}
-	transition calculateUnitVectorPoint2Target {
-		from createVectorPointToTarget
-		to createUnitVectorPointToTarget
-		action unitPoint2target = createUnitVectorResult
-	}
-	transition calculateVectorAlly2Point {
-		from createUnitVectorPointToTarget
-		to createVectorAllyToPoint
-		action ally2target = createVectorResult
-	}
-	transition calculateUnitVectorAlly2target {
-		from createVectorAllyToPoint
-		to createUnitVectorAllyToPoint
-		action unitAlly2point = createUnitVectorResult 
-	}
-	transition calculateAngleBetweenVectors {
-		from createUnitVectorAllyToPoint
-		to getAngleBetweenVectors
-		action angleBetweenVectors = angleBetweenVectorsResult
-	}
-	transition finish {
-		from createUnitVectorAllyToPoint
-		to stop
-		action allyIsBehindResult = -angleThreshold < angleBetweenVectors /\ angleBetweenVectors < angleThreshold
-	}
-}
-
-interface AllyHasBallI {
-	var allyHasBallResult: boolean
-}
-// TODO: fazer metodo de verificacao por posicao e angulo
-operation AllyHasBall(robot: Robot, ball: Ball) {
-	requires AllyHasBallI
-	
-	initial Initial
-	final stop
-	
-	transition finish {
-		from Initial
-		to stop
-		action allyHasBallResult = true
-	}
-}
-
-interface AllyIsCloseToBallI {
-	var allyIsCloseToBallResult: boolean
-}
-
-operation AllyIsCloseToBall(robot: Robot, ball: Ball) {
-	requires AllyIsCloseToBallI
-	requires GetPositionFromRobotI
-	requires GetDistanceBetweenTwoPointsI
-	
-	var robotPosition: Point = robot.pos
-	var ballPosition: Point = ball.pos
-	var MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL: real = 111
-	
-	initial Initial 
-	state sInitial {
-		entry GetDistanceBetweenTwoPoints(robotPosition, ballPosition)
-	}
-	final stop
-	
-	transition calculateRobotPosition {
-		from Initial
-		to sInitial
-	}
-	transition finish {
-		from sInitial
-		to stop
-		action allyIsCloseToBallResult = getDistanceBetweenTwoPointsResult < MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL
-	}
-}
-
-function allyIsLookingToBall(robot: Robot, ball: Ball): boolean {
-	var ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER: real = degreesToRadians(60)
-	
-	var robotCenter: Point = robot.pos
-	var robotAngle: real = robot.angle
-	var robotFront: Point = fromPolar(ROBOT_RADIUS(), robotAngle)
-	var ballPosition: Point = ball.pos
-	
-	var robotCenterToFrontUnitVector: Point = createUnitVector(robotCenter, robotFront)
-	var robotToBallUnitVector: Point = createUnitVector(robotCenter, ballPosition)
-	
-	var angle = angleBetween(robotCenterToFrontUnitVector, robotToBallUnitVector)
-	return -ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER < angle /\ angle < +ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER;	
-}
-
-interface AllyIsLookingToBallI {
-	var allyIsLookingToBallResult: boolean
-}
-
-operation AllyIsLookingToBall(robot: Robot, ball: Ball) {
-	requires AllyIsLookingToBallI
-	requires CreateUnitVectorI
-	requires CreateVectorI
-	requires AngleBetweenVectorsI
-	requires FromPolarI
-	
-	var ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER: real = degreesToRadians(60)
-	
-	var robotCenter: Point = robot.pos
-	var robotAngle: real = robot.angle
-	var robotFront: Point
-	var ballPosition: Point = ball.pos
-	
-	var robotCenterToFrontUnitVector: Point
-	var robotToBallUnitVector: Point
-	
-	var angle: real
-	
-	initial Initial
-	state createRobotCenterAndFrontUnitVector {
-		entry FromPolar(ROBOT_RADIUS(), robotAngle);CreateVector(robotCenter, robotFront); CreateUnitVector(createVectorResult)
-	}
-	state createRobotCenterToBallUnitVector {
-		entry CreateVector(robotCenter, ballPosition); CreateUnitVector(createVectorResult)
-	}
-	state calculateAngleBetweenUnitVectors {
-		entry AngleBetweenVectors(robotCenterToFrontUnitVector, robotToBallUnitVector)
-	}
-	final stop
-	
-	transition robotCenterFrontUnitVetor {
-		from Initial
-		to createRobotCenterAndFrontUnitVector
-		action robotFront = fromPolarResult; robotCenterToFrontUnitVector = createUnitVectorResult
-	}
-	transition robotCenterToBallUnitVector {
-		from createRobotCenterAndFrontUnitVector
-		to createRobotCenterToBallUnitVector
-		action robotToBallUnitVector = createUnitVectorResult
-	}
-	transition calculateAngle {
-		from createRobotCenterToBallUnitVector
-		to calculateAngleBetweenUnitVectors
-		action angle = angleBetweenVectorsResult
-	}
-	transition finish {
-		from calculateAngleBetweenUnitVectors
-		to stop
-		action allyIsLookingToBallResult = (-ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER < angle) /\ (angle < ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER)
-	}
-}
-
-function allyCanHaveBallOnDribbler(robot: Robot, ball: Ball): boolean {
-	return allyIsLookingToBall(robot, ball) /\ allyIsCloseToBall(robot, ball)	
-}
-
-function allyIsPushingBallWithHisBack(robot: Robot, ball: Ball): boolean {
-	return (!allyIsLookingToBall(robot, ball)) /\ allyIsCloseToBall(robot, ball)
-}

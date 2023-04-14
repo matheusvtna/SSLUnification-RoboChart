@@ -72,7 +72,7 @@ datatype Frame {
 //	transition finish {		
 //		from Run
 //		to Stop
-//		action getRobotPositionFromFrameResult = frame.robot.pos
+//		action getRobotPositionFromFrameResult = frame.robot.position
 //	}
 //}	
 

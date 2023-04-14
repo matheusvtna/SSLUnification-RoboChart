@@ -11,7 +11,7 @@ datatype Point {
 //                 FROM POLAR
 // --------------------------------------------
 interface FromPolarI {
-	var fromPolarResult : Point
+	var FromPolarResult : Point
 }
 
 // This operation works as a function to create a
@@ -22,7 +22,7 @@ interface FromPolarI {
 //
 // @return [Point] The vector with the respective
 // length and rotated with the respective angle. 
-operation fromPolar(length: real, angle: real) {
+operation FromPolar(length: real, angle: real) {
 	requires FromPolarI
 	
 	var vec: Point 
@@ -41,7 +41,7 @@ operation fromPolar(length: real, angle: real) {
 		from FromPolar
 		to Stop
 		// TODO: FIX COS AND SIN FUNCTIONS.
-		action fromPolarResult.x = cos(angle) * length; fromPolarResult.y = sin(angle) * length
+		action FromPolarResult.x = cos(angle) * length; FromPolarResult.y = sin(angle) * length
 	}
 }	
 
