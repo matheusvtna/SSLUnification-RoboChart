@@ -2,20 +2,146 @@ function smallestAngleDiff(source: real, target: real): real {
 	// TODO: Fazer função de diferença angular...
 }
 
-// TODO: Inserir formula do cosseno
-function cos(angle: real) {
-	return angle
+interface cosI {
+	var cosResult: real
 }
 
-// TODO: Inserir formula do cosseno
-function sin(angle: real) {
-	return angle
+operation cos(angle: real) {
+	requires cosI
+
+	// First Approximation.
+	var cosseno: real = 1.0
+	var term: real = 1.0
+
+	// PI Approximation.
+	var PI: real = 3.14159
+
+	var number_of_terms: int = 100000
+
+	var count: int = 0
+
+	initial sInitial
+	state sSeries {
+		entry term = term * ((-1.0) * count * count / ((2.0 * count - 1.0) * 2.0 * count)); cosseno = cosseno + term; count = count + 1
+	}
+	final sFinal
+
+	transition calculates {
+		from sInitial
+		to sSeries
+	}
+	transition finish {
+		from sSeries
+		to sFinal
+		condition count >= number_of_terms
+		action cosResult = cosseno
+	}
 }
 
-function degreesToRadians(degrees: real): real {
-	return degrees * PI / 180
+interface sinI {
+	var sinResult: real
 }
 
-function radiansToDegrees(radians: real): real {
-	return radians / (PI / 180)
+operation sin(angle: real) {
+	requires sinI
+
+	// First Approximation.
+	var seno: real = angle
+	var term: real = angle
+
+	// PI Approximation.
+	var PI: real = 3.14159
+
+	var number_of_terms: real = 100000
+
+	var count: int = 0
+
+	initial sInitial
+	state sSeries {
+		entry term = term * ((-1.0) * angle * angle / ((2.0 * count) * (2.0 * count + 1.0))); seno = seno + term; count = count + 1
+	}
+	final sFinal
+
+	transition calculates {
+		from sInitial
+		to sSeries
+	}
+	transition finish {
+		from sSeries
+		to sFinal
+		condition count >= number_of_terms
+		action sinResult = seno
+	}
+}
+
+interface degreesToRadiansI {
+	var degreesToRadiansResult: real
+}
+
+operation degreesToRadians(degrees: real) {
+	requires degreesToRadiansI
+	initial sInitial
+	final sFinal
+
+	// PI Approximation.
+	var PI: real = 3.14159
+
+	transition finish {
+		from sInitial
+		to sFinal
+		action degreesToRadiansResult = degrees * PI / 180
+	}
+}
+
+
+interface radiansToDegreesI {
+	var radiansToDegreesResult: real
+}
+
+operation radiansToDegrees(radians: real) {
+	requires radiansToDegreesI
+	initial sInitial
+	final sFinal
+
+	// PI Approximation.
+	var PI: real = 3.14159
+
+	transition finish {
+		from sInitial
+		to sFinal
+		action radiansToDegreesResult = radians / (PI / 180)
+	}
+}
+
+interface sqrtI {
+	var sqrtResult: real
+}
+
+operation sqrt(n: real) {
+	requires sqrtI
+
+	var precision: real = 0.0001
+
+	// Initial Estimation.
+	var x0: real = 1.0
+
+	// Next Estimation.
+	var x1: real = 0.0
+    
+	initial sInitial
+	state sLoop {
+		entry x0 = x1; x1 = (x0 + n / x0) / 2.0 // Newton-Raphson Formulas
+	}
+	final sFinal
+
+	transition calculate {
+		from sInitial
+		to sLoop
+	}
+	transition finish {
+		from sLoop
+		to sFinal
+		condition (x1 - x0) * (x1 - x0) < precision * precision
+		action sqrtResult = x1
+	}
 }
