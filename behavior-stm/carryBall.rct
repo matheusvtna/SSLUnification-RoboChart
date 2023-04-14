@@ -24,7 +24,7 @@ operation carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real
 	var robot: Robot = frame.robot
 	var ball: Ball = frame.ball
 	var ballPosition: Point = ball.pos
-	var distance: nat
+	var distance: real
 	
 	// States.
 	initial sInitial

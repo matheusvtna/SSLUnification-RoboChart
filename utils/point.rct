@@ -67,16 +67,20 @@ interface GetDistanceBetweenTwoPointsI {
 operation GetDistanceBetweenTwoPoints(source: Point, target: Point) {
 	requires GetDistanceBetweenTwoPointsI
 	requires sqrtI	
+	requires powI
 
 	// States.
 	initial sInitial
 	final sFinal
+	var x2: real
+	var y2: real
 	
 	// Transitions.
 	transition calculate {
 		from sInitial		
 		to sFinal
-		action sqrt((source.x - target.x)^2 + (source.y - target.y)^2); getDistanceBetweenTwoPointsResult = sqrtResult
+		action pow(source.x - target.x, 2); x2 = powResult; pow(source.y - target.y, 2); y2 = powResult; 
+			sqrt(x2 + y2); getDistanceBetweenTwoPointsResult = sqrtResult
 	}
 }
 
@@ -84,7 +88,7 @@ operation GetDistanceBetweenTwoPoints(source: Point, target: Point) {
 //          GET THE NORM OF A VECTOR
 // --------------------------------------------
 interface GetNormOfVectorI {
-	var getNormOfVectorResult : nat
+	var getNormOfVectorResult : real
 }
 
 // This operation works as a function to calculates
@@ -92,10 +96,11 @@ interface GetNormOfVectorI {
 //
 // @param vec: Point
 //
-// @return [nat] The norm of the vector.
+// @return [real] The norm of the vector.
 operation getNormOfVector(vec: Point) {
 	requires GetNormOfVectorI
-		
+	requires sqrtI
+	
 	// States.
 	initial sInitial
 	final sFinal
@@ -104,7 +109,7 @@ operation getNormOfVector(vec: Point) {
 	transition calculate {
 		from sInitial
 		to sFinal
-		action sqrt(vec.x^2 + vec.y^2); getNormOfVectorResult = sqrtResult
+		action sqrt(vec.x*vec.x + vec.y*vec.y); getNormOfVectorResult = sqrtResult
 	}
 }		
 
@@ -127,7 +132,7 @@ operation CreateUnitVector(vec: Point) {
 	requires GetNormOfVectorI
 			
 	// Intermediary variable to save vector norm.	
-	var norm: nat
+	var norm: real
 				
 	// States.
 	initial sInitial	

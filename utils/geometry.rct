@@ -146,13 +146,42 @@ operation sqrt(n: real) {
 	}
 }
 
+
+interface powI {
+	var powResult: real
+}
+
+operation pow(x: real, n: int) {
+	requires powI
+	
+	var count: int = 1
+	var res: real = 1.0
+	
+	initial sInitial
+	state sLoop {
+		entry res = res * x; count = count + 1	
+	}
+	final sFinal
+	transition calculate {
+		from sInitial
+		to sLoop
+	}
+	transition finish {
+		from sLoop
+		to sFinal
+		condition count == n
+		action powResult = res
+	}
+}
+
 interface atanI {
 	var atanResult: real
 }
 
 operation atan(angle: real) {
 	requires atanI
-
+	requires powI
+	
 	var number_of_terms: int = 100000
 
 	var count: int = 0
@@ -161,7 +190,7 @@ operation atan(angle: real) {
 
 	initial sInitial
 	state sLoop {
-		entry offset = ((angle^(2 * count + 1)) / (2 * count + 1)); if (count % 2 == 0) then res = res + offset else res = res - offset
+		entry pow(angle, (2 * count + 1)); offset = (powResult) / (2 * count + 1); if (count % 2 == 0) then res = res + offset else res = res - offset end
 	}
 	final sFinal
 
@@ -200,10 +229,16 @@ operation atan2(y: real, x: real) {
 		from sInitial
 		to sFinal
 		action atan(y/x); if(x > 0) then atan2Result = atanResult
-						else if(y >= 0 /\ x < 0) then atan2Result = atanResult + PI
-						else if(y < 0 /\ x < 0) then atan2Result = atanResult - PI
-						else if(y > 0 /\ x == 0) then atan2Result = PI/2
-						else if(y < 0 /\ x == 0) then atan2Result = -PI/2
-						else atan2Result = 0
-	}
+							else if(y >= 0 /\ x < 0) then atan2Result = atanResult + PI
+								else if(y < 0 /\ x < 0) then atan2Result = atanResult - PI
+									else if(y > 0 /\ x == 0) then atan2Result = PI/2
+										else if(y < 0 /\ x == 0) then atan2Result = -PI/2
+											else atan2Result = 0 end
+										end
+									end
+								end
+							end 
+						}
+	
 }
+

@@ -214,9 +214,10 @@ operation AllyIsLookingToBall(robot: Robot, ball: Ball) {
 	requires CreateUnitVectorI
 	requires AngleBetweenVectorsI
 	requires FromPolarI
+	requires degreesToRadiansI
 	
 	var ROBOT_RADIUS: real = 90.0
-	var ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER: real = degreesToRadians(60)
+	var ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER: real
 	
 	var robotCenter: Point = robot.position
 	var robotAngle: real = robot.angle
@@ -243,7 +244,7 @@ operation AllyIsLookingToBall(robot: Robot, ball: Ball) {
 	transition calculateRobotCenterToFrontUnitVector {
 		from sInitial
 		to sGetRobotCenterToFrontUnitVector
-		action FromPolar(ROBOT_RADIUS, robotAngle); CreateVector(robotCenter, FromPolarResult); CreateUnitVector(createVectorResult)
+		action degreesToRadians(60); ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER = degreesToRadiansResult; FromPolar(ROBOT_RADIUS, robotAngle); CreateVector(robotCenter, FromPolarResult); CreateUnitVector(createVectorResult)
 	}
 	
 	transition calculateRobotCenterToBallUnitVector {
