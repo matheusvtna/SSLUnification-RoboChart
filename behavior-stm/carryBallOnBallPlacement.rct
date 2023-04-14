@@ -55,7 +55,7 @@ operation carryBallOnBallPlacement (frame: Frame
 	}
 	state MoveAwayFromBall {
 		entry nodeStatus = NODE_STATUS::RUNNING; moveAwayFromPosition(frame, targetPosition, DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH); 
-			GetDistanceBetweenTwoPoints(robot.pos, ball.pos)
+			GetDistanceBetweenTwoPoints(robot.position, ball.pos)
 	}
 	final Final
 

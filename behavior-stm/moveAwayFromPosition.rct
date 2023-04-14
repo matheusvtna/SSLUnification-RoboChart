@@ -11,7 +11,7 @@ operation moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceT
 	// States.
 	initial Initial
 	state MoveAway {
-		entry robotPosition = frame.robot.pos; GetDistanceBetweenTwoPoints(robotPosition, dangerousPosition)
+		entry robotPosition = frame.robot.position; GetDistanceBetweenTwoPoints(robotPosition, dangerousPosition)
 	}	
 	final Stop
 	
