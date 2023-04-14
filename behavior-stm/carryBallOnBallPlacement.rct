@@ -36,7 +36,7 @@ operation carryBallOnBallPlacement (frame: Frame, targetPosition: Point) {
 
 	// States.
 	initial sInitial
-	state GoToBehindBall {
+	state sGoToBehindBall {
 		entry nodeStatus = NODE_STATUS::RUNNING; goToBehindBall(targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
 	}
 	state sGiveSpaceToGetBall {
