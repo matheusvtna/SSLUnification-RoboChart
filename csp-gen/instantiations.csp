@@ -47,11 +47,6 @@ nametype core_int = union({ -2..2},{calc_type_min(Union(
 
 -- BASIC TYPES
 
--- VECTOR TYPES AND OPERATIONS
-
-
--- CLOCKS
-
 -- generate Div
 Div(e1,e2,T) = if member(e1/e2,T) then e1/e2 else e1
 

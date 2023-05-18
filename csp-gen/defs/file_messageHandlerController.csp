@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 13-04-2023 23:54:59
+-- Automatically generated on 17-05-2023 21:56:54
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -9,7 +9,7 @@
 
 
 
-	module WorldMessageHandlerController
+	module MessageHandlerController
 		shared_variable_events = {|
 		|}
 		
@@ -21,7 +21,9 @@
 
 		-- declaring controller events
 		channel receiveGameStatus: InOut.core_string
-		channel sendGameStatusVision: InOut.core_string
+		channel sendGameStatus: InOut.core_string
+		channel receiveProcessedFrame: InOut.Frame
+		channel sendFrame: InOut.core_string
 		
 		
 		
@@ -34,7 +36,9 @@
 		sem__events = {|
 			terminate
 		,	receiveGameStatus,
-			sendGameStatusVision
+			sendGameStatus,
+			receiveProcessedFrame,
+			sendFrame
 		|}
 
 		-- defined operations

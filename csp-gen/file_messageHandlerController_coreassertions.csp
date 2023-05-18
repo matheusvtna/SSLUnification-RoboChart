@@ -1,0 +1,43 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 17-05-2023 21:56:54
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_messageHandlerController.csp"
+
+
+
+-- generate MessageHandlerController
+P_MessageHandlerController = let
+	id__ = 0
+	
+	
+	
+		
+within
+	MessageHandlerController::O__(id__)
+
+assert P_MessageHandlerController :[deadlock-free]	
+assert P_MessageHandlerController;RUN({r__}) :[deadlock-free]
+assert P_MessageHandlerController :[deterministic]
+assert P_MessageHandlerController :[divergence-free]
+
+-- generate MessageHandlerController_stm_ref0
+P_MessageHandlerController_stm_ref0 = let
+	id__ = 0
+	
+	
+	
+within
+	MessageHandlerController::stm_ref0::O__(
+		id__
+	)
+assert P_MessageHandlerController_stm_ref0 :[deadlock-free]	
+assert P_MessageHandlerController_stm_ref0;RUN({r__}) :[deadlock-free]
+assert P_MessageHandlerController_stm_ref0 :[deterministic]
+assert P_MessageHandlerController_stm_ref0 :[divergence-free]
+

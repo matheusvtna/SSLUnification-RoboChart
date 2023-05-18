@@ -1,13 +1,15 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 17-05-2023 21:57:31
+-- Automatically generated on 17-05-2023 21:56:54
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
-	module RefereeServiceController
+
+
+	module MessageHandlerController
 		shared_variable_events = {|
 		|}
 		
@@ -18,8 +20,10 @@
 		transparent chase
 
 		-- declaring controller events
-		channel receiveRawGameEvent: InOut.core_string
+		channel receiveGameStatus: InOut.core_string
 		channel sendGameStatus: InOut.core_string
+		channel receiveProcessedFrame: InOut.Frame
+		channel sendFrame: InOut.core_string
 		
 		
 		
@@ -31,8 +35,10 @@
 		-- channel set with all visible events
 		sem__events = {|
 			terminate
-		,	receiveRawGameEvent,
-			sendGameStatus
+		,	receiveGameStatus,
+			sendGameStatus,
+			receiveProcessedFrame,
+			sendFrame
 		|}
 		
 		-- set of visible memory events
@@ -544,3 +550,6 @@
 		}
 
 	endmodule
+
+
+

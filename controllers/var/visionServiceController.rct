@@ -1,10 +1,8 @@
 import frame
 
 interface IVisionVAR {
-	event receiveGameStatus: string
-	event receiveRawFrame: string
-	
-	event setProcessedFrame: Frame
+	event receiveRawFrame: string	
+	event sendProcessedFrame: Frame
 }
 
 controller VisionServiceController {

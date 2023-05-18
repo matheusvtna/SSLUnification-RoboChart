@@ -11,3 +11,13 @@
 /file_carryBall_coreassertions.csp
 /file_goToBehindBall.csp
 /file_goToBehindBall_coreassertions.csp
+/file_worldMessageHandlerController.csp
+/file_worldMessageHandlerController_coreassertions.csp
+/file_worldMessageHandlerSTM.csp
+/file_worldMessageHandlerSTM_coreassertions.csp
+/file_var.csp
+/file_var_coreassertions.csp
+/file_visionServiceController.csp
+/file_visionServiceController_coreassertions.csp
+/file_refereeServiceController.csp
+/file_refereeServiceController_coreassertions.csp

@@ -1,4 +1,4 @@
-stm WorldMessageHandlerSTM {
+stm MessageHandlerSTM {
 	
 	initial i
 	final f

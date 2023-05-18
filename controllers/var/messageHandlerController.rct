@@ -1,0 +1,35 @@
+interface IMessageHandlerVAR {
+	event receiveGameStatus: string
+	event sendGameStatus: string
+	
+	event receiveProcessedFrame: Frame
+	event sendFrame: string
+}
+
+// It corresponds to Message framework.
+//
+// Currently, the Message framework that has been
+// used on SSL VAR is ZeroMQ (zmq).
+//
+// zqm works just as an intermediary node to be able
+// to communicate different services. It works by
+// using different communication protocols: IPC,
+// TCP, UDP, I_PROC.  
+// 
+// SSL Var is using IPC communication protocol. It
+// works by writing and reading values from files
+// named as each service. For example:
+// - visionService handles `vision` file;
+// - refereeService handles `referee` file;
+//
+// So, zqm is transparent to SSL VAR when is coded.
+// However, to be able to design the communication
+// and data exchange between controllers in RoboChart
+// we designed this MessageHandlerController, which
+// should simulate the file access and data travelling. 
+controller MessageHandlerController {
+	uses IMessageHandlerVAR
+	
+	// TODO: Desenvolver MessageHandlerSTM.
+	sref stm_ref0 = MessageHandlerSTM
+}

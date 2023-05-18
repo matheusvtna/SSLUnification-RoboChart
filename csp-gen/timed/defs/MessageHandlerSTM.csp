@@ -1,16 +1,13 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 13-04-2023 23:40:49
+-- Automatically generated on 17-05-2023 21:38:21
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
-
-
-
-module WorldMessageHandlerSTM
+module MessageHandlerSTM
 exports
 	transparent diamond
 	transparent sbisim
@@ -403,5 +400,3 @@ exports
 		sharedVarHide = {||}
 		}
 endmodule
-
-

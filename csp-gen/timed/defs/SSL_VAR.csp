@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 13-04-2023 23:58:52
+-- Automatically generated on 17-05-2023 21:58:05
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -17,7 +17,7 @@ module SSL_VAR
 	
 	-- declaring channels
 	-- declaring robotic platform events
-	channel sendGameEvent: InOut.core_string
+	channel sendRawGameEvent: InOut.core_string
 	channel sendRawFrame: InOut.core_string
 	
 	
@@ -28,7 +28,7 @@ module SSL_VAR
 	
 	-- channel set with all visible events
 	sem__events = {|
-		sendGameEvent,
+		sendRawGameEvent,
 		sendRawFrame
 	|}
 	
@@ -44,9 +44,8 @@ module SSL_VAR
 			transparent chase
 	
 			-- declaring controller events
-			channel receiveGameStatus: InOut.core_string
 			channel receiveRawFrame: InOut.core_string
-			channel setProcessedFrame: InOut.Frame
+			channel sendProcessedFrame: InOut.Frame
 			
 			
 			
@@ -58,9 +57,8 @@ module SSL_VAR
 			-- channel set with all visible events
 			sem__events = {|
 				terminate
-			,	receiveGameStatus,
-				receiveRawFrame,
-				setProcessedFrame
+			,	receiveRawFrame,
+				sendProcessedFrame
 			|}
 			
 			-- set of visible memory events
@@ -583,7 +581,7 @@ module SSL_VAR
 			transparent chase
 	
 			-- declaring controller events
-			channel receiveGameEvent: InOut.core_string
+			channel receiveRawGameEvent: InOut.core_string
 			channel sendGameStatus: InOut.core_string
 			
 			
@@ -596,7 +594,7 @@ module SSL_VAR
 			-- channel set with all visible events
 			sem__events = {|
 				terminate
-			,	receiveGameEvent,
+			,	receiveRawGameEvent,
 				sendGameStatus
 			|}
 			
@@ -1109,7 +1107,7 @@ module SSL_VAR
 			}
 	
 		endmodule
-		module worldMessageHandlerControllerRef
+		module messageHandlerControllerRef
 			shared_variable_events = {|
 			|}
 			
@@ -1121,7 +1119,9 @@ module SSL_VAR
 	
 			-- declaring controller events
 			channel receiveGameStatus: InOut.core_string
-			channel sendGameStatusVision: InOut.core_string
+			channel sendGameStatus: InOut.core_string
+			channel receiveProcessedFrame: InOut.Frame
+			channel sendFrame: InOut.core_string
 			
 			
 			
@@ -1134,7 +1134,9 @@ module SSL_VAR
 			sem__events = {|
 				terminate
 			,	receiveGameStatus,
-				sendGameStatusVision
+				sendGameStatus,
+				receiveProcessedFrame,
+				sendFrame
 			|}
 			
 			-- set of visible memory events
@@ -1657,13 +1659,13 @@ module SSL_VAR
 			Buffer0(<v>) = 
 				refereeServiceControllerRef::sendGameStatus.out?x -> Buffer0(<x>)
 				[]
-				worldMessageHandlerControllerRef::receiveGameStatus.in!v -> Buffer0(<>)
+				messageHandlerControllerRef::receiveGameStatus.in!v -> Buffer0(<>)
 			Buffer0(<>) = refereeServiceControllerRef::sendGameStatus.out?x -> Buffer0(<x>)
 			Buffer1(<v>) = 
-				worldMessageHandlerControllerRef::sendGameStatusVision.out?x -> Buffer1(<x>)
+				visionServiceControllerRef::sendProcessedFrame.out?x -> Buffer1(<x>)
 				[]
-				visionServiceControllerRef::receiveGameStatus.in!v -> Buffer1(<>)
-			Buffer1(<>) = worldMessageHandlerControllerRef::sendGameStatusVision.out?x -> Buffer1(<x>)
+				messageHandlerControllerRef::receiveProcessedFrame.in!v -> Buffer1(<>)
+			Buffer1(<>) = visionServiceControllerRef::sendProcessedFrame.out?x -> Buffer1(<x>)
 			
 		within
 			(
@@ -1671,7 +1673,7 @@ module SSL_VAR
 					(Buffer0(<>)|||
 					Buffer1(<>)
 					)
-						[|{|worldMessageHandlerControllerRef::receiveGameStatus,refereeServiceControllerRef::sendGameStatus,visionServiceControllerRef::receiveGameStatus,worldMessageHandlerControllerRef::sendGameStatusVision|}|]
+						[|{|messageHandlerControllerRef::receiveGameStatus,refereeServiceControllerRef::sendGameStatus,messageHandlerControllerRef::receiveProcessedFrame,visionServiceControllerRef::sendProcessedFrame|}|]
 					(
 						(
 							(
@@ -1679,23 +1681,24 @@ module SSL_VAR
 									visionServiceControllerRef::terminate <- terminate,
 									visionServiceControllerRef::receiveRawFrame <- sendRawFrame
 								]]
-								\ {|
-									visionServiceControllerRef::setProcessedFrame
-								|}
 							)
 								[|{|terminate|}|]
 							(
 								(
 									refereeServiceControllerRef::D__(id__)[[
 										refereeServiceControllerRef::terminate <- terminate,
-										refereeServiceControllerRef::receiveGameEvent <- sendGameEvent
+										refereeServiceControllerRef::receiveRawGameEvent <- sendRawGameEvent
 									]]
 								)
 									[|{|terminate|}|]
 								(
-									worldMessageHandlerControllerRef::D__(id__)[[
-										worldMessageHandlerControllerRef::terminate <- terminate
+									messageHandlerControllerRef::D__(id__)[[
+										messageHandlerControllerRef::terminate <- terminate
 									]]
+									\ {|
+										messageHandlerControllerRef::sendGameStatus,
+										messageHandlerControllerRef::sendFrame
+									|}
 								)
 							)
 							\
@@ -1722,10 +1725,10 @@ module SSL_VAR
 				)
 				\ Union({
 					{|
-						worldMessageHandlerControllerRef::receiveGameStatus,
+						messageHandlerControllerRef::receiveGameStatus,
 						refereeServiceControllerRef::sendGameStatus,
-						visionServiceControllerRef::receiveGameStatus,
-						worldMessageHandlerControllerRef::sendGameStatusVision
+						messageHandlerControllerRef::receiveProcessedFrame,
+						visionServiceControllerRef::sendProcessedFrame
 					|},
 					{|
 					|},
@@ -1743,13 +1746,13 @@ module SSL_VAR
 			Buffer0(<v>) = 
 				refereeServiceControllerRef::sendGameStatus.out?x -> Buffer0(<x>)
 				[]
-				worldMessageHandlerControllerRef::receiveGameStatus.in!v -> Buffer0(<>)
+				messageHandlerControllerRef::receiveGameStatus.in!v -> Buffer0(<>)
 			Buffer0(<>) = refereeServiceControllerRef::sendGameStatus.out?x -> Buffer0(<x>)
 			Buffer1(<v>) = 
-				worldMessageHandlerControllerRef::sendGameStatusVision.out?x -> Buffer1(<x>)
+				visionServiceControllerRef::sendProcessedFrame.out?x -> Buffer1(<x>)
 				[]
-				visionServiceControllerRef::receiveGameStatus.in!v -> Buffer1(<>)
-			Buffer1(<>) = worldMessageHandlerControllerRef::sendGameStatusVision.out?x -> Buffer1(<x>)
+				messageHandlerControllerRef::receiveProcessedFrame.in!v -> Buffer1(<>)
+			Buffer1(<>) = visionServiceControllerRef::sendProcessedFrame.out?x -> Buffer1(<x>)
 			
 		within
 			(
@@ -1757,7 +1760,7 @@ module SSL_VAR
 					(Buffer0(<>)|||
 					Buffer1(<>)
 					)
-						[|{|worldMessageHandlerControllerRef::receiveGameStatus,refereeServiceControllerRef::sendGameStatus,visionServiceControllerRef::receiveGameStatus,worldMessageHandlerControllerRef::sendGameStatusVision|}|]
+						[|{|messageHandlerControllerRef::receiveGameStatus,refereeServiceControllerRef::sendGameStatus,messageHandlerControllerRef::receiveProcessedFrame,visionServiceControllerRef::sendProcessedFrame|}|]
 					(
 						(
 							(
@@ -1765,23 +1768,24 @@ module SSL_VAR
 									visionServiceControllerRef::terminate <- terminate,
 									visionServiceControllerRef::receiveRawFrame <- sendRawFrame
 								]]
-								\ {|
-									visionServiceControllerRef::setProcessedFrame
-								|}
 							)
 								[|{|terminate|}|]
 							(
 								(
 									refereeServiceControllerRef::VS__(id__)[[
 										refereeServiceControllerRef::terminate <- terminate,
-										refereeServiceControllerRef::receiveGameEvent <- sendGameEvent
+										refereeServiceControllerRef::receiveRawGameEvent <- sendRawGameEvent
 									]]
 								)
 									[|{|terminate|}|]
 								(
-									worldMessageHandlerControllerRef::VS__(id__)[[
-										worldMessageHandlerControllerRef::terminate <- terminate
+									messageHandlerControllerRef::VS__(id__)[[
+										messageHandlerControllerRef::terminate <- terminate
 									]]
+									\ {|
+										messageHandlerControllerRef::sendGameStatus,
+										messageHandlerControllerRef::sendFrame
+									|}
 								)
 							)
 							\
@@ -1808,10 +1812,10 @@ module SSL_VAR
 				)
 				\ Union({
 					{|
-						worldMessageHandlerControllerRef::receiveGameStatus,
+						messageHandlerControllerRef::receiveGameStatus,
 						refereeServiceControllerRef::sendGameStatus,
-						visionServiceControllerRef::receiveGameStatus,
-						worldMessageHandlerControllerRef::sendGameStatusVision
+						messageHandlerControllerRef::receiveProcessedFrame,
+						visionServiceControllerRef::sendProcessedFrame
 					|},
 					{|
 					|},
@@ -1829,13 +1833,13 @@ module SSL_VAR
 			Buffer0(<v>) = 
 				refereeServiceControllerRef::sendGameStatus.out?x -> Buffer0(<x>)
 				[]
-				worldMessageHandlerControllerRef::receiveGameStatus.in!v -> Buffer0(<>)
+				messageHandlerControllerRef::receiveGameStatus.in!v -> Buffer0(<>)
 			Buffer0(<>) = refereeServiceControllerRef::sendGameStatus.out?x -> Buffer0(<x>)
 			Buffer1(<v>) = 
-				worldMessageHandlerControllerRef::sendGameStatusVision.out?x -> Buffer1(<x>)
+				visionServiceControllerRef::sendProcessedFrame.out?x -> Buffer1(<x>)
 				[]
-				visionServiceControllerRef::receiveGameStatus.in!v -> Buffer1(<>)
-			Buffer1(<>) = worldMessageHandlerControllerRef::sendGameStatusVision.out?x -> Buffer1(<x>)
+				messageHandlerControllerRef::receiveProcessedFrame.in!v -> Buffer1(<>)
+			Buffer1(<>) = visionServiceControllerRef::sendProcessedFrame.out?x -> Buffer1(<x>)
 			
 		within
 			(
@@ -1843,7 +1847,7 @@ module SSL_VAR
 					(Buffer0(<>)|||
 					Buffer1(<>)
 					)
-						[|{|worldMessageHandlerControllerRef::receiveGameStatus,refereeServiceControllerRef::sendGameStatus,visionServiceControllerRef::receiveGameStatus,worldMessageHandlerControllerRef::sendGameStatusVision|}|]
+						[|{|messageHandlerControllerRef::receiveGameStatus,refereeServiceControllerRef::sendGameStatus,messageHandlerControllerRef::receiveProcessedFrame,visionServiceControllerRef::sendProcessedFrame|}|]
 					(
 						(
 							(
@@ -1851,23 +1855,24 @@ module SSL_VAR
 									visionServiceControllerRef::terminate <- terminate,
 									visionServiceControllerRef::receiveRawFrame <- sendRawFrame
 								]]
-								\ {|
-									visionServiceControllerRef::setProcessedFrame
-								|}
 							)
 								[|{|terminate|}|]
 							(
 								(
 									refereeServiceControllerRef::O__(id__)[[
 										refereeServiceControllerRef::terminate <- terminate,
-										refereeServiceControllerRef::receiveGameEvent <- sendGameEvent
+										refereeServiceControllerRef::receiveRawGameEvent <- sendRawGameEvent
 									]]
 								)
 									[|{|terminate|}|]
 								(
-									worldMessageHandlerControllerRef::O__(id__)[[
-										worldMessageHandlerControllerRef::terminate <- terminate
+									messageHandlerControllerRef::O__(id__)[[
+										messageHandlerControllerRef::terminate <- terminate
 									]]
+									\ {|
+										messageHandlerControllerRef::sendGameStatus,
+										messageHandlerControllerRef::sendFrame
+									|}
 								)
 							)
 							\
@@ -1894,10 +1899,10 @@ module SSL_VAR
 				)
 				\ Union({
 					{|
-						worldMessageHandlerControllerRef::receiveGameStatus,
+						messageHandlerControllerRef::receiveGameStatus,
 						refereeServiceControllerRef::sendGameStatus,
-						visionServiceControllerRef::receiveGameStatus,
-						worldMessageHandlerControllerRef::sendGameStatusVision
+						messageHandlerControllerRef::receiveProcessedFrame,
+						visionServiceControllerRef::sendProcessedFrame
 					|},
 					{|
 					|},
@@ -1915,13 +1920,13 @@ module SSL_VAR
 			Buffer0(<v>) = 
 				refereeServiceControllerRef::sendGameStatus.out?x -> Buffer0(<x>)
 				[]
-				worldMessageHandlerControllerRef::receiveGameStatus.in!v -> Buffer0(<>)
+				messageHandlerControllerRef::receiveGameStatus.in!v -> Buffer0(<>)
 			Buffer0(<>) = refereeServiceControllerRef::sendGameStatus.out?x -> Buffer0(<x>)
 			Buffer1(<v>) = 
-				worldMessageHandlerControllerRef::sendGameStatusVision.out?x -> Buffer1(<x>)
+				visionServiceControllerRef::sendProcessedFrame.out?x -> Buffer1(<x>)
 				[]
-				visionServiceControllerRef::receiveGameStatus.in!v -> Buffer1(<>)
-			Buffer1(<>) = worldMessageHandlerControllerRef::sendGameStatusVision.out?x -> Buffer1(<x>)
+				messageHandlerControllerRef::receiveProcessedFrame.in!v -> Buffer1(<>)
+			Buffer1(<>) = visionServiceControllerRef::sendProcessedFrame.out?x -> Buffer1(<x>)
 			
 		within
 			(
@@ -1929,7 +1934,7 @@ module SSL_VAR
 					(Buffer0(<>)|||
 					Buffer1(<>)
 					)
-						[|{|worldMessageHandlerControllerRef::receiveGameStatus,refereeServiceControllerRef::sendGameStatus,visionServiceControllerRef::receiveGameStatus,worldMessageHandlerControllerRef::sendGameStatusVision|}|]
+						[|{|messageHandlerControllerRef::receiveGameStatus,refereeServiceControllerRef::sendGameStatus,messageHandlerControllerRef::receiveProcessedFrame,visionServiceControllerRef::sendProcessedFrame|}|]
 					(
 						(
 							(
@@ -1937,23 +1942,24 @@ module SSL_VAR
 									visionServiceControllerRef::terminate <- terminate,
 									visionServiceControllerRef::receiveRawFrame <- sendRawFrame
 								]]
-								\ {|
-									visionServiceControllerRef::setProcessedFrame
-								|}
 							)
 								[|{|terminate|}|]
 							(
 								(
 									refereeServiceControllerRef::VS_O__(id__)[[
 										refereeServiceControllerRef::terminate <- terminate,
-										refereeServiceControllerRef::receiveGameEvent <- sendGameEvent
+										refereeServiceControllerRef::receiveRawGameEvent <- sendRawGameEvent
 									]]
 								)
 									[|{|terminate|}|]
 								(
-									worldMessageHandlerControllerRef::VS_O__(id__)[[
-										worldMessageHandlerControllerRef::terminate <- terminate
+									messageHandlerControllerRef::VS_O__(id__)[[
+										messageHandlerControllerRef::terminate <- terminate
 									]]
+									\ {|
+										messageHandlerControllerRef::sendGameStatus,
+										messageHandlerControllerRef::sendFrame
+									|}
 								)
 							)
 							\
@@ -1980,10 +1986,10 @@ module SSL_VAR
 				)
 				\ Union({
 					{|
-						worldMessageHandlerControllerRef::receiveGameStatus,
+						messageHandlerControllerRef::receiveGameStatus,
 						refereeServiceControllerRef::sendGameStatus,
-						visionServiceControllerRef::receiveGameStatus,
-						worldMessageHandlerControllerRef::sendGameStatusVision
+						messageHandlerControllerRef::receiveProcessedFrame,
+						visionServiceControllerRef::sendProcessedFrame
 					|},
 					{|
 					|},
@@ -2001,13 +2007,13 @@ module SSL_VAR
 			Buffer0(<v>) = 
 				refereeServiceControllerRef::sendGameStatus.out?x -> Buffer0(<x>)
 				[]
-				worldMessageHandlerControllerRef::receiveGameStatus.in!v -> Buffer0(<>)
+				messageHandlerControllerRef::receiveGameStatus.in!v -> Buffer0(<>)
 			Buffer0(<>) = refereeServiceControllerRef::sendGameStatus.out?x -> Buffer0(<x>)
 			Buffer1(<v>) = 
-				worldMessageHandlerControllerRef::sendGameStatusVision.out?x -> Buffer1(<x>)
+				visionServiceControllerRef::sendProcessedFrame.out?x -> Buffer1(<x>)
 				[]
-				visionServiceControllerRef::receiveGameStatus.in!v -> Buffer1(<>)
-			Buffer1(<>) = worldMessageHandlerControllerRef::sendGameStatusVision.out?x -> Buffer1(<x>)
+				messageHandlerControllerRef::receiveProcessedFrame.in!v -> Buffer1(<>)
+			Buffer1(<>) = visionServiceControllerRef::sendProcessedFrame.out?x -> Buffer1(<x>)
 			
 		within
 			(
@@ -2015,7 +2021,7 @@ module SSL_VAR
 					(Buffer0(<>)|||
 					Buffer1(<>)
 					)
-						[|{|worldMessageHandlerControllerRef::receiveGameStatus,refereeServiceControllerRef::sendGameStatus,visionServiceControllerRef::receiveGameStatus,worldMessageHandlerControllerRef::sendGameStatusVision|}|]
+						[|{|messageHandlerControllerRef::receiveGameStatus,refereeServiceControllerRef::sendGameStatus,messageHandlerControllerRef::receiveProcessedFrame,visionServiceControllerRef::sendProcessedFrame|}|]
 					(
 						(
 							(
@@ -2023,23 +2029,24 @@ module SSL_VAR
 									visionServiceControllerRef::terminate <- terminate,
 									visionServiceControllerRef::receiveRawFrame <- sendRawFrame
 								]]
-								\ {|
-									visionServiceControllerRef::setProcessedFrame
-								|}
 							)
 								[|{|terminate|}|]
 							(
 								(
 									refereeServiceControllerRef::O__(id__)[[
 										refereeServiceControllerRef::terminate <- terminate,
-										refereeServiceControllerRef::receiveGameEvent <- sendGameEvent
+										refereeServiceControllerRef::receiveRawGameEvent <- sendRawGameEvent
 									]]
 								)
 									[|{|terminate|}|]
 								(
-									worldMessageHandlerControllerRef::O__(id__)[[
-										worldMessageHandlerControllerRef::terminate <- terminate
+									messageHandlerControllerRef::O__(id__)[[
+										messageHandlerControllerRef::terminate <- terminate
 									]]
+									\ {|
+										messageHandlerControllerRef::sendGameStatus,
+										messageHandlerControllerRef::sendFrame
+									|}
 								)
 							)
 							\
@@ -2066,10 +2073,10 @@ module SSL_VAR
 				)
 				\ Union({
 					{|
-						worldMessageHandlerControllerRef::receiveGameStatus,
+						messageHandlerControllerRef::receiveGameStatus,
 						refereeServiceControllerRef::sendGameStatus,
-						visionServiceControllerRef::receiveGameStatus,
-						worldMessageHandlerControllerRef::sendGameStatusVision
+						messageHandlerControllerRef::receiveProcessedFrame,
+						visionServiceControllerRef::sendProcessedFrame
 					|},
 					{|
 					|},

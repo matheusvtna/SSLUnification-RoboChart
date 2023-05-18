@@ -1,5 +1,5 @@
 interface IRefereeVAR {
-	event receiveGameEvent: string
+	event receiveRawGameEvent: string
 	
 	event sendGameStatus: string
 }
