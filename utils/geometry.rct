@@ -21,14 +21,17 @@ operation cos(angle: real) {
 	var count: int = 0
 
 	initial sInitial
-	state sSeries {
-		entry term = term * ((-1.0) * count * count / ((2.0 * count - 1.0) * 2.0 * count)); cosseno = cosseno + term; count = count + 1
-	}
+	junction sSeries
 	final sFinal
 
 	transition calculate {
 		from sInitial
 		to sSeries
+	}
+	transition loop {
+		from sSeries
+		to sSeries
+		action term = term * ((-1.0) * count * count / ((2.0 * count - 1.0) * 2.0 * count)); cosseno = cosseno + term; count = count + 1
 	}
 	transition finish {
 		from sSeries
@@ -57,14 +60,17 @@ operation sin(angle: real) {
 	var count: int = 0
 
 	initial sInitial
-	state sSeries {
-		entry term = term * (-1.0) * angle * angle / ((2.0 * count) * (2.0 * count + 1.0)); seno = seno + term; count = count + 1
-	}
+	junction sSeries
 	final sFinal
 
 	transition calculate {
 		from sInitial
 		to sSeries
+	}
+	transition loop {
+		from sSeries
+		to sSeries
+		action term = term * (-1.0) * angle * angle / ((2.0 * count) * (2.0 * count + 1.0)); seno = seno + term; count = count + 1
 	}
 	transition finish {
 		from sSeries
@@ -129,14 +135,17 @@ operation sqrt(n: real) {
 	var x1: real = 0.0
     
 	initial sInitial
-	state sLoop {
-		entry x0 = x1; x1 = (x0 + n / x0) / 2.0 // Newton-Raphson Formulas
-	}
+	junction sLoop
 	final sFinal
 
 	transition calculate {
 		from sInitial
 		to sLoop
+	}
+	transition loop {
+		from sLoop
+		to sLoop
+		action x0 = x1; x1 = (x0 + n / x0) / 2.0 // Newton-Raphson Formulas
 	}
 	transition finish {
 		from sLoop
@@ -158,13 +167,17 @@ operation pow(x: real, n: int) {
 	var res: real = 1.0
 	
 	initial sInitial
-	state sLoop {
-		entry res = res * x; count = count + 1	
-	}
+	junction sLoop
 	final sFinal
+
 	transition calculate {
 		from sInitial
 		to sLoop
+	}
+	transition loop {
+		from sLoop
+		to sLoop
+		action res = res * x; count = count + 1	
 	}
 	transition finish {
 		from sLoop
@@ -189,14 +202,17 @@ operation atan(angle: real) {
 	var offset: real = 0
 
 	initial sInitial
-	state sLoop {
-		entry pow(angle, (2 * count + 1)); offset = (powResult) / (2 * count + 1); if (count % 2 == 0) then res = res + offset else res = res - offset end
-	}
+	junction sLoop
 	final sFinal
 
 	transition calculate {
 		from sInitial
 		to sLoop
+	}
+	transition loop {
+		from sLoop
+		to sLoop
+		action pow(angle, (2 * count + 1)); offset = (powResult) / (2 * count + 1); if (count % 2 == 0) then res = res + offset else res = res - offset end
 	}
 	transition finish {
 		from sLoop
@@ -238,7 +254,5 @@ operation atan2(y: real, x: real) {
 									end
 								end
 							end 
-						}
-	
+						}	
 }
-

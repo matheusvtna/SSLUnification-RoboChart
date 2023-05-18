@@ -53,17 +53,12 @@ operation robotHasBallContact(robot: Robot) {
 	requires RobotHasBallContactI
 	
 	// States.
-	initial sInitial
-	state sRobotHasBallContact {}	
+	initial sInitial	
 	final sFinal
 	
 	// Transitions.
-	transition start {
-		from sInitial
-		to sRobotHasBallContact
-	}
-	transition finish {		
-		from sRobotHasBallContact
+	transition finish {
+		from sInitial		
 		to sFinal
 		action robotHasBallContactResult = robot.feedback.ir
 	}
@@ -100,36 +95,28 @@ operation AllyIsBehind(robot: Robot, point: Point, target: Point, angleThreshold
 	var angleBetweenVectors: real
 	
 	initial sInitial
-	state sGetVectorPointToTarget {
-		entry point2target = createUnitVectorResult
-	}
-	state sGetVectorAllyToPoint {
-		entry ally2target = createUnitVectorResult
-	}	
-	state sGetAngleBetweenVectors {
-		entry angleBetweenVectors = angleBetweenVectorsResult
-	}
 	final sFinal
-	
-	transition calculateVectorPointToTarget{
-		from sInitial
-		to sGetVectorPointToTarget
-		action CreateVector(point, target); CreateUnitVector(createVectorResult)
-	}
-	transition calculateVectorAlly2Point {
-		from sGetVectorPointToTarget
-		to sGetVectorAllyToPoint
-		action CreateVector(robot.position, point); CreateUnitVector(createVectorResult)
-	}	
-	transition calculateAngleBetweenVectors {
-		from sGetVectorAllyToPoint
-		to sGetAngleBetweenVectors
-		action AngleBetweenVectors(point2target, ally2target)
-	}
+
 	transition finish {
-		from sGetAngleBetweenVectors
+		from sInitial
 		to sFinal
-		action allyIsBehindResult = -angleThreshold < angleBetweenVectors /\ angleBetweenVectors < angleThreshold
+		action 
+			// Calculate point2target
+			CreateVector(point, target); 
+			CreateUnitVector(createVectorResult);
+			point2target = createUnitVectorResult;
+
+			// Calculate ally2target
+			CreateVector(robot.position, point); 
+			CreateUnitVector(createVectorResult);
+			ally2target = createUnitVectorResult;
+			
+			// Calculate angle between vectors
+			AngleBetweenVectors(point2target, ally2target);
+			angleBetweenVectors = angleBetweenVectorsResult;
+
+			// Result
+			allyIsBehindResult = -angleThreshold < angleBetweenVectors /\ angleBetweenVectors < angleThreshold
 	}
 }
 
@@ -216,51 +203,48 @@ operation AllyIsLookingToBall(robot: Robot, ball: Ball) {
 	requires FromPolarI
 	requires degreesToRadiansI
 	
+	// Constants
 	var ROBOT_RADIUS: real = 90.0
-	var ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER: real
+	var ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_DEGREES: real = 60.0
+	var ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_RADIANS: real
 	
+	// Start values.
 	var robotCenter: Point = robot.position
 	var robotAngle: real = robot.angle
 	var robotFront: Point
 	var ballPosition: Point = ball.pos
 	
+	// Calculated values.
 	var robotCenterToFrontUnitVector: Point
 	var robotToBallUnitVector: Point
-	
 	var angle: real
 	
 	initial sInitial
-	state sGetRobotCenterToFrontUnitVector {
-		entry robotCenterToFrontUnitVector = createUnitVectorResult
-	}
-	state sGetRobotCenterToBallUnitVector {
-		entry robotToBallUnitVector = createUnitVectorResult
-	}
-	state sGetAngleBetweenUnitVectors {
-		entry angle = angleBetweenVectorsResult
-	}
 	final sFinal
 
-	transition calculateRobotCenterToFrontUnitVector {
-		from sInitial
-		to sGetRobotCenterToFrontUnitVector
-		action degreesToRadians(60); ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER = degreesToRadiansResult; FromPolar(ROBOT_RADIUS, robotAngle); CreateVector(robotCenter, FromPolarResult); CreateUnitVector(createVectorResult)
-	}
-	
-	transition calculateRobotCenterToBallUnitVector {
-		from sGetRobotCenterToFrontUnitVector
-		to sGetRobotCenterToBallUnitVector
-		action CreateVector(robotCenter, ballPosition); CreateUnitVector(createVectorResult)
-	}
-	transition calculateAngleBetweenVectors {
-		from sGetRobotCenterToBallUnitVector
-		to sGetAngleBetweenUnitVectors
-		action AngleBetweenVectors(robotCenterToFrontUnitVector, robotToBallUnitVector)
-	}
 	transition finish {
-		from sGetAngleBetweenUnitVectors
+		from sInitial
 		to sFinal
-		action allyIsLookingToBallResult = (-ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER < angle) /\ (angle < ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER)
+		action 
+			// Calculate RobotCenterToFrontUnitVector
+			degreesToRadians(ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_DEGREES); 
+			ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_RADIANS = degreesToRadiansResult;
+			FromPolar(ROBOT_RADIUS, robotAngle); 
+			CreateVector(robotCenter, FromPolarResult); 
+			CreateUnitVector(createVectorResult);
+			robotCenterToFrontUnitVector = createUnitVectorResult;
+
+			// Calculate RobotCenterToBallUnitVector
+			CreateVector(robotCenter, ballPosition); 
+			CreateUnitVector(createVectorResult);
+			robotToBallUnitVector = createUnitVectorResult;
+
+			// Calculate AngleBetweenVectors
+			AngleBetweenVectors(robotCenterToFrontUnitVector, robotToBallUnitVector);
+			angle = angleBetweenVectorsResult;
+		
+			// Result
+			allyIsLookingToBallResult = (-ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER < angle) /\ (angle < ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER)
 	}
 }
 
@@ -322,107 +306,3 @@ operation AllyIsPushingBallWithHisBack(robot: Robot, ball: Ball) {
 		action AllyIsLookingToBall(robot, ball) ; AllyIsCloseToBall(robot, ball); allyIsPushingBallWithHisBackResult = (not allyIsLookingToBallResult) /\ allyIsCloseToBallResult
 	}
 }
-
-
-// ============================================
-// =           GETTERS AND SETTERS            =
-// ============================================
-//
-// --------------------------------------------
-//               ROBOT POSITION
-// --------------------------------------------
-interface GetPositionFromRobotI {
-	var getPositionFromRobotResult : Point
-}
-
-// This operation works as a function to get 
-// the position from a robot.
-//
-// @param robot: Robot
-//
-// @return [Point] The robot position vector. 
-operation getPositionFromRobot(robot: Robot) {
-	requires GetPositionFromRobotI
-	
-	// States.
-	initial sInitial
-	state sGetPositionFromRobot {}	
-	final sFinal
-	
-	// Transitions.
-	transition start {
-		from sInitial
-		to sGetPositionFromRobot
-	}
-	transition finish {		
-		from sGetPositionFromRobot
-		to sFinal
-		action getPositionFromRobotResult = robot.position
-	}
-}	
-
-// --------------------------------------------
-//               ROBOT ANGLE
-// --------------------------------------------
-interface GetAngleFromRobotI {
-	var getAngleFromRobotResult : real
-}
-
-// This operation works as a function to get 
-// the angle from a robot.
-//
-// @param robot: Robot
-//
-// @return [real] The robot angle. 
-operation getAngleFromRobot(robot: Robot) {
-	requires GetAngleFromRobotI
-	
-	// States.
-	initial sInitial
-	state sGetAngleFromRobot {}	
-	final sFinal
-	
-	// Transitions.
-	transition start {
-		from sInitial
-		to sGetAngleFromRobot
-	}
-	transition finish {		
-		from sGetAngleFromRobot
-		to sFinal
-		action getAngleFromRobotResult = robot.angle
-	}
-}	
-
-// --------------------------------------------
-//               ROBOT FEEDBACK
-// --------------------------------------------
-interface GetFeedbackFromRobotI {
-	var getFeedbackFromRobotResult : RobotFeedback
-}
-
-// This operation works as a function to get 
-// the feedback from a robot.
-//
-// @param robot: Robot
-//
-// @return [RobotFeedback] The robot feedback. 
-operation getFeedbackFromRobot(robot: Robot) {
-	requires GetFeedbackFromRobotI
-	
-	// States.
-	initial sInitial
-	state sGetFeedbackFromRobot {}	
-	final sFinal
-	
-	// Transitions.
-	transition start {
-		from sInitial
-		to sGetFeedbackFromRobot
-	}
-	transition finish {		
-		from sGetFeedbackFromRobot
-		to sFinal
-		action getFeedbackFromRobotResult = robot.feedback
-	}
-}	
