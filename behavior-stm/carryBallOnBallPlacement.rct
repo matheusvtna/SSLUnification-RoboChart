@@ -28,10 +28,10 @@ operation carryBallOnBallPlacement (frame: Frame, targetPosition: Point) {
 	var ball: Ball = frame.ball
 
 	// Constants.
-	const DIST_THRESHOLD_BALL_TO_TARGET: real = 150
-	const DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH: real = 500
-	const DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED: real = 200
-	const MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES: real = 60
+	const DIST_THRESHOLD_BALL_TO_TARGET: real = 150.0
+	const DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH: real = 500.0
+	const DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED: real = 200.0
+	const MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES: real = 60.0
 	const TIME_TO_PLACE_BALL_IN_SECONDS: nat = 30
 
 	// States.
@@ -53,7 +53,7 @@ operation carryBallOnBallPlacement (frame: Frame, targetPosition: Point) {
 	}
 	final sFinal
 	
-	// SUccess Transitions.
+	// Success Transitions.
 	transition AdjustToCarryBall {
 		from sInitial
 		to sGoToBehindBall

@@ -244,7 +244,7 @@ operation AllyIsLookingToBall(robot: Robot, ball: Ball) {
 			angle = angleBetweenVectorsResult;
 		
 			// Result
-			allyIsLookingToBallResult = (-ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER < angle) /\ (angle < ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER)
+			allyIsLookingToBallResult = (-ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_RADIANS < angle) /\ (angle < ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_RADIANS)
 	}
 }
 

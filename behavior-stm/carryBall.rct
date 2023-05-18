@@ -25,32 +25,39 @@ operation carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real
 	var ball: Ball = frame.ball
 	var ballPosition: Point = ball.pos
 	var distance: real
+
+	// Variables conditions.
+	var allyHasBall: boolean
 	
 	// States.
 	initial sInitial
-	state GetDistanceBetweenBallAndTarget {
-		entry GetDistanceBetweenTwoPoints(ballPosition, targetPosition); AllyHasBall(robot, ball)
-		exit distance = getDistanceBetweenTwoPointsResult
+	state sCarryBall {
+		entry 
+			GetDistanceBetweenTwoPoints(ballPosition, targetPosition); 
+			distance = getDistanceBetweenTwoPointsResult;
+
+			AllyHasBall(robot, ball);
+			allyHasBall = allyHasBallResult
 	}
 	final sFinal
 	
 	// Transitions.
 	transition start {
 		from sInitial
-		to GetDistanceBetweenBallAndTarget
+		to sCarryBall
 	}
 	
 	transition success {		
-		from GetDistanceBetweenBallAndTarget
+		from sCarryBall
 		to sFinal
-		condition getDistanceBetweenTwoPointsResult < distanceThreshold
+		condition distance < distanceThreshold
 		action nodeStatus = NODE_STATUS::DONE
 	}
 	
 	transition fail {		
-		from GetDistanceBetweenBallAndTarget
+		from sCarryBall
 		to sFinal
-		condition not allyHasBallResult
+		condition not allyHasBall
 		action nodeStatus = NODE_STATUS::FAILED
 	}
 }

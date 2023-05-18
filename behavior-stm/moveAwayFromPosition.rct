@@ -28,7 +28,7 @@ operation moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceT
 		
 	// States.
 	initial sInitial
-	state MoveAway {
+	state sMoveAway {
 		entry robotPosition = frame.robot.position; GetDistanceBetweenTwoPoints(robotPosition, dangerousPosition)
 	}	
 	final sFinal
@@ -36,21 +36,21 @@ operation moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceT
 	// Transitions.
 	transition start {
 		from sInitial
-		to MoveAway
+		to sMoveAway
 	}
 	
 	transition success {		
-		from MoveAway
+		from sMoveAway
 		to sFinal
 		condition getDistanceBetweenTwoPointsResult >= distanceThreshold
 		action nodeStatus = NODE_STATUS::DONE
 	}
 	
 	transition fail {		
-		from MoveAway
+		from sMoveAway
 		to sFinal
 		// Como remover esse warning? O que isso significa? 
-		condition sinceEntry(MoveAway) > TIME_LIMIT_TO_BEHAVE /\ getDistanceBetweenTwoPointsResult < distanceThreshold
+		condition sinceEntry(sMoveAway) > TIME_LIMIT_TO_BEHAVE /\ getDistanceBetweenTwoPointsResult < distanceThreshold
 		action nodeStatus = NODE_STATUS::FAILED
 	}
 }

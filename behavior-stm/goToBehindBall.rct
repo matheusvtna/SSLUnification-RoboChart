@@ -26,10 +26,24 @@ operation goToBehindBall(targetPosition: Point, angleThreshold: real) {
 	var robot: Robot	
 	var ball: Ball
 
+	// Variables conditions.
+	var allyIsBehindBall: boolean
+	var allyIsCloseToBall: boolean
+	var allyIsPushingBallWithHisBack: boolean
+
 	// States.
 	initial sInitial
 	state sGoToBehindBall {
-		entry AllyIsBehind(robot, ball.pos, targetPosition, angleThreshold); AllyIsCloseToBall(robot, ball); AllyIsPushingBallWithHisBack(robot, ball)
+		entry 			
+			AllyIsBehind(robot, ball.pos, targetPosition, angleThreshold); 
+			allyIsBehindBall = allyIsBehindResult;
+		
+			AllyIsCloseToBall(robot, ball); 
+			allyIsCloseToBall = allyIsCloseToBallResult;
+
+			AllyIsPushingBallWithHisBack(robot, ball);
+			allyIsPushingBallWithHisBack = allyIsPushingBallWithHisBackResult
+
 	}	
 	final sFinal
 	
@@ -43,14 +57,14 @@ operation goToBehindBall(targetPosition: Point, angleThreshold: real) {
 	transition success {		
 		from sGoToBehindBall
 		to sFinal
-		condition (allyIsBehindResult /\ allyIsCloseToBallResult) 
+		condition (allyIsBehindBall /\ allyIsCloseToBall) 
 		action nodeStatus = NODE_STATUS::DONE
 	}
 	
 	transition fail {		
 		from sGoToBehindBall
 		to sFinal
-		condition allyIsPushingBallWithHisBackResult
+		condition allyIsPushingBallWithHisBack
 		action nodeStatus = NODE_STATUS::FAILED
 	}
 }	

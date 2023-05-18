@@ -23,35 +23,47 @@ operation approachBall(ball: Ball, angleThreshold: real) {
 	requires AllyIsCloseToBallI
 	requires AllyHasBallI
 	
-	// Robot instance.
+	// Start values.
 	var robot: Robot
-	
 	var target: Point
+
+	// Variables conditions.
+	var allyIsBehindBall: boolean
+	var allyIsCloseToBall: boolean
+	var allyHasBall: boolean
 	
 	// States.
 	initial sInitial
-	state Approach {
-		entry AllyIsBehind(robot, ball.pos, target, angleThreshold); AllyIsCloseToBall(robot, ball); AllyHasBall(robot, ball)
+	state sApproach {
+		entry 
+			AllyIsBehind(robot, ball.pos, target, angleThreshold); 
+			allyIsBehindBall = allyIsBehindResult;
+
+			AllyIsCloseToBall(robot, ball); 
+			allyIsCloseToBall = allyIsCloseToBallResult;
+
+			AllyHasBall(robot, ball);
+			allyHasBall = allyHasBallResult
 	}	
 	final sFinal
 	
 	// Transitions.
 	transition start {
 		from sInitial
-		to Approach
+		to sApproach
 	}
 	
 	transition success {		
-		from Approach
+		from sApproach
 		to sFinal
-		condition allyHasBallResult
+		condition allyHasBall
 		action nodeStatus = NODE_STATUS::DONE
 	}
 	
 	transition fail {
-		from Approach
+		from sApproach
 		to sFinal
-		condition (not allyIsBehindResult \/ not allyIsCloseToBallResult)
+		condition (not allyIsBehindBall \/ not allyIsCloseToBall)
 		action nodeStatus = NODE_STATUS::FAILED
 	}
 }	
