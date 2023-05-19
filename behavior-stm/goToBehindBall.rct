@@ -34,7 +34,8 @@ operation goToBehindBall(targetPosition: Point, angleThreshold: real) {
 	// States.
 	initial sInitial
 	state sGoToBehindBall {
-		entry 			
+		entry 
+			nodeStatus = NODE_STATUS::RUNNING;	
 			AllyIsBehind(robot, ball.pos, targetPosition, angleThreshold); 
 			allyIsBehindBall = allyIsBehindResult;
 		
@@ -59,6 +60,13 @@ operation goToBehindBall(targetPosition: Point, angleThreshold: real) {
 		to sFinal
 		condition (allyIsBehindBall /\ allyIsCloseToBall) 
 		action nodeStatus = NODE_STATUS::DONE
+	}
+	
+	transition recalculate {
+		from sGoToBehindBall
+		to sGoToBehindBall
+		condition not (allyIsBehindBall /\ allyIsCloseToBall) /\ not allyIsPushingBallWithHisBack
+		action nodeStatus = NODE_STATUS::RUNNING
 	}
 	
 	transition fail {		

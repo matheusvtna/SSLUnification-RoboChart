@@ -35,7 +35,8 @@ operation approachBall(ball: Ball, angleThreshold: real) {
 	// States.
 	initial sInitial
 	state sApproach {
-		entry 
+		entry
+			nodeStatus = NODE_STATUS::RUNNING;
 			AllyIsBehind(robot, ball.pos, target, angleThreshold); 
 			allyIsBehindBall = allyIsBehindResult;
 
@@ -58,6 +59,13 @@ operation approachBall(ball: Ball, angleThreshold: real) {
 		to sFinal
 		condition allyHasBall
 		action nodeStatus = NODE_STATUS::DONE
+	}
+	
+	transition recalculate {
+		from sApproach
+		to sApproach
+		condition (not allyHasBall) /\ not (not allyIsBehindBall \/ not allyIsCloseToBall)
+		action nodeStatus = NODE_STATUS::RUNNING
 	}
 	
 	transition fail {

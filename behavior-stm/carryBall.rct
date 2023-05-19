@@ -32,7 +32,8 @@ operation carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real
 	// States.
 	initial sInitial
 	state sCarryBall {
-		entry 
+		entry
+			nodeStatus = NODE_STATUS::RUNNING;
 			GetDistanceBetweenTwoPoints(ballPosition, targetPosition); 
 			distance = getDistanceBetweenTwoPointsResult;
 
@@ -52,6 +53,13 @@ operation carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real
 		to sFinal
 		condition distance < distanceThreshold
 		action nodeStatus = NODE_STATUS::DONE
+	}
+	
+	transition recalculate {
+		from sCarryBall
+		to sCarryBall
+		condition (not distance < distanceThreshold) /\ allyHasBall
+		action nodeStatus = NODE_STATUS::RUNNING
 	}
 	
 	transition fail {		

@@ -29,7 +29,7 @@ operation moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceT
 	// States.
 	initial sInitial
 	state sMoveAway {
-		entry robotPosition = frame.robot.position; GetDistanceBetweenTwoPoints(robotPosition, dangerousPosition)
+		entry nodeStatus = NODE_STATUS::RUNNING; robotPosition = frame.robot.position; GetDistanceBetweenTwoPoints(robotPosition, dangerousPosition)
 	}	
 	final sFinal
 	
@@ -44,6 +44,13 @@ operation moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceT
 		to sFinal
 		condition getDistanceBetweenTwoPointsResult >= distanceThreshold
 		action nodeStatus = NODE_STATUS::DONE
+	}
+	
+	transition recalculate {
+		from sMoveAway
+		to sMoveAway
+		condition (not getDistanceBetweenTwoPointsResult >= distanceThreshold) /\ (not (sinceEntry(sMoveAway) > TIME_LIMIT_TO_BEHAVE /\ getDistanceBetweenTwoPointsResult < distanceThreshold))
+		action nodeStatus = NODE_STATUS::RUNNING
 	}
 	
 	transition fail {		
