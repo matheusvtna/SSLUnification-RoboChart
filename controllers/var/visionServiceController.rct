@@ -3,6 +3,8 @@ import frame
 interface IVisionVAR {
 	event receiveRawFrame: string	
 	event sendProcessedFrame: Frame
+	
+	event receiveParams: string
 }
 
 controller VisionServiceController {

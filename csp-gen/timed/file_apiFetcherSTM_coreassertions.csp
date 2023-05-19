@@ -1,0 +1,33 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 18-05-2023 20:44:46
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_apiFetcherSTM.csp"
+
+-- generate APIFetcherSTM
+P_APIFetcherSTM = let
+	id__ = 0
+	
+	
+	
+within
+	APIFetcherSTM::O__(
+		id__
+	)
+assert P_APIFetcherSTM :[deadlock-free]	
+assert P_APIFetcherSTM;RUN({r__}) :[deadlock-free]
+assert P_APIFetcherSTM :[deterministic]
+assert P_APIFetcherSTM :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_APIFetcherSTM[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_APIFetcherSTM
+
+
+

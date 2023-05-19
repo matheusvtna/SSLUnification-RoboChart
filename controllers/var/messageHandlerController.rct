@@ -3,7 +3,14 @@ interface IMessageHandlerVAR {
 	event sendGameStatus: string
 	
 	event receiveProcessedFrame: Frame
-	event sendFrame: string
+	event sendFrameToReferee: Frame
+	event sendFrameToGame: Frame
+	
+	event sendStreamData: StreamData
+	
+	event receiveParams: string
+	event sendVisionParams: string
+	event sendRefereeParams: string
 }
 
 // It corresponds to Message framework.

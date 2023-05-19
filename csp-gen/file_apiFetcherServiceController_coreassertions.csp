@@ -1,0 +1,43 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 18-05-2023 21:13:45
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_apiFetcherServiceController.csp"
+
+
+
+-- generate APIFetcherServiceController
+P_APIFetcherServiceController = let
+	id__ = 0
+	
+	
+	
+		
+within
+	APIFetcherServiceController::O__(id__)
+
+assert P_APIFetcherServiceController :[deadlock-free]	
+assert P_APIFetcherServiceController;RUN({r__}) :[deadlock-free]
+assert P_APIFetcherServiceController :[deterministic]
+assert P_APIFetcherServiceController :[divergence-free]
+
+-- generate APIFetcherServiceController_stm_ref0
+P_APIFetcherServiceController_stm_ref0 = let
+	id__ = 0
+	
+	
+	
+within
+	APIFetcherServiceController::stm_ref0::O__(
+		id__
+	)
+assert P_APIFetcherServiceController_stm_ref0 :[deadlock-free]	
+assert P_APIFetcherServiceController_stm_ref0;RUN({r__}) :[deadlock-free]
+assert P_APIFetcherServiceController_stm_ref0 :[deterministic]
+assert P_APIFetcherServiceController_stm_ref0 :[divergence-free]
+

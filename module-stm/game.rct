@@ -1,0 +1,10 @@
+stm GameSTM {
+	
+	initial i
+	final f
+	
+	transition t1 {
+		from i 
+		to f
+	}
+}

@@ -1,0 +1,13 @@
+import frame
+import StreamDatabaseController 
+
+interface IAPIFetcherVAR {
+	event receiveStreamData: StreamData	
+	event sendStreamData: StreamData
+}
+
+controller APIFetcherServiceController {
+	uses IAPIFetcherVAR
+	// TODO: Desenvolver APIFetcherSTM.
+	sref stm_ref0 = APIFetcherSTM
+}

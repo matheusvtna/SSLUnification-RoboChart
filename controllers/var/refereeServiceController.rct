@@ -1,7 +1,10 @@
 interface IRefereeVAR {
 	event receiveRawGameEvent: string
-	
 	event sendGameStatus: string
+	
+	event receiveProcessedFrame: Frame
+	
+	event receiveParams: string
 }
 
 controller RefereeServiceController {

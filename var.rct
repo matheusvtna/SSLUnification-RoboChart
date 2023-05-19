@@ -16,13 +16,39 @@ module SSL_VAR {
 	cref visionServiceControllerRef = VisionServiceController
 	cref refereeServiceControllerRef = RefereeServiceController 
 	cref messageHandlerControllerRef = MessageHandlerController
+	cref apiFetcherServiceControllerRef = APIFetcherServiceController
+	cref streamDatabaseControllerRef = StreamDatabaseController
+	cref gameControllerRef = GameController
+	
 	
 	// Controllers connections.
 	connection VAREnv on sendRawFrame to visionServiceControllerRef on receiveRawFrame ( _async )
 	connection VAREnv on sendRawGameEvent to refereeServiceControllerRef on receiveRawGameEvent ( _async )
 
-	connection refereeServiceControllerRef on sendGameStatus to messageHandlerControllerRef on receiveGameStatus ( _async )	
+	// Processed Frame by Vision Service.
 	connection visionServiceControllerRef on sendProcessedFrame to messageHandlerControllerRef on receiveProcessedFrame ( _async )
 
+	// Processed Frame to Referee Parse Game Event + Processed Game Status.
+	connection messageHandlerControllerRef on sendFrameToReferee to refereeServiceControllerRef on receiveProcessedFrame ( _async )
+	connection refereeServiceControllerRef on sendGameStatus to messageHandlerControllerRef on receiveGameStatus ( _async )	
+	
+	// Save Stream Data.
+	connection messageHandlerControllerRef on sendStreamData to apiFetcherServiceControllerRef on receiveStreamData ( _async )
+	connection apiFetcherServiceControllerRef on sendStreamData to streamDatabaseControllerRef on receiveStreamData ( _async )
+	
+	// Game Visualization.
+	connection messageHandlerControllerRef on sendGameStatus to gameControllerRef on receiveProcessedGameStatus ( _async )
+	connection messageHandlerControllerRef on sendFrameToGame to gameControllerRef on receiveProcessedFrame ( _async )
+		
+	// Replay Data.
+	connection streamDatabaseControllerRef on sendStreamData to gameControllerRef on receiveStreamData ( _async )
+	
+	// Game Requests to Stream Replay.
+	connection gameControllerRef on askForSavedGameEvent to streamDatabaseControllerRef on handleGameEventRequest ( _async )
+	connection gameControllerRef on askForTimestamp to streamDatabaseControllerRef on handleTimestampRequest ( _async )
+	
+	// PARAMS.
+	connection gameControllerRef on sendParams to messageHandlerControllerRef on receiveParams ( _async )
+	connection messageHandlerControllerRef on sendRefereeParams to refereeServiceControllerRef on receiveParams ( _async )
+	connection messageHandlerControllerRef on sendVisionParams to visionServiceControllerRef on receiveParams ( _async )
 }
-

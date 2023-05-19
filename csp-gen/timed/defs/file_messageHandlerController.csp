@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 17-05-2023 21:56:54
+-- Automatically generated on 18-05-2023 21:20:45
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -23,7 +23,12 @@
 		channel receiveGameStatus: InOut.core_string
 		channel sendGameStatus: InOut.core_string
 		channel receiveProcessedFrame: InOut.Frame
-		channel sendFrame: InOut.core_string
+		channel sendFrameToReferee: InOut.Frame
+		channel sendFrameToGame: InOut.Frame
+		channel sendStreamData: InOut.StreamData
+		channel receiveParams: InOut.core_string
+		channel sendVisionParams: InOut.core_string
+		channel sendRefereeParams: InOut.core_string
 		
 		
 		
@@ -38,7 +43,12 @@
 		,	receiveGameStatus,
 			sendGameStatus,
 			receiveProcessedFrame,
-			sendFrame
+			sendFrameToReferee,
+			sendFrameToGame,
+			sendStreamData,
+			receiveParams,
+			sendVisionParams,
+			sendRefereeParams
 		|}
 		
 		-- set of visible memory events

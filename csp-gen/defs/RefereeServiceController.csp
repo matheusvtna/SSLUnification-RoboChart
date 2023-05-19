@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 17-05-2023 21:57:31
+-- Automatically generated on 18-05-2023 21:24:03
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -20,6 +20,8 @@
 		-- declaring controller events
 		channel receiveRawGameEvent: InOut.core_string
 		channel sendGameStatus: InOut.core_string
+		channel receiveProcessedFrame: InOut.Frame
+		channel receiveParams: InOut.core_string
 		
 		
 		
@@ -32,7 +34,9 @@
 		sem__events = {|
 			terminate
 		,	receiveRawGameEvent,
-			sendGameStatus
+			sendGameStatus,
+			receiveProcessedFrame,
+			receiveParams
 		|}
 
 		-- defined operations

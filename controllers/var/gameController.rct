@@ -1,0 +1,19 @@
+import frame
+
+interface IGame {
+	event receiveProcessedFrame: Frame	
+	event receiveProcessedGameStatus: string
+	
+	event askForSavedGameEvent: string
+	event askForTimestamp: nat
+	
+	event receiveStreamData: StreamData
+	
+	event sendParams: string
+}
+
+controller GameController {
+	uses IGame
+	// TODO: Desenvolver GameSTM.
+	sref stm_ref0 = GameSTM
+}

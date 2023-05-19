@@ -1,0 +1,17 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 18-05-2023 21:16:21
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+-- data definitions used by platform:/resource/SSLUnification/controllers/var/streamDatabaseController.rct
+nametype StreamData = (Frame,core_string)
+StreamData_frame((frame,gameStatus)) = frame
+update_StreamData_frame((frame,gameStatus),v__) = (v__,gameStatus)
+StreamData_gameStatus((frame,gameStatus)) = gameStatus
+update_StreamData_gameStatus((frame,gameStatus),v__) = (frame,v__)
+
+	

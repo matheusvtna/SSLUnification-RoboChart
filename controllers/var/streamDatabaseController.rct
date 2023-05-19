@@ -1,0 +1,18 @@
+datatype StreamData {
+	frame: Frame
+	gameStatus: string
+}
+
+interface IStreamDatabase {
+	event receiveStreamData: StreamData
+	event sendStreamData: StreamData
+	
+	event handleGameEventRequest: string
+	event handleTimestampRequest: nat
+}
+
+controller StreamDatabaseController {
+	uses IStreamDatabase
+	// TODO: Desenvolver StreamDatabaseSTM.
+	sref stm_ref0 = StreamDatabaseSTM
+}

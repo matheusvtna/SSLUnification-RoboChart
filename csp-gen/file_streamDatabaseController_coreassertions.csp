@@ -1,0 +1,43 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 18-05-2023 21:16:21
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_streamDatabaseController.csp"
+
+
+
+-- generate StreamDatabaseController
+P_StreamDatabaseController = let
+	id__ = 0
+	
+	
+	
+		
+within
+	StreamDatabaseController::O__(id__)
+
+assert P_StreamDatabaseController :[deadlock-free]	
+assert P_StreamDatabaseController;RUN({r__}) :[deadlock-free]
+assert P_StreamDatabaseController :[deterministic]
+assert P_StreamDatabaseController :[divergence-free]
+
+-- generate StreamDatabaseController_stm_ref0
+P_StreamDatabaseController_stm_ref0 = let
+	id__ = 0
+	
+	
+	
+within
+	StreamDatabaseController::stm_ref0::O__(
+		id__
+	)
+assert P_StreamDatabaseController_stm_ref0 :[deadlock-free]	
+assert P_StreamDatabaseController_stm_ref0;RUN({r__}) :[deadlock-free]
+assert P_StreamDatabaseController_stm_ref0 :[deterministic]
+assert P_StreamDatabaseController_stm_ref0 :[divergence-free]
+

@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 17-05-2023 21:58:05
+-- Automatically generated on 18-05-2023 21:26:55
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -73,4 +73,49 @@ assert P_SSL_VAR_messageHandlerControllerRef :[deadlock-free]
 assert P_SSL_VAR_messageHandlerControllerRef;RUN({r__}) :[deadlock-free]
 assert P_SSL_VAR_messageHandlerControllerRef :[deterministic]
 assert P_SSL_VAR_messageHandlerControllerRef :[divergence-free]
+
+-- generate SSL_VAR_apiFetcherServiceControllerRef
+P_SSL_VAR_apiFetcherServiceControllerRef = let
+	id__ = 0
+	
+	
+	
+		
+within
+	SSL_VAR::apiFetcherServiceControllerRef::O__(id__)
+
+assert P_SSL_VAR_apiFetcherServiceControllerRef :[deadlock-free]	
+assert P_SSL_VAR_apiFetcherServiceControllerRef;RUN({r__}) :[deadlock-free]
+assert P_SSL_VAR_apiFetcherServiceControllerRef :[deterministic]
+assert P_SSL_VAR_apiFetcherServiceControllerRef :[divergence-free]
+
+-- generate SSL_VAR_streamDatabaseControllerRef
+P_SSL_VAR_streamDatabaseControllerRef = let
+	id__ = 0
+	
+	
+	
+		
+within
+	SSL_VAR::streamDatabaseControllerRef::O__(id__)
+
+assert P_SSL_VAR_streamDatabaseControllerRef :[deadlock-free]	
+assert P_SSL_VAR_streamDatabaseControllerRef;RUN({r__}) :[deadlock-free]
+assert P_SSL_VAR_streamDatabaseControllerRef :[deterministic]
+assert P_SSL_VAR_streamDatabaseControllerRef :[divergence-free]
+
+-- generate SSL_VAR_gameControllerRef
+P_SSL_VAR_gameControllerRef = let
+	id__ = 0
+	
+	
+	
+		
+within
+	SSL_VAR::gameControllerRef::O__(id__)
+
+assert P_SSL_VAR_gameControllerRef :[deadlock-free]	
+assert P_SSL_VAR_gameControllerRef;RUN({r__}) :[deadlock-free]
+assert P_SSL_VAR_gameControllerRef :[deterministic]
+assert P_SSL_VAR_gameControllerRef :[divergence-free]
 
