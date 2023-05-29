@@ -24,12 +24,14 @@ operation moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceT
 	requires GetDistanceBetweenTwoPointsI
 	
 	var robotPosition: Point  
+	var robotIsFarEnoughFromPosition: boolean
+	
 	const TIME_LIMIT_TO_BEHAVE: nat = 30
 		
 	// States.
 	initial sInitial
 	state sMoveAway {
-		entry nodeStatus = NODE_STATUS::RUNNING; robotPosition = frame.robot.position; GetDistanceBetweenTwoPoints(robotPosition, dangerousPosition)
+		entry nodeStatus = NODE_STATUS::RUNNING; robotPosition = frame.robot.position; GetDistanceBetweenTwoPoints(robotPosition, dangerousPosition); robotIsFarEnoughFromPosition = getDistanceBetweenTwoPointsResult >= distanceThreshold 
 	}	
 	final sFinal
 	
@@ -42,14 +44,14 @@ operation moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceT
 	transition success {		
 		from sMoveAway
 		to sFinal
-		condition getDistanceBetweenTwoPointsResult >= distanceThreshold
+		condition robotIsFarEnoughFromPosition
 		action nodeStatus = NODE_STATUS::DONE
 	}
 	
 	transition recalculate {
 		from sMoveAway
 		to sMoveAway
-		condition (not getDistanceBetweenTwoPointsResult >= distanceThreshold) /\ (not (sinceEntry(sMoveAway) > TIME_LIMIT_TO_BEHAVE /\ getDistanceBetweenTwoPointsResult < distanceThreshold))
+		condition (not robotIsFarEnoughFromPosition) /\ (not (sinceEntry(sMoveAway) > TIME_LIMIT_TO_BEHAVE /\ (not robotIsFarEnoughFromPosition)))
 		action nodeStatus = NODE_STATUS::RUNNING
 	}
 	
@@ -57,7 +59,7 @@ operation moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceT
 		from sMoveAway
 		to sFinal
 		// Como remover esse warning? O que isso significa? 
-		condition sinceEntry(sMoveAway) > TIME_LIMIT_TO_BEHAVE /\ getDistanceBetweenTwoPointsResult < distanceThreshold
+		condition sinceEntry(sMoveAway) > TIME_LIMIT_TO_BEHAVE /\ (not robotIsFarEnoughFromPosition)
 		action nodeStatus = NODE_STATUS::FAILED
 	}
 }

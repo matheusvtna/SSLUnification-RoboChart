@@ -26,6 +26,7 @@ operation carryBallOnBallPlacement (frame: Frame, targetPosition: Point) {
 	// Robot instance.
 	var robot: Robot = frame.robot
 	var ball: Ball = frame.ball
+	var robotHasMovedAwayFromBall: boolean
 
 	// Constants.
 	const DIST_THRESHOLD_BALL_TO_TARGET: real = 150.0
@@ -49,7 +50,7 @@ operation carryBallOnBallPlacement (frame: Frame, targetPosition: Point) {
 		entry nodeStatus = NODE_STATUS::RUNNING; carryBall(frame, targetPosition, DIST_THRESHOLD_BALL_TO_TARGET)
 	}
 	state sMoveAwayFromBall {
-		entry nodeStatus = NODE_STATUS::RUNNING; moveAwayFromPosition(frame, targetPosition, DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH); GetDistanceBetweenTwoPoints(robot.position, ball.pos)
+		entry nodeStatus = NODE_STATUS::RUNNING; moveAwayFromPosition(frame, targetPosition, DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH); GetDistanceBetweenTwoPoints(robot.position, ball.pos); robotHasMovedAwayFromBall = getDistanceBetweenTwoPointsResult > DIST_THRESHOLD_BALL_TO_TARGET 
 	}
 	final sFinal
 	
@@ -113,7 +114,7 @@ operation carryBallOnBallPlacement (frame: Frame, targetPosition: Point) {
 	transition BallIsOutOfPosition {
 		from sMoveAwayFromBall
 		to sGoToBehindBall
-		condition getDistanceBetweenTwoPointsResult > DIST_THRESHOLD_BALL_TO_TARGET
+		condition robotHasMovedAwayFromBall
 	}
 	
 	// Self Transitions.
