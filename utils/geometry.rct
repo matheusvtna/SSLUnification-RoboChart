@@ -2,10 +2,20 @@ function smallestAngleDiff(source: real, target: real): real {
 	// TODO: Fazer função de diferença angular...
 }
 
+
+// --------------------------------------------
+//                   COSSENO
+// --------------------------------------------
 interface cosI {
 	var cosResult: real
 }
 
+// This operation works as a function to calculates
+// the cosine from an angle in radians. 
+//
+// @param angle: real [-PI, +PI]
+//
+// @return [real] cos(angle). 
 operation cos(angle: real) {
 	requires cosI
 
@@ -41,10 +51,20 @@ operation cos(angle: real) {
 	}
 }
 
+
+// --------------------------------------------
+//                   SENO
+// --------------------------------------------
 interface sinI {
 	var sinResult: real
 }
 
+// This operation works as a function to calculates
+// the sinus from an angle in radians. 
+//
+// @param angle: real [-PI, +PI]
+//
+// @return [real] sin(angle). 
 operation sin(angle: real) {
 	requires sinI
 
@@ -80,10 +100,19 @@ operation sin(angle: real) {
 	}
 }
 
+// --------------------------------------------
+//             DEGREES TO RADIANS
+// --------------------------------------------
 interface degreesToRadiansI {
 	var degreesToRadiansResult: real
 }
 
+// This operation works as a function to calculates
+// the mapping from degrees to radians from an angle. 
+//
+// @param degrees: real [-180, +180]
+//
+// @return [real] The angle in radians. 
 operation degreesToRadians(degrees: real) {
 	requires degreesToRadiansI
 	initial sInitial
@@ -100,10 +129,19 @@ operation degreesToRadians(degrees: real) {
 }
 
 
+// --------------------------------------------
+//             RADIANS TO DEGREES
+// --------------------------------------------
 interface radiansToDegreesI {
 	var radiansToDegreesResult: real
 }
 
+// This operation works as a function to calculates
+// the mapping from radians to degrees from an angle. 
+//
+// @param degrees: real [-PI, +PI]
+//
+// @return [real] The angle in degrees. 
 operation radiansToDegrees(radians: real) {
 	requires radiansToDegreesI
 	initial sInitial
@@ -119,10 +157,19 @@ operation radiansToDegrees(radians: real) {
 	}
 }
 
+// --------------------------------------------
+//                   SQRT
+// --------------------------------------------
 interface sqrtI {
 	var sqrtResult: real
 }
 
+// This operation works as a function to calculates
+// the square root from a real value. 
+//
+// @param n: real
+//
+// @return [real] The square root of n. 
 operation sqrt(n: real) {
 	requires sqrtI
 
@@ -155,11 +202,19 @@ operation sqrt(n: real) {
 	}
 }
 
-
+// --------------------------------------------
+//                   POWER
+// --------------------------------------------
 interface powI {
 	var powResult: real
 }
 
+// This operation works as a function to calculates
+// the power from a real value x with an exponent n. 
+//
+// @param n: real
+//
+// @return [real] x**n. 
 operation pow(x: real, n: int) {
 	requires powI
 	
@@ -187,10 +242,19 @@ operation pow(x: real, n: int) {
 	}
 }
 
+// --------------------------------------------
+//                   ATAN
+// --------------------------------------------
 interface atanI {
 	var atanResult: real
 }
 
+// This operation works as a function to calculates
+// the arc tangent from an angle in radians. 
+//
+// @param angle: real [-PI, +PI]
+//
+// @return [real] atan(angle). 
 operation atan(angle: real) {
 	requires atanI
 	requires powI
@@ -222,10 +286,20 @@ operation atan(angle: real) {
 	}
 } 
 
+// --------------------------------------------
+//                  ATAN 2
+// --------------------------------------------
 interface atan2I {
 	var atan2Result: real
 }
 
+// This operation works as a function to calculates
+// the arc tangent from a pair (x, y). 
+//
+// @param x: real
+// @param y: real
+//
+// @return [real] atan(y/x) 
 operation atan2(y: real, x: real) {
 	requires atanI
 	requires atan2I
@@ -244,15 +318,15 @@ operation atan2(y: real, x: real) {
 	transition finish {
 		from sInitial
 		to sFinal
-		action atan(y/x); if(x > 0) then atan2Result = atanResult
-							else if(y >= 0 /\ x < 0) then atan2Result = atanResult + PI
-								else if(y < 0 /\ x < 0) then atan2Result = atanResult - PI
-									else if(y > 0 /\ x == 0) then atan2Result = PI/2
-										else if(y < 0 /\ x == 0) then atan2Result = -PI/2
-											else atan2Result = 0 end
-										end
-									end
-								end
-							end 
-						}	
+		action if(x > 0) then atan(y/x); atan2Result = atanResult
+				else if(y >= 0 /\ x < 0) then atan(y/x); atan2Result = atanResult + PI
+					else if(y < 0 /\ x < 0) then atan(y/x); atan2Result = atanResult - PI
+						else if(y > 0 /\ x == 0) then atan2Result = PI/2
+							else if(y < 0 /\ x == 0) then atan2Result = -PI/2
+								else atan2Result = 0 end
+							end
+						end
+					end
+				end 
+			}	
 }
