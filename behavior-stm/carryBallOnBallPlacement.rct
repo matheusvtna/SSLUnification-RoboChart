@@ -115,5 +115,32 @@ operation carryBallOnBallPlacement (frame: Frame, targetPosition: Point) {
 		to sGoToBehindBall
 		condition getDistanceBetweenTwoPointsResult > DIST_THRESHOLD_BALL_TO_TARGET
 	}
+	
+	// Self Transitions.
+	transition KeepGoToBehindBall {
+		from sGoToBehindBall
+		to sGoToBehindBall
+		condition nodeStatus == NODE_STATUS::RUNNING
+	}
+	transition KeepApproachBall {
+		from sApproachBall
+		to sApproachBall
+		condition nodeStatus == NODE_STATUS::RUNNING
+	}
+	transition KeepPlaceBall {
+		from sPlaceBall
+		to sPlaceBall
+		condition nodeStatus == NODE_STATUS::RUNNING
+	}
+	transition KeepMovingAway {
+		from sMoveAwayFromBall
+		to sMoveAwayFromBall
+		condition nodeStatus == NODE_STATUS::RUNNING
+	}
+	transition KeepGivingSpace {
+		from sGiveSpaceToGetBall
+		to sGiveSpaceToGetBall
+		condition nodeStatus == NODE_STATUS::RUNNING
+	}
 }
 
