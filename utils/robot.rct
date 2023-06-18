@@ -177,7 +177,10 @@ operation AllyIsCloseToBall(robot: Robot, ball: Ball) {
 	transition finish {
 		from sInitial
 		to sFinal
-		action GetDistanceBetweenTwoPoints(robotPosition, ballPosition); distance = getDistanceBetweenTwoPointsResult; allyIsCloseToBallResult = distance < MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL
+		action 
+			GetDistanceBetweenTwoPoints(robotPosition, ballPosition);
+			distance = getDistanceBetweenTwoPointsResult; 
+			allyIsCloseToBallResult = distance < MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL
 	}
 }
 
@@ -273,7 +276,10 @@ operation AllyCanHaveBallOnDribbler(robot: Robot, ball: Ball) {
 	transition sCheck {
 		from sInitial
 		to sFinal
-		action AllyIsLookingToBall(robot, ball) ; AllyIsCloseToBall(robot, ball); allyCanHaveBallOnDribblerResult = allyIsLookingToBallResult /\ allyIsCloseToBallResult
+		action 
+			AllyIsLookingToBall(robot, ball); 
+			AllyIsCloseToBall(robot, ball); 
+			allyCanHaveBallOnDribblerResult = allyIsLookingToBallResult /\ allyIsCloseToBallResult
 	}
 }
 
@@ -302,7 +308,9 @@ operation AllyIsPushingBallWithHisBack(robot: Robot, ball: Ball) {
 	transition sCheck {
 		from sInitial
 		to sFinal
-		// TODO: Como é o NOT em RoboChart?
-		action AllyIsLookingToBall(robot, ball) ; AllyIsCloseToBall(robot, ball); allyIsPushingBallWithHisBackResult = (not allyIsLookingToBallResult) /\ allyIsCloseToBallResult
+		action 
+			AllyIsLookingToBall(robot, ball); 
+			AllyIsCloseToBall(robot, ball); 
+			allyIsPushingBallWithHisBackResult = (not allyIsLookingToBallResult) /\ allyIsCloseToBallResult
 	}
 }

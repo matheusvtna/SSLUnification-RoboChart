@@ -34,12 +34,13 @@ operation carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real
 	initial sInitial
 	state sCarryBall {
 		entry
-			nodeStatus = NODE_STATUS::RUNNING;
-			GetDistanceBetweenTwoPoints(ballPosition, targetPosition); 
-			ballIsPositioned = getDistanceBetweenTwoPointsResult < distanceThreshold;
-			
-			AllyHasBall(robot, ball);
-			allyHasBall = allyHasBallResult
+			nodeStatus = NODE_STATUS::RUNNING
+// Commenting the calls of the following operations for the FDR's validation						
+//			GetDistanceBetweenTwoPoints(ballPosition, targetPosition); 
+//			ballIsPositioned = getDistanceBetweenTwoPointsResult < distanceThreshold;
+//			
+//			AllyHasBall(robot, ball);
+//			allyHasBall = allyHasBallResult
 	}
 	final sFinal
 	

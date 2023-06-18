@@ -36,15 +36,16 @@ operation approachBall(ball: Ball, angleThreshold: real) {
 	initial sInitial
 	state sApproach {
 		entry
-			nodeStatus = NODE_STATUS::RUNNING;
-			AllyIsBehind(robot, ball.pos, target, angleThreshold); 
-			allyIsBehindBall = allyIsBehindResult;
-
-			AllyIsCloseToBall(robot, ball); 
-			allyIsCloseToBall = allyIsCloseToBallResult;
-
-			AllyHasBall(robot, ball);
-			allyHasBall = allyHasBallResult
+			nodeStatus = NODE_STATUS::RUNNING
+// Commenting the calls of the following operations for the FDR's validation			
+//			AllyIsBehind(robot, ball.pos, target, angleThreshold); 
+//			allyIsBehindBall = allyIsBehindResult;
+//
+//			AllyIsCloseToBall(robot, ball); 
+//			allyIsCloseToBall = allyIsCloseToBallResult;
+//
+//			AllyHasBall(robot, ball);
+//			allyHasBall = allyHasBallResult
 	}	
 	final sFinal
 	

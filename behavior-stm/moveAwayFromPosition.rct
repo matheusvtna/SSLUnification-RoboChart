@@ -31,7 +31,12 @@ operation moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceT
 	// States.
 	initial sInitial
 	state sMoveAway {
-		entry nodeStatus = NODE_STATUS::RUNNING; robotPosition = frame.robot.position; GetDistanceBetweenTwoPoints(robotPosition, dangerousPosition); robotIsFarEnoughFromPosition = getDistanceBetweenTwoPointsResult >= distanceThreshold 
+		entry 
+			nodeStatus = NODE_STATUS::RUNNING
+// Commenting the calls of the following operations for the FDR's validation						
+//			robotPosition = frame.robot.position; 
+//			GetDistanceBetweenTwoPoints(robotPosition, dangerousPosition); 
+//			robotIsFarEnoughFromPosition = getDistanceBetweenTwoPointsResult >= distanceThreshold 
 	}	
 	final sFinal
 	
@@ -58,7 +63,7 @@ operation moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceT
 	transition fail {		
 		from sMoveAway
 		to sFinal
-		// Como remover esse warning? O que isso significa? 
+		// How to solve this warning? What this means? 
 		condition sinceEntry(sMoveAway) > TIME_LIMIT_TO_BEHAVE /\ (not robotIsFarEnoughFromPosition)
 		action nodeStatus = NODE_STATUS::FAILED
 	}

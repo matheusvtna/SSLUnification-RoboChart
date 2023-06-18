@@ -35,15 +35,16 @@ operation goToBehindBall(targetPosition: Point, angleThreshold: real) {
 	initial sInitial
 	state sGoToBehindBall {
 		entry 
-			nodeStatus = NODE_STATUS::RUNNING;	
-			AllyIsBehind(robot, ball.pos, targetPosition, angleThreshold); 
-			allyIsBehindBall = allyIsBehindResult;
-		
-			AllyIsCloseToBall(robot, ball); 
-			allyIsCloseToBall = allyIsCloseToBallResult;
-
-			AllyIsPushingBallWithHisBack(robot, ball);
-			allyIsPushingBallWithHisBack = allyIsPushingBallWithHisBackResult
+			nodeStatus = NODE_STATUS::RUNNING			
+// Commenting the calls of the following operations for the FDR's validation						
+//			AllyIsBehind(robot, ball.pos, targetPosition, angleThreshold); 
+//			allyIsBehindBall = allyIsBehindResult;
+//		
+//			AllyIsCloseToBall(robot, ball); 
+//			allyIsCloseToBall = allyIsCloseToBallResult;
+//
+//			AllyIsPushingBallWithHisBack(robot, ball);
+//			allyIsPushingBallWithHisBack = allyIsPushingBallWithHisBackResult
 
 	}	
 	final sFinal

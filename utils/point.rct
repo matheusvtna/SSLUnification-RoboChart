@@ -45,7 +45,11 @@ operation FromPolar(length: real, angle: real) {
 	transition calculate {
 		from sInitial		
 		to sFinal
-		action cos(angle); sin(angle); FromPolarResult.x = cosResult * length; FromPolarResult.y = sinResult * length
+		action 
+			cos(angle); 
+			sin(angle); 
+			FromPolarResult.x = cosResult * length; 
+			FromPolarResult.y = sinResult * length
 	}
 }	
 
@@ -79,8 +83,12 @@ operation GetDistanceBetweenTwoPoints(source: Point, target: Point) {
 	transition calculate {
 		from sInitial		
 		to sFinal
-		action pow(source.x - target.x, 2); x2 = powResult; pow(source.y - target.y, 2); y2 = powResult; 
-			sqrt(x2 + y2); getDistanceBetweenTwoPointsResult = sqrtResult
+		action 
+			pow(source.x - target.x, 2); 
+			x2 = powResult; pow(source.y - target.y, 2); 
+			y2 = powResult; 
+			sqrt(x2 + y2); 
+			getDistanceBetweenTwoPointsResult = sqrtResult
 	}
 }
 
@@ -109,7 +117,9 @@ operation getNormOfVector(vec: Point) {
 	transition calculate {
 		from sInitial
 		to sFinal
-		action sqrt(vec.x*vec.x + vec.y*vec.y); getNormOfVectorResult = sqrtResult
+		action 
+			sqrt(vec.x*vec.x + vec.y*vec.y); 
+			getNormOfVectorResult = sqrtResult
 	}
 }		
 
@@ -143,7 +153,11 @@ operation CreateUnitVector(vec: Point) {
 		from sInitial				
 		to sFinal
 		// TODO: action if (norm > 0) then createUnitVectorResult = Point(vec.x/norm, vec.y/norm) else createUnitVectorResult = Point(0,0)
-		action getNormOfVector(vec); norm = getNormOfVectorResult; createUnitVectorResult.x = vec.x/norm; createUnitVectorResult.y = vec.y/norm
+		action 
+			getNormOfVector(vec); 
+			norm = getNormOfVectorResult; 
+			createUnitVectorResult.x = vec.x/norm; 
+			createUnitVectorResult.y = vec.y/norm
 	}
 }
 
@@ -173,7 +187,9 @@ operation CreateVector(source: Point, target: Point) {
 	transition create {
 		from sInitial
 		to sFinal
-		action createVectorResult.x = target.x - source.x; createVectorResult.y = target.y - source.y
+		action 
+			createVectorResult.x = target.x - source.x;
+			createVectorResult.y = target.y - source.y
 	}
 }
 
@@ -269,6 +285,9 @@ operation AngleBetweenVectors(source: Point, target: Point) {
 	transition start {
 		from sInitial		
 		to sFinal
-		action dot(source, target); cross(source, target); atan2(crossResult, dotResult)
+		action 
+			dot(source, target);
+			cross(source, target); 
+			atan2(crossResult, dotResult)
 	}
 }

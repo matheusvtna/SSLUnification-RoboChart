@@ -6,5 +6,5 @@
 datatype Frame {
 	ball: Ball
 	robot: Robot
-	// TODO: mudar para ter mais de um robo de aliados e oponentes.
+	// TODO: Add teammates and opponents.
 }

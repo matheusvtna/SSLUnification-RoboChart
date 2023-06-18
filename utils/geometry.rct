@@ -41,7 +41,10 @@ operation cos(angle: real) {
 	transition loop {
 		from sSeries
 		to sSeries
-		action term = term * ((-1.0) * count * count / ((2.0 * count - 1.0) * 2.0 * count)); cosseno = cosseno + term; count = count + 1
+		action 
+			term = term * ((-1.0) * count * count / ((2.0 * count - 1.0) * 2.0 * count)); 
+			cosseno = cosseno + term; 
+			count = count + 1
 	}
 	transition finish {
 		from sSeries
@@ -90,7 +93,10 @@ operation sin(angle: real) {
 	transition loop {
 		from sSeries
 		to sSeries
-		action term = term * (-1.0) * angle * angle / ((2.0 * count) * (2.0 * count + 1.0)); seno = seno + term; count = count + 1
+		action 
+			term = term * (-1.0) * angle * angle / ((2.0 * count) * (2.0 * count + 1.0)); 
+			seno = seno + term; 
+			count = count + 1
 	}
 	transition finish {
 		from sSeries
@@ -276,7 +282,14 @@ operation atan(angle: real) {
 	transition loop {
 		from sLoop
 		to sLoop
-		action pow(angle, (2 * count + 1)); offset = (powResult) / (2 * count + 1); if (count % 2 == 0) then res = res + offset else res = res - offset end
+		action 
+			pow(angle, (2 * count + 1)); 
+			offset = (powResult) / (2 * count + 1); 
+			if (count % 2 == 0) then 
+				res = res + offset 
+			else 
+				res = res - offset 
+			end
 	}
 	transition finish {
 		from sLoop
@@ -318,12 +331,19 @@ operation atan2(y: real, x: real) {
 	transition finish {
 		from sInitial
 		to sFinal
-		action if(x > 0) then atan(y/x); atan2Result = atanResult
-				else if(y >= 0 /\ x < 0) then atan(y/x); atan2Result = atanResult + PI
-					else if(y < 0 /\ x < 0) then atan(y/x); atan2Result = atanResult - PI
-						else if(y > 0 /\ x == 0) then atan2Result = PI/2
-							else if(y < 0 /\ x == 0) then atan2Result = -PI/2
-								else atan2Result = 0 end
+		action if(x > 0) then 
+					atan(y/x); atan2Result = atanResult
+					else if(y >= 0 /\ x < 0) then 
+						atan(y/x); atan2Result = atanResult + PI
+						else if(y < 0 /\ x < 0) then 
+							atan(y/x); atan2Result = atanResult - PI
+							else if(y > 0 /\ x == 0) then 
+								atan2Result = PI/2
+								else if(y < 0 /\ x == 0) then 
+									atan2Result = -PI/2
+									else 
+										atan2Result = 0 
+								end
 							end
 						end
 					end

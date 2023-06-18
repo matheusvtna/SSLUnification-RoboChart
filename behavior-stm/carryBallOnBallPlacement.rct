@@ -38,19 +38,32 @@ operation carryBallOnBallPlacement (frame: Frame, targetPosition: Point) {
 	// States.
 	initial sInitial
 	state sGoToBehindBall {
-		entry nodeStatus = NODE_STATUS::RUNNING; goToBehindBall(targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
+		entry 
+			nodeStatus = NODE_STATUS::RUNNING;
+			goToBehindBall(targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
 	}
 	state sGiveSpaceToGetBall {
-		entry nodeStatus = NODE_STATUS::RUNNING; moveAwayFromPosition(frame, ball.pos, DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED)
+		entry 
+			nodeStatus = NODE_STATUS::RUNNING;
+			moveAwayFromPosition(frame, ball.pos, DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED)
 	}
 	state sApproachBall {
-		entry nodeStatus = NODE_STATUS::RUNNING; approachBall(ball, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
+		entry 
+			nodeStatus = NODE_STATUS::RUNNING;
+			approachBall(ball, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
 	}
 	state sPlaceBall {
-		entry nodeStatus = NODE_STATUS::RUNNING; carryBall(frame, targetPosition, DIST_THRESHOLD_BALL_TO_TARGET)
+		entry 
+			nodeStatus = NODE_STATUS::RUNNING;
+			carryBall(frame, targetPosition, DIST_THRESHOLD_BALL_TO_TARGET)
 	}
 	state sMoveAwayFromBall {
-		entry nodeStatus = NODE_STATUS::RUNNING; moveAwayFromPosition(frame, targetPosition, DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH); GetDistanceBetweenTwoPoints(robot.position, ball.pos); robotHasMovedAwayFromBall = getDistanceBetweenTwoPointsResult > DIST_THRESHOLD_BALL_TO_TARGET 
+		entry 
+			nodeStatus = NODE_STATUS::RUNNING; 
+			moveAwayFromPosition(frame, targetPosition, DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH)
+// Commenting the calls of the following operations for the FDR's validation			
+//			GetDistanceBetweenTwoPoints(robot.position, ball.pos); 
+//			robotHasMovedAwayFromBall = getDistanceBetweenTwoPointsResult > DIST_THRESHOLD_BALL_TO_TARGET 
 	}
 	final sFinal
 	
