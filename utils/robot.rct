@@ -1,316 +1,316 @@
-import ball
-
-// ============================================
-// =                DATATYPES                 =
-// ============================================
+//import ball
 //
-// Datatype to represent a RobotFeedback in SSL Environment.
-// 
-// A RobotFeedback contains informations of a Robot. It contains
-// a boolean value to indicate whether the robot has the IR sensor
-// activated, a real value to represent the battery charge and a
-// real value to represent the capacitor charge.
-datatype RobotFeedback {
-	ir: boolean
-	battery: real
-	capacitor: real
-}
-
-// Datatype to represent a Robot in SSL Environment.
-// 
-// A Robot an integer value to represent the robot id,
-// a Point to represent its position in the field, a
-// Point value to represent its velocity, a real value
-// to represent its angle and a RobotFeedback which
-// contains physical informations of the robot
-datatype Robot {
-	id: int
-	position: Point
-	vel: Point
-	angle: real
-	feedback: RobotFeedback
-}
-
-// ============================================
-// =                FSM UTILS                 =
-// ============================================
+//// ============================================
+//// =                DATATYPES                 =
+//// ============================================
+////
+//// Datatype to represent a RobotFeedback in SSL Environment.
+//// 
+//// A RobotFeedback contains informations of a Robot. It contains
+//// a boolean value to indicate whether the robot has the IR sensor
+//// activated, a real value to represent the battery charge and a
+//// real value to represent the capacitor charge.
+//datatype RobotFeedback {
+//	ir: boolean
+//	battery: real
+//	capacitor: real
+//}
 //
-// --------------------------------------------
-//           ROBOT HAS BALL CONTACT
-// --------------------------------------------
-interface RobotHasBallContactI {
-	var robotHasBallContactResult : boolean
-}
-
-// This operation works as a function to check 
-// whether the current robot has ball contact.
+//// Datatype to represent a Robot in SSL Environment.
+//// 
+//// A Robot an integer value to represent the robot id,
+//// a Point to represent its position in the field, a
+//// Point value to represent its velocity, a real value
+//// to represent its angle and a RobotFeedback which
+//// contains physical informations of the robot
+//datatype Robot {
+//	id: int
+//	position: Point
+//	vel: Point
+//	angle: real
+//	feedback: RobotFeedback
+//}
 //
-// @param robot: Robot
+//// ============================================
+//// =                FSM UTILS                 =
+//// ============================================
+////
+//// --------------------------------------------
+////           ROBOT HAS BALL CONTACT
+//// --------------------------------------------
+//interface RobotHasBallContactI {
+//	var robotHasBallContactResult : boolean
+//}
 //
-// @return [boolean] A value which indicates if
-// the robot has ball contact or not. 
-operation robotHasBallContact(robot: Robot) {
-	requires RobotHasBallContactI
-	
-	// States.
-	initial sInitial	
-	final sFinal
-	
-	// Transitions.
-	transition finish {
-		from sInitial		
-		to sFinal
-		action robotHasBallContactResult = robot.feedback.ir
-	}
-}	
-
-// FSM Utils
-
-// --------------------------------------------
-//   ROBOT IS BEHIND A POINT LOOKING TO TARGET
-// --------------------------------------------
-interface AllyIsBehindI {
-	var allyIsBehindResult: boolean
-}
-
-// This operation works as a function to check 
-// whether the current robot is behind a point
-// looking to a target.
+//// This operation works as a function to check 
+//// whether the current robot has ball contact.
+////
+//// @param robot: Robot
+////
+//// @return [boolean] A value which indicates if
+//// the robot has ball contact or not. 
+//operation robotHasBallContact(robot: Robot) {
+//	requires RobotHasBallContactI
+//	
+//	// States.
+//	initial sInitial	
+//	final sFinal
+//	
+//	// Transitions.
+//	transition finish {
+//		from sInitial		
+//		to sFinal
+//		action robotHasBallContactResult = robot.feedback.ir
+//	}
+//}	
 //
-// @param robot: Robot.
-// @param point: Point.
-// @param target: Point.
-// @param angleThreshold: real.
+//// FSM Utils
 //
-// @return [boolean] A value which indicates if
-// the robot is behind the point looking to target.
-operation AllyIsBehind(robot: Robot, point: Point, target: Point, angleThreshold: real) {
-	requires AllyIsBehindI
-	requires CreateVectorI
-	requires CreateUnitVectorI
-	requires AngleBetweenVectorsI
-	
-	var point2target: Point
-	var ally2target: Point 	
-	var angleBetweenVectors: real
-	
-	initial sInitial
-	final sFinal
-
-	transition finish {
-		from sInitial
-		to sFinal
-		action 
-			// Calculate point2target
-			CreateVector(point, target); 
-			CreateUnitVector(createVectorResult);
-			point2target = createUnitVectorResult;
-
-			// Calculate ally2target
-			CreateVector(robot.position, point); 
-			CreateUnitVector(createVectorResult);
-			ally2target = createUnitVectorResult;
-			
-			// Calculate angle between vectors
-			AngleBetweenVectors(point2target, ally2target);
-			angleBetweenVectors = angleBetweenVectorsResult;
-
-			// Result
-			allyIsBehindResult = -angleThreshold < angleBetweenVectors /\ angleBetweenVectors < angleThreshold
-	}
-}
-
-// --------------------------------------------
-//   			ROBOT HAS BALL
-// --------------------------------------------
-interface AllyHasBallI {
-	var allyHasBallResult: boolean
-}
-
-// This operation works as a function to ...
+//// --------------------------------------------
+////   ROBOT IS BEHIND A POINT LOOKING TO TARGET
+//// --------------------------------------------
+//interface AllyIsBehindI {
+//	var allyIsBehindResult: boolean
+//}
 //
-// @param robot: Robot.
-// @param ball: Ball.
+//// This operation works as a function to check 
+//// whether the current robot is behind a point
+//// looking to a target.
+////
+//// @param robot: Robot.
+//// @param point: Point.
+//// @param target: Point.
+//// @param angleThreshold: real.
+////
+//// @return [boolean] A value which indicates if
+//// the robot is behind the point looking to target.
+//operation AllyIsBehind(robot: Robot, point: Point, target: Point, angleThreshold: real) {
+//	requires AllyIsBehindI
+//	requires CreateVectorI
+//	requires CreateUnitVectorI
+//	requires AngleBetweenVectorsI
+//	
+//	var point2target: Point
+//	var ally2target: Point 	
+//	var angleBetweenVectors: real
+//	
+//	initial sInitial
+//	final sFinal
 //
-// @return [boolean] A value which indicates if
-// the robot has ball or not.
-// TODO: Fazer metodo de verificacao por posicao e angulo
-operation AllyHasBall(robot: Robot, ball: Ball) {
-	requires AllyHasBallI
-	
-	initial sInitial
-	final sFinal
-	
-	transition finish {
-		from sInitial
-		to sFinal
-		action allyHasBallResult = true
-	}
-}
-
-// --------------------------------------------
-//   	     ROBOT IS CLOSE TO BALL
-// --------------------------------------------
-interface AllyIsCloseToBallI {
-	var allyIsCloseToBallResult: boolean
-}
-
-// This operation works as a function to ...
+//	transition finish {
+//		from sInitial
+//		to sFinal
+//		action 
+//			// Calculate point2target
+//			CreateVector(point, target); 
+//			CreateUnitVector(createVectorResult);
+//			point2target = createUnitVectorResult;
 //
-// @param robot: Robot.
-// @param ball: Ball.
+//			// Calculate ally2target
+//			CreateVector(robot.position, point); 
+//			CreateUnitVector(createVectorResult);
+//			ally2target = createUnitVectorResult;
+//			
+//			// Calculate angle between vectors
+//			AngleBetweenVectors(point2target, ally2target);
+//			angleBetweenVectors = angleBetweenVectorsResult;
 //
-// @return [boolean] A value which indicates if
-// the robot is close to ball or not.
-operation AllyIsCloseToBall(robot: Robot, ball: Ball) {
-	requires AllyIsCloseToBallI
-	requires GetDistanceBetweenTwoPointsI
-	
-	var robotPosition: Point = robot.position
-	var ballPosition: Point = ball.pos
-	var distance: real
-	var MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL: real = 111
-	
-	initial sInitial 	
-	final sFinal
-	
-	transition finish {
-		from sInitial
-		to sFinal
-		action 
-			GetDistanceBetweenTwoPoints(robotPosition, ballPosition);
-			distance = getDistanceBetweenTwoPointsResult; 
-			allyIsCloseToBallResult = distance < MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL
-	}
-}
-
-// --------------------------------------------
-//   	     ROBOT IS CLOSE TO BALL
-// --------------------------------------------
-interface AllyIsLookingToBallI {
-	var allyIsLookingToBallResult: boolean
-}
-
-// This operation works as a function to ...
+//			// Result
+//			allyIsBehindResult = -angleThreshold < angleBetweenVectors /\ angleBetweenVectors < angleThreshold
+//	}
+//}
 //
-// @param robot: Robot.
-// @param ball: Ball.
+//// --------------------------------------------
+////   			ROBOT HAS BALL
+//// --------------------------------------------
+//interface AllyHasBallI {
+//	var allyHasBallResult: boolean
+//}
 //
-// @return [boolean] A value which indicates if
-// the robot is looking to ball or not.
-operation AllyIsLookingToBall(robot: Robot, ball: Ball) {
-	requires AllyIsLookingToBallI
-	requires CreateVectorI
-	requires CreateUnitVectorI
-	requires AngleBetweenVectorsI
-	requires FromPolarI
-	requires degreesToRadiansI
-	
-	// Constants
-	var ROBOT_RADIUS: real = 90.0
-	var ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_DEGREES: real = 60.0
-	var ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_RADIANS: real
-	
-	// Start values.
-	var robotCenter: Point = robot.position
-	var robotAngle: real = robot.angle
-	var robotFront: Point
-	var ballPosition: Point = ball.pos
-	
-	// Calculated values.
-	var robotCenterToFrontUnitVector: Point
-	var robotToBallUnitVector: Point
-	var angle: real
-	
-	initial sInitial
-	final sFinal
-
-	transition finish {
-		from sInitial
-		to sFinal
-		action 
-			// Calculate RobotCenterToFrontUnitVector
-			degreesToRadians(ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_DEGREES); 
-			ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_RADIANS = degreesToRadiansResult;
-			FromPolar(ROBOT_RADIUS, robotAngle); 
-			CreateVector(robotCenter, FromPolarResult); 
-			CreateUnitVector(createVectorResult);
-			robotCenterToFrontUnitVector = createUnitVectorResult;
-
-			// Calculate RobotCenterToBallUnitVector
-			CreateVector(robotCenter, ballPosition); 
-			CreateUnitVector(createVectorResult);
-			robotToBallUnitVector = createUnitVectorResult;
-
-			// Calculate AngleBetweenVectors
-			AngleBetweenVectors(robotCenterToFrontUnitVector, robotToBallUnitVector);
-			angle = angleBetweenVectorsResult;
-		
-			// Result
-			allyIsLookingToBallResult = (-ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_RADIANS < angle) /\ (angle < ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_RADIANS)
-	}
-}
-
-// --------------------------------------------
-//   	 ROBOT CAN HAVE BALL ON DRIBBLER
-// --------------------------------------------
-interface AllyCanHaveBallOnDribblerI {
-	var allyCanHaveBallOnDribblerResult: boolean
-}
-
-// This operation works as a function to ...
+//// This operation works as a function to ...
+////
+//// @param robot: Robot.
+//// @param ball: Ball.
+////
+//// @return [boolean] A value which indicates if
+//// the robot has ball or not.
+//// TODO: Fazer metodo de verificacao por posicao e angulo
+//operation AllyHasBall(robot: Robot, ball: Ball) {
+//	requires AllyHasBallI
+//	
+//	initial sInitial
+//	final sFinal
+//	
+//	transition finish {
+//		from sInitial
+//		to sFinal
+//		action allyHasBallResult = true
+//	}
+//}
 //
-// @param robot: Robot.
-// @param ball: Ball.
+//// --------------------------------------------
+////   	     ROBOT IS CLOSE TO BALL
+//// --------------------------------------------
+//interface AllyIsCloseToBallI {
+//	var allyIsCloseToBallResult: boolean
+//}
 //
-// @return [boolean] A value which indicates if
-// the robot has the ball on dribbler or not.
-operation AllyCanHaveBallOnDribbler(robot: Robot, ball: Ball) {
-	requires AllyCanHaveBallOnDribblerI
-	requires AllyIsLookingToBallI
-	requires AllyIsCloseToBallI
-
-	initial sInitial
-	final sFinal
-
-	transition sCheck {
-		from sInitial
-		to sFinal
-		action 
-			AllyIsLookingToBall(robot, ball); 
-			AllyIsCloseToBall(robot, ball); 
-			allyCanHaveBallOnDribblerResult = allyIsLookingToBallResult /\ allyIsCloseToBallResult
-	}
-}
-
-// --------------------------------------------
-//     ROBOT IS PUSHING BALL WITH HIS BACK
-// --------------------------------------------
-interface AllyIsPushingBallWithHisBackI {
-	var allyIsPushingBallWithHisBackResult: boolean
-}
-
-// This operation works as a function to ...
+//// This operation works as a function to ...
+////
+//// @param robot: Robot.
+//// @param ball: Ball.
+////
+//// @return [boolean] A value which indicates if
+//// the robot is close to ball or not.
+//operation AllyIsCloseToBall(robot: Robot, ball: Ball) {
+//	requires AllyIsCloseToBallI
+//	requires GetDistanceBetweenTwoPointsI
+//	
+//	var robotPosition: Point = robot.position
+//	var ballPosition: Point = ball.pos
+//	var distance: real
+//	var MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL: real = 111
+//	
+//	initial sInitial 	
+//	final sFinal
+//	
+//	transition finish {
+//		from sInitial
+//		to sFinal
+//		action 
+//			GetDistanceBetweenTwoPoints(robotPosition, ballPosition);
+//			distance = getDistanceBetweenTwoPointsResult; 
+//			allyIsCloseToBallResult = distance < MIN_RADIUS_TO_CONSIDER_CLOSE_TO_BALL
+//	}
+//}
 //
-// @param robot: Robot.
-// @param ball: Ball.
+//// --------------------------------------------
+////   	     ROBOT IS CLOSE TO BALL
+//// --------------------------------------------
+//interface AllyIsLookingToBallI {
+//	var allyIsLookingToBallResult: boolean
+//}
 //
-// @return [boolean] A value which indicates if
-// the robot has the ball on dribbler or not.
-operation AllyIsPushingBallWithHisBack(robot: Robot, ball: Ball) {
-	requires AllyIsPushingBallWithHisBackI
-	requires AllyIsLookingToBallI
-	requires AllyIsCloseToBallI
-
-	initial sInitial
-	final sFinal
-
-	transition sCheck {
-		from sInitial
-		to sFinal
-		action 
-			AllyIsLookingToBall(robot, ball); 
-			AllyIsCloseToBall(robot, ball); 
-			allyIsPushingBallWithHisBackResult = (not allyIsLookingToBallResult) /\ allyIsCloseToBallResult
-	}
-}
+//// This operation works as a function to ...
+////
+//// @param robot: Robot.
+//// @param ball: Ball.
+////
+//// @return [boolean] A value which indicates if
+//// the robot is looking to ball or not.
+//operation AllyIsLookingToBall(robot: Robot, ball: Ball) {
+//	requires AllyIsLookingToBallI
+//	requires CreateVectorI
+//	requires CreateUnitVectorI
+//	requires AngleBetweenVectorsI
+//	requires FromPolarI
+//	requires degreesToRadiansI
+//	
+//	// Constants
+//	var ROBOT_RADIUS: real = 90.0
+//	var ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_DEGREES: real = 60.0
+//	var ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_RADIANS: real
+//	
+//	// Start values.
+//	var robotCenter: Point = robot.position
+//	var robotAngle: real = robot.angle
+//	var robotFront: Point
+//	var ballPosition: Point = ball.pos
+//	
+//	// Calculated values.
+//	var robotCenterToFrontUnitVector: Point
+//	var robotToBallUnitVector: Point
+//	var angle: real
+//	
+//	initial sInitial
+//	final sFinal
+//
+//	transition finish {
+//		from sInitial
+//		to sFinal
+//		action 
+//			// Calculate RobotCenterToFrontUnitVector
+//			degreesToRadians(ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_DEGREES); 
+//			ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_RADIANS = degreesToRadiansResult;
+//			FromPolar(ROBOT_RADIUS, robotAngle); 
+//			CreateVector(robotCenter, FromPolarResult); 
+//			CreateUnitVector(createVectorResult);
+//			robotCenterToFrontUnitVector = createUnitVectorResult;
+//
+//			// Calculate RobotCenterToBallUnitVector
+//			CreateVector(robotCenter, ballPosition); 
+//			CreateUnitVector(createVectorResult);
+//			robotToBallUnitVector = createUnitVectorResult;
+//
+//			// Calculate AngleBetweenVectors
+//			AngleBetweenVectors(robotCenterToFrontUnitVector, robotToBallUnitVector);
+//			angle = angleBetweenVectorsResult;
+//		
+//			// Result
+//			allyIsLookingToBallResult = (-ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_RADIANS < angle) /\ (angle < ANGULAR_DIFF_TO_CONSIDER_BALL_ON_DRIBBLER_RADIANS)
+//	}
+//}
+//
+//// --------------------------------------------
+////   	 ROBOT CAN HAVE BALL ON DRIBBLER
+//// --------------------------------------------
+//interface AllyCanHaveBallOnDribblerI {
+//	var allyCanHaveBallOnDribblerResult: boolean
+//}
+//
+//// This operation works as a function to ...
+////
+//// @param robot: Robot.
+//// @param ball: Ball.
+////
+//// @return [boolean] A value which indicates if
+//// the robot has the ball on dribbler or not.
+//operation AllyCanHaveBallOnDribbler(robot: Robot, ball: Ball) {
+//	requires AllyCanHaveBallOnDribblerI
+//	requires AllyIsLookingToBallI
+//	requires AllyIsCloseToBallI
+//
+//	initial sInitial
+//	final sFinal
+//
+//	transition sCheck {
+//		from sInitial
+//		to sFinal
+//		action 
+//			AllyIsLookingToBall(robot, ball); 
+//			AllyIsCloseToBall(robot, ball); 
+//			allyCanHaveBallOnDribblerResult = allyIsLookingToBallResult /\ allyIsCloseToBallResult
+//	}
+//}
+//
+//// --------------------------------------------
+////     ROBOT IS PUSHING BALL WITH HIS BACK
+//// --------------------------------------------
+//interface AllyIsPushingBallWithHisBackI {
+//	var allyIsPushingBallWithHisBackResult: boolean
+//}
+//
+//// This operation works as a function to ...
+////
+//// @param robot: Robot.
+//// @param ball: Ball.
+////
+//// @return [boolean] A value which indicates if
+//// the robot has the ball on dribbler or not.
+//operation AllyIsPushingBallWithHisBack(robot: Robot, ball: Ball) {
+//	requires AllyIsPushingBallWithHisBackI
+//	requires AllyIsLookingToBallI
+//	requires AllyIsCloseToBallI
+//
+//	initial sInitial
+//	final sFinal
+//
+//	transition sCheck {
+//		from sInitial
+//		to sFinal
+//		action 
+//			AllyIsLookingToBall(robot, ball); 
+//			AllyIsCloseToBall(robot, ball); 
+//			allyIsPushingBallWithHisBackResult = (not allyIsLookingToBallResult) /\ allyIsCloseToBallResult
+//	}
+//}

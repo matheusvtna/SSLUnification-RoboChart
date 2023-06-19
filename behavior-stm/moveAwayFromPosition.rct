@@ -4,7 +4,7 @@ import utils
 //           MOVE AWAY FROM POSITION
 // --------------------------------------------
 interface MoveAwayFromPositionI {
-	moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceThreshold: real)
+	moveAwayFromPosition()
 }
 
 // This operation makes robot move away to
@@ -19,11 +19,9 @@ interface MoveAwayFromPositionI {
 // @param distanceThreshold: real.
 //
 // TODO: Add a FSM output -> makes robot move...
-operation moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceThreshold: real) {
+operation moveAwayFromPosition() {
 	requires NodeStatusI
-	requires GetDistanceBetweenTwoPointsI
 	
-	var robotPosition: Point  
 	var robotIsFarEnoughFromPosition: boolean
 	
 	const TIME_LIMIT_TO_BEHAVE: nat = 30
@@ -31,12 +29,7 @@ operation moveAwayFromPosition(frame: Frame, dangerousPosition: Point, distanceT
 	// States.
 	initial sInitial
 	state sMoveAway {
-		entry 
-			nodeStatus = NODE_STATUS::RUNNING
-// Commenting the calls of the following operations for the FDR's validation						
-//			robotPosition = frame.robot.position; 
-//			GetDistanceBetweenTwoPoints(robotPosition, dangerousPosition); 
-//			robotIsFarEnoughFromPosition = getDistanceBetweenTwoPointsResult >= distanceThreshold 
+		entry nodeStatus = NODE_STATUS::RUNNING 
 	}	
 	final sFinal
 	

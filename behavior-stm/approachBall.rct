@@ -1,11 +1,10 @@
 import utils
 
-
 // --------------------------------------------
 //              APPROACH BALL
 // --------------------------------------------
 interface ApproachBallI {
-	approachBall(ball: Ball, angleThreshold: real)
+	approachBall()
 }
 
 // This operation makes robot move to ball smoothly.
@@ -17,16 +16,9 @@ interface ApproachBallI {
 // @param angleThreshold: real.
 //
 // TODO: Add a FSM output -> makes robot move...
-operation approachBall(ball: Ball, angleThreshold: real) {
+operation approachBall() {
 	requires NodeStatusI
-	requires AllyIsBehindI
-	requires AllyIsCloseToBallI
-	requires AllyHasBallI
 	
-	// Start values.
-	var robot: Robot
-	var target: Point
-
 	// Variables conditions.
 	var allyIsBehindBall: boolean
 	var allyIsCloseToBall: boolean
@@ -35,17 +27,7 @@ operation approachBall(ball: Ball, angleThreshold: real) {
 	// States.
 	initial sInitial
 	state sApproach {
-		entry
-			nodeStatus = NODE_STATUS::RUNNING
-// Commenting the calls of the following operations for the FDR's validation			
-//			AllyIsBehind(robot, ball.pos, target, angleThreshold); 
-//			allyIsBehindBall = allyIsBehindResult;
-//
-//			AllyIsCloseToBall(robot, ball); 
-//			allyIsCloseToBall = allyIsCloseToBallResult;
-//
-//			AllyHasBall(robot, ball);
-//			allyHasBall = allyHasBallResult
+		entry nodeStatus = NODE_STATUS::RUNNING
 	}	
 	final sFinal
 	

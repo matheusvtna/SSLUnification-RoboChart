@@ -1,11 +1,10 @@
 import utils
-import robot
 
 // --------------------------------------------
 //              GO TO BEHIND BALL
 // --------------------------------------------
 interface GoToBehindBallI {
-	goToBehindBall(targetPosition: Point, angleThreshold: real)
+	goToBehindBall()
 }
 
 // This operation makes robot move to behind the
@@ -16,15 +15,8 @@ interface GoToBehindBallI {
 // @param angleThreshold: real.
 //
 // TODO: Add a FSM output -> makes robot move...
-operation goToBehindBall(targetPosition: Point, angleThreshold: real) {
-	requires AllyIsBehindI
-	requires AllyIsCloseToBallI
-	requires AllyIsPushingBallWithHisBackI
+operation goToBehindBall() {
 	requires NodeStatusI
-	
-	// Entities instances.
-	var robot: Robot	
-	var ball: Ball
 
 	// Variables conditions.
 	var allyIsBehindBall: boolean
@@ -34,18 +26,7 @@ operation goToBehindBall(targetPosition: Point, angleThreshold: real) {
 	// States.
 	initial sInitial
 	state sGoToBehindBall {
-		entry 
-			nodeStatus = NODE_STATUS::RUNNING			
-// Commenting the calls of the following operations for the FDR's validation						
-//			AllyIsBehind(robot, ball.pos, targetPosition, angleThreshold); 
-//			allyIsBehindBall = allyIsBehindResult;
-//		
-//			AllyIsCloseToBall(robot, ball); 
-//			allyIsCloseToBall = allyIsCloseToBallResult;
-//
-//			AllyIsPushingBallWithHisBack(robot, ball);
-//			allyIsPushingBallWithHisBack = allyIsPushingBallWithHisBackResult
-
+		entry nodeStatus = NODE_STATUS::RUNNING			
 	}	
 	final sFinal
 	

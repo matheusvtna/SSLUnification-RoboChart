@@ -1,11 +1,48 @@
+package carryBallOnBallPlacement
+
 import goToBehindBall
 import approachBall
 import carryBall
 import moveAwayFromPosition
 
+stm BehaviorSTM {
+	requires carryBallOnBallPlacementI
+	uses NodeStatusI
+	
+	initial i0
+	final f0
+	transition t0 {
+		from i0
+		to f0
+		action carryBallOnBallPlacement()
+	}
+}
+
+interface IBehavior {
+	event receiveFrame: string
+	event receiveField: string
+	event receiveTactic: string
+	event sendAction: string
+}
+
+controller BehaviorController {
+	uses IBehavior
+	
+	opref carryBallOp = carryBall
+	opref approachBallOp = approachBall
+	opref goToBehindBallOp = goToBehindBall
+	opref moveAwayOp = moveAwayFromPosition
+	opref superOperation = carryBallOnBallPlacement
+	sref stm_ref0 = BehaviorSTM
+}
+
 // --------------------------------------------
 //         CARRY BALL ON BALL PLACEMENT
 // --------------------------------------------
+
+interface carryBallOnBallPlacementI {
+	carryBallOnBallPlacement()
+}
 
 // This operation makes the robot execute the
 // Ball Placement procedure by carrying the ball.
@@ -14,56 +51,41 @@ import moveAwayFromPosition
 // @param targetPosition: Point.
 //
 // TODO: Add a FSM output -> makes robot move...
-operation carryBallOnBallPlacement (frame: Frame, targetPosition: Point) {
+operation carryBallOnBallPlacement() {
 	requires GoToBehindBallI
 	requires ApproachBallI
 	requires CarryBallI
-	requires MoveAwayFromPositionI
-	
-	requires GetDistanceBetweenTwoPointsI
+	requires MoveAwayFromPositionI	
 	requires NodeStatusI
 	
-	// Robot instance.
-	var robot: Robot = frame.robot
-	var ball: Ball = frame.ball
 	var robotHasMovedAwayFromBall: boolean
-
-	// Constants.
-	const DIST_THRESHOLD_BALL_TO_TARGET: real = 150.0
-	const DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH: real = 500.0
-	const DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED: real = 200.0
-	const MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES: real = 60.0
-	const TIME_TO_PLACE_BALL_IN_SECONDS: nat = 30
 
 	// States.
 	initial sInitial
 	state sGoToBehindBall {
 		entry 
 			nodeStatus = NODE_STATUS::RUNNING;
-			goToBehindBall(targetPosition, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
+			goToBehindBall()
 	}
 	state sGiveSpaceToGetBall {
 		entry 
 			nodeStatus = NODE_STATUS::RUNNING;
-			moveAwayFromPosition(frame, ball.pos, DIST_THREHOLD_ROBOT_TO_BALL_WHEN_GO_TO_FAILED)
+			moveAwayFromPosition()
 	}
 	state sApproachBall {
 		entry 
 			nodeStatus = NODE_STATUS::RUNNING;
-			approachBall(ball, MIN_ANGLE_DIFF_TO_CONSIDER_ALIGNED_WITH_BALL_IN_DEGREES)
+			approachBall()
 	}
 	state sPlaceBall {
 		entry 
 			nodeStatus = NODE_STATUS::RUNNING;
-			carryBall(frame, targetPosition, DIST_THRESHOLD_BALL_TO_TARGET)
+			carryBall()
 	}
 	state sMoveAwayFromBall {
 		entry 
 			nodeStatus = NODE_STATUS::RUNNING; 
-			moveAwayFromPosition(frame, targetPosition, DIST_THREHOLD_ROBOT_TO_TARGET_ON_FINISH)
-// Commenting the calls of the following operations for the FDR's validation			
-//			GetDistanceBetweenTwoPoints(robot.position, ball.pos); 
-//			robotHasMovedAwayFromBall = getDistanceBetweenTwoPointsResult > DIST_THRESHOLD_BALL_TO_TARGET 
+			moveAwayFromPosition() 
 	}
 	final sFinal
 	

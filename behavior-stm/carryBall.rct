@@ -4,7 +4,7 @@ import utils
 //                 CARRY BALL
 // --------------------------------------------
 interface CarryBallI {
-	carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real)
+	carryBall()
 }
 
 // This operation makes robot move to a target position
@@ -16,31 +16,17 @@ interface CarryBallI {
 // @param angleThreshold: real.
 //
 // TODO: Add a FSM output -> makes robot move...
-operation carryBall(frame: Frame, targetPosition: Point, distanceThreshold: real) {
-	requires GetDistanceBetweenTwoPointsI
-	requires AllyHasBallI
+operation carryBall() {	
 	requires NodeStatusI	
-	
-	var robot: Robot = frame.robot
-	var ball: Ball = frame.ball
-	var ballPosition: Point = ball.pos
-	var ballIsPositioned: boolean
-	
-
+		
 	// Variables conditions.
 	var allyHasBall: boolean
+	var ballIsPositioned: boolean
 	
 	// States.
 	initial sInitial
 	state sCarryBall {
-		entry
-			nodeStatus = NODE_STATUS::RUNNING
-// Commenting the calls of the following operations for the FDR's validation						
-//			GetDistanceBetweenTwoPoints(ballPosition, targetPosition); 
-//			ballIsPositioned = getDistanceBetweenTwoPointsResult < distanceThreshold;
-//			
-//			AllyHasBall(robot, ball);
-//			allyHasBall = allyHasBallResult
+		entry nodeStatus = NODE_STATUS::RUNNING
 	}
 	final sFinal
 	

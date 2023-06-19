@@ -1,0 +1,39 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 19-06-2023 14:57:58
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "core_timed_defs.csp"
+include "core_defs.csp"
+include "state_timed_defs.csp"
+include "moveAwayFromPosition.csp"
+include "file_moveAwayFromPosition_defs.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+
+transparent wbisim
+channel r__
+-- generate OP_moveAwayFromPosition
+P_OP_moveAwayFromPosition = let
+	id__ = 0
+	
+	
+	
+	const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE = 30
+	
+within
+	OP_moveAwayFromPosition::O__(id__,
+			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+assert P_OP_moveAwayFromPosition :[deadlock-free]	
+assert P_OP_moveAwayFromPosition;RUN({r__}) :[deadlock-free]
+assert P_OP_moveAwayFromPosition :[deterministic]
+assert P_OP_moveAwayFromPosition :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_OP_moveAwayFromPosition[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_OP_moveAwayFromPosition

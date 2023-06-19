@@ -1,9 +1,9 @@
-// Datatype to represent a Ball in SSL Environment.
-// 
-// A Ball contains a Point to represent its position,
-// a Point to represents its velocity. Both are measured
-// in millimeters.
-datatype Ball {
-	pos: Point
-	vel: Point
-}
+//// Datatype to represent a Ball in SSL Environment.
+//// 
+//// A Ball contains a Point to represent its position,
+//// a Point to represents its velocity. Both are measured
+//// in millimeters.
+//datatype Ball {
+//	pos: Point
+//	vel: Point
+//}

@@ -21,7 +21,7 @@ module SSL {
 	// SSL Unification Module Controllers.
 	cref visionControllerRef = VisionController
 	cref decisionControllerRef = DecisionController
-	cref behaviorControllerRef = BehaviorController
+//	cref behaviorControllerRef = BehaviorController
 	cref planningControllerRef = PlanningController
 	cref navigationControllerRef = NavigationController
 	
@@ -31,18 +31,18 @@ module SSL {
 	connection SSLRobot on sendGameEventDecision to decisionControllerRef on receiveGameEvent ( _async )
 	
 	connection visionControllerRef on sendFrameDecision to decisionControllerRef on receiveFrame ( _async )
-	connection visionControllerRef on sendFrameBehavior to behaviorControllerRef on receiveField ( _async )
+//	connection visionControllerRef on sendFrameBehavior to behaviorControllerRef on receiveField ( _async )
 	connection visionControllerRef on sendFramePlanning to planningControllerRef on receiveFrame ( _async )
 	connection visionControllerRef on sendFrameNavigation to navigationControllerRef on receiveFrame ( _async )
 	
 	connection visionControllerRef on sendFieldDecision to decisionControllerRef on receiveField ( _async )
-	connection visionControllerRef on sendFieldBehavior to behaviorControllerRef on receiveFrame ( _async )
+//	connection visionControllerRef on sendFieldBehavior to behaviorControllerRef on receiveFrame ( _async )
 	connection visionControllerRef on sendFieldPlanning to planningControllerRef on receiveField ( _async )
 	connection visionControllerRef on sendFieldNavigation to navigationControllerRef on receiveField ( _async )
 		
-	connection decisionControllerRef on sendTactic to behaviorControllerRef on receiveTactic ( _async )
-	
-	connection behaviorControllerRef on sendAction to planningControllerRef on receiveAction ( _async )
+//	connection decisionControllerRef on sendTactic to behaviorControllerRef on receiveTactic ( _async )
+//	
+//	connection behaviorControllerRef on sendAction to planningControllerRef on receiveAction ( _async )
 	
 	connection planningControllerRef on sendCommand to navigationControllerRef on receiveCommand ( _async )
 }

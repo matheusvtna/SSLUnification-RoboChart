@@ -1,0 +1,30 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 19-06-2023 14:57:58
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "carryBallOnBallPlacement_defs.csp"
+include "core_defs.csp"
+include "carryBallOnBallPlacement_BehaviorSTM.csp"
+include "state_defs.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+channel r__
+-- generate carryBallOnBallPlacement_BehaviorSTM
+P_carryBallOnBallPlacement_BehaviorSTM = let
+	id__ = 0
+	
+	
+	
+within
+	carryBallOnBallPlacement_BehaviorSTM::O__(
+		id__
+	)
+assert P_carryBallOnBallPlacement_BehaviorSTM :[deadlock-free]	
+assert P_carryBallOnBallPlacement_BehaviorSTM;RUN({r__}) :[deadlock-free]
+assert P_carryBallOnBallPlacement_BehaviorSTM :[deterministic]
+assert P_carryBallOnBallPlacement_BehaviorSTM :[divergence-free]

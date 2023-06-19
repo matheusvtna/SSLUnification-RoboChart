@@ -1,10 +1,10 @@
-// Datatype to represent a Frame in SSL Environment.
-// 
-// A Frame contains a Ball with its properties and
-// a Robot to represent the current robot platform.
-// TODO: Map allies and enemies within frame.
-datatype Frame {
-	ball: Ball
-	robot: Robot
-	// TODO: Add teammates and opponents.
-}
+//// Datatype to represent a Frame in SSL Environment.
+//// 
+//// A Frame contains a Ball with its properties and
+//// a Robot to represent the current robot platform.
+//// TODO: Map allies and enemies within frame.
+//datatype Frame {
+//	ball: Ball
+//	robot: Robot
+//	// TODO: Add teammates and opponents.
+//}
