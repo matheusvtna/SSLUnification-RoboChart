@@ -1,9 +1,14 @@
 enumeration NODE_STATUS {
-	RUNNING
-	FAILED
-	DONE
+	RUNNING // Node is still running.
+	FAILED  // Node has finished its behavior with a failure.
+	DONE    // Node has finished its behavior with success.
+	ABORTED // The behavior has been aborted through a higher reason.
 }
 
 interface NodeStatusI {
 	var nodeStatus : NODE_STATUS
+}
+
+interface BehaviorTreeControl {
+	event behaviorHasChanged
 }

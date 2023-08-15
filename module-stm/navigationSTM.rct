@@ -1,3 +1,14 @@
+interface INavigation {
+	event receiveFrame: string
+	event receiveField: string
+	event receiveCommand: string
+}
+
+interface IMove {
+	move ( linearVelocity : real , angularVelocity : real )
+	stop ()
+}
+
 stm NavigationSTM {
 	
 	initial i

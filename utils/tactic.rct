@@ -1,0 +1,5 @@
+enumeration Tactic {
+	HALT
+	PLACE_BALL_IN_POSITION
+	// TODO: Add more tactics...
+}

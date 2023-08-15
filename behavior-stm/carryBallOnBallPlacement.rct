@@ -5,23 +5,60 @@ import approachBall
 import carryBall
 import moveAwayFromPosition
 
+// TODO: Move BehaviorSTM, IBehavior and BehaviorController away.
 stm BehaviorSTM {
+	// Possible behavior operations.
 	requires carryBallOnBallPlacementI
-	uses NodeStatusI
 	
-	initial i0
-	final f0
-	transition t0 {
-		from i0
-		to f0
-		action carryBallOnBallPlacement()
+	// Behavior Tree Control Interfaces.
+	uses NodeStatusI
+	uses BehaviorTreeControl
+	
+	// Current Tactic.
+	//
+	// Defaults to HALT.
+	var currentTactic : Tactic = Tactic::HALT
+	
+	// States.
+	initial sInitial
+	state sExec {}
+	state sAbort {}
+	final sFinal
+	
+	// Transitions.
+	transition start {
+		from sInitial
+		to sExec
+	}
+
+	// TODO: Check tactics and act according its value.
+	// BallPlacementAlly -> carryBallOnBallPlacement
+	// DirectAlly -> freeKick
+	// ... -> ...
+	transition carryBallOnBallPlacement {
+		from sExec
+		to sExec		
+		action carryBallOnBallPlacement()	
+	}
+	
+	transition abort {
+		from sExec
+		to sAbort
+		// TODO: How we can check if the currentTactic is different from the received one.
+		// condition receiveTactic[1] != currentTactic
+		action behaviorHasChanged
+	}
+	
+	transition reset {
+		from sAbort
+		to sExec
 	}
 }
 
 interface IBehavior {
 	event receiveFrame: string
 	event receiveField: string
-	event receiveTactic: string
+	event receiveTactic: Tactic
 	event sendAction: string
 }
 
@@ -35,6 +72,7 @@ controller BehaviorController {
 	opref superOperation = carryBallOnBallPlacement
 	sref stm_ref0 = BehaviorSTM
 }
+// END TODO
 
 // --------------------------------------------
 //         CARRY BALL ON BALL PLACEMENT
@@ -52,12 +90,17 @@ interface carryBallOnBallPlacementI {
 //
 // TODO: Add a FSM output -> makes robot move...
 operation carryBallOnBallPlacement() {
+	// Sub-Operations
 	requires GoToBehindBallI
 	requires ApproachBallI
 	requires CarryBallI
 	requires MoveAwayFromPositionI	
-	requires NodeStatusI
 	
+	// Behavior Tree Control Interfaces.
+	requires NodeStatusI
+	uses BehaviorTreeControl
+	
+	// Conditional variables.
 	var robotHasMovedAwayFromBall: boolean
 
 	// States.
@@ -178,5 +221,36 @@ operation carryBallOnBallPlacement() {
 		to sGiveSpaceToGetBall
 		condition nodeStatus == NODE_STATUS::RUNNING
 	}
+	
+	// Aborted Transitions.
+	transition GameEventChangedOnGoToBall {
+		from sGoToBehindBall
+		to sFinal
+		condition nodeStatus == NODE_STATUS::ABORTED
+	}
+	transition GameEventChangedApproachBall {
+		from sApproachBall
+		to sGoToBehindBall
+		condition nodeStatus == NODE_STATUS::ABORTED
+	}
+	transition GameEventChangedCarryBall {
+		from sPlaceBall
+		to sGoToBehindBall
+		condition nodeStatus == NODE_STATUS::ABORTED
+	}
+	transition GameEventChangedOnMoveAwayFromBall {
+		from sMoveAwayFromBall
+		to sFinal
+		condition nodeStatus == NODE_STATUS::ABORTED
+	}
+	transition GameEventChangedOnGivingSpaceToBall {
+		from sGiveSpaceToGetBall
+		to sFinal
+		condition nodeStatus == NODE_STATUS::ABORTED
+	}
+	transition GameEventChangedOnMovingAwayFromBall {
+		from sMoveAwayFromBall
+		to sGoToBehindBall
+		condition nodeStatus == NODE_STATUS::ABORTED
+	}
 }
-

@@ -1,3 +1,20 @@
+interface IVision {
+	event receiveGameEvent: string
+	event receiveRawFrame: string
+
+	event sendFrameDecision: string
+	event sendFieldDecision: string
+
+	event sendFrameBehavior: string
+	event sendFieldBehavior: string
+
+	event sendFramePlanning: string
+	event sendFieldPlanning: string
+
+	event sendFrameNavigation: string
+	event sendFieldNavigation: string
+}
+
 stm VisionSTM {
 	
 	initial i
@@ -8,4 +25,3 @@ stm VisionSTM {
 		to f
 	}
 }
-

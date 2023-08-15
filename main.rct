@@ -41,7 +41,7 @@ module SSL {
 	connection visionControllerRef on sendFieldNavigation to navigationControllerRef on receiveField ( _async )
 		
 //	connection decisionControllerRef on sendTactic to behaviorControllerRef on receiveTactic ( _async )
-//	
+	
 //	connection behaviorControllerRef on sendAction to planningControllerRef on receiveAction ( _async )
 	
 	connection planningControllerRef on sendCommand to navigationControllerRef on receiveCommand ( _async )

@@ -20,10 +20,14 @@ interface MoveAwayFromPositionI {
 //
 // TODO: Add a FSM output -> makes robot move...
 operation moveAwayFromPosition() {
+	// Behavior Tree Control Interfaces.
 	requires NodeStatusI
+	uses BehaviorTreeControl
 	
+	// Conditional variables.
 	var robotIsFarEnoughFromPosition: boolean
-	
+
+	// Constants.	
 	const TIME_LIMIT_TO_BEHAVE: nat = 30
 		
 	// States.
@@ -59,5 +63,12 @@ operation moveAwayFromPosition() {
 		// How to solve this warning? What this means? 
 		condition sinceEntry(sMoveAway) > TIME_LIMIT_TO_BEHAVE /\ (not robotIsFarEnoughFromPosition)
 		action nodeStatus = NODE_STATUS::FAILED
+	}
+	
+	transition abort {		
+		from sMoveAway
+		to sFinal
+		trigger behaviorHasChanged
+		action nodeStatus = NODE_STATUS::ABORTED
 	}
 }

@@ -17,9 +17,11 @@ interface CarryBallI {
 //
 // TODO: Add a FSM output -> makes robot move...
 operation carryBall() {	
-	requires NodeStatusI	
+	// Behavior Tree Control Interfaces.
+	requires NodeStatusI
+	uses BehaviorTreeControl
 		
-	// Variables conditions.
+	// Conditional variables.
 	var allyHasBall: boolean
 	var ballIsPositioned: boolean
 	
@@ -55,5 +57,12 @@ operation carryBall() {
 		to sFinal
 		condition not allyHasBall
 		action nodeStatus = NODE_STATUS::FAILED
+	}
+	
+	transition abort {		
+		from sCarryBall
+		to sFinal
+		trigger behaviorHasChanged
+		action nodeStatus = NODE_STATUS::ABORTED
 	}
 }

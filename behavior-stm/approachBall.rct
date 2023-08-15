@@ -19,10 +19,11 @@ interface ApproachBallI {
 operation approachBall() {
 	requires NodeStatusI
 	
-	// Variables conditions.
+	// Conditional variables.
 	var allyIsBehindBall: boolean
 	var allyIsCloseToBall: boolean
 	var allyHasBall: boolean
+	var decisionHasChanged: boolean
 	
 	// States.
 	initial sInitial
@@ -56,5 +57,12 @@ operation approachBall() {
 		to sFinal
 		condition (not allyIsBehindBall \/ not allyIsCloseToBall)
 		action nodeStatus = NODE_STATUS::FAILED
+	}
+	
+	transition abort {		
+		from sApproach
+		to sFinal
+		condition decisionHasChanged
+		action nodeStatus = NODE_STATUS::ABORTED
 	}
 }	

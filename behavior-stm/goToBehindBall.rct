@@ -16,9 +16,11 @@ interface GoToBehindBallI {
 //
 // TODO: Add a FSM output -> makes robot move...
 operation goToBehindBall() {
+	// Behavior Tree Control Interfaces.
 	requires NodeStatusI
+	uses BehaviorTreeControl
 
-	// Variables conditions.
+	// Conditional variables.
 	var allyIsBehindBall: boolean
 	var allyIsCloseToBall: boolean
 	var allyIsPushingBallWithHisBack: boolean
@@ -56,6 +58,13 @@ operation goToBehindBall() {
 		to sFinal
 		condition allyIsPushingBallWithHisBack
 		action nodeStatus = NODE_STATUS::FAILED
+	}
+	
+	transition abort {		
+		from sGoToBehindBall
+		to sFinal
+		trigger behaviorHasChanged
+		action nodeStatus = NODE_STATUS::ABORTED
 	}
 }	
 

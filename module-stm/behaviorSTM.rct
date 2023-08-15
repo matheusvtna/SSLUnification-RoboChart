@@ -1,11 +1,24 @@
 //import behaviors
 //
+//interface IBehavior {
+//	event receiveFrame: string
+//	event receiveField: string
+//	event receiveTactic: Tactic
+//	
+//	event sendAction: string	
+//}
+//
 //stm BehaviorSTM {
 //	
-//	initial i0
-//	final f0
+//	uses BehaviorTreeControl
+//	
+//	initial sInitial
+//	final sFinal
+//	
+//	
 //	transition t0 {
-//		from i0
-//		to f0
+//		from sInitial
+//		to sFinal
+//		action carryBallOnBallPlacement()
 //	}
 //}

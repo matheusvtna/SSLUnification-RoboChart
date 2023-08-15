@@ -1,22 +1,6 @@
-interface IVision {
-	event receiveGameEvent: string
-	event receiveRawFrame: string
-
-	event sendFrameDecision: string
-	event sendFieldDecision: string
-
-	event sendFrameBehavior: string
-	event sendFieldBehavior: string
-
-	event sendFramePlanning: string
-	event sendFieldPlanning: string
-
-	event sendFrameNavigation: string
-	event sendFieldNavigation: string
-}
+import visionSTM
 
 controller VisionController {
 	uses IVision
 	sref stm_ref0 = VisionSTM
 }
-

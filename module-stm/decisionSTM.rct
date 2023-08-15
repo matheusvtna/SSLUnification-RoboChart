@@ -1,9 +1,28 @@
-stm DecisionSTM {
-	final f0
-	initial i0
-	transition t0 {
-		from i0
-		to f0
-	}
+interface IDecision {
+	event receiveGameEvent: string
+	event receiveFrame: string
+	event receiveField: string
+	event sendTactic: Tactic
 }
 
+stm DecisionSTM {
+	uses IDecision
+		
+	initial sInitial
+	state sDecision {}
+	final sFinal
+	
+	var tactic:Tactic
+		
+	transition start {
+		from sInitial
+		to sDecision		
+	}
+	transition decision {
+		from sDecision
+		to sFinal
+		// TODO: Question -> Action shouldn't be before trigger?
+		trigger sendTactic ? tactic
+		action tactic = Tactic::PLACE_BALL_IN_POSITION
+	}
+}
