@@ -17,13 +17,14 @@ interface ApproachBallI {
 //
 // TODO: Add a FSM output -> makes robot move...
 operation approachBall() {
+	// Behavior Tree Control Interfaces.
 	requires NodeStatusI
+	uses BehaviorTreeControl
 	
 	// Conditional variables.
 	var allyIsBehindBall: boolean
 	var allyIsCloseToBall: boolean
 	var allyHasBall: boolean
-	var decisionHasChanged: boolean
 	
 	// States.
 	initial sInitial
@@ -62,7 +63,7 @@ operation approachBall() {
 	transition abort {		
 		from sApproach
 		to sFinal
-		condition decisionHasChanged
+		trigger behaviorHasChanged
 		action nodeStatus = NODE_STATUS::ABORTED
 	}
 }	
