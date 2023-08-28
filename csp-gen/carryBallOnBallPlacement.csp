@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 19-06-2023 14:57:58
+-- Automatically generated on 27-08-2023 20:59:19
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -17,5 +17,6 @@ include "defs/carryBallOnBallPlacement.csp"
 include "defs/file_moveAwayFromPosition_defs.csp"
 include "instantiations.csp"
 include "defs/file_carryBall_defs.csp"
+include "defs/file_tactic_defs.csp"
 include "defs/file_approachBall_defs.csp"
 channel r__

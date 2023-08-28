@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 19-06-2023 14:57:58
+-- Automatically generated on 27-08-2023 20:59:19
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -9,6 +9,20 @@
 
 include "carryBallOnBallPlacement.csp"
 
+-- generate carryBallOnBallPlacement_CarryBallOnBallPlacementSTM
+P_carryBallOnBallPlacement_CarryBallOnBallPlacementSTM = let
+	id__ = 0
+	
+	
+	
+within
+	carryBallOnBallPlacement::CarryBallOnBallPlacementSTM::O__(
+		id__
+	)
+assert P_carryBallOnBallPlacement_CarryBallOnBallPlacementSTM :[deadlock-free]	
+assert P_carryBallOnBallPlacement_CarryBallOnBallPlacementSTM;RUN({r__}) :[deadlock-free]
+assert P_carryBallOnBallPlacement_CarryBallOnBallPlacementSTM :[deterministic]
+assert P_carryBallOnBallPlacement_CarryBallOnBallPlacementSTM :[divergence-free]
 -- generate carryBallOnBallPlacement_BehaviorSTM
 P_carryBallOnBallPlacement_BehaviorSTM = let
 	id__ = 0
@@ -24,19 +38,6 @@ assert P_carryBallOnBallPlacement_BehaviorSTM;RUN({r__}) :[deadlock-free]
 assert P_carryBallOnBallPlacement_BehaviorSTM :[deterministic]
 assert P_carryBallOnBallPlacement_BehaviorSTM :[divergence-free]
 
--- generate carryBallOnBallPlacement_OP_carryBallOnBallPlacement
-P_carryBallOnBallPlacement_OP_carryBallOnBallPlacement = let
-	id__ = 0
-	
-	
-	
-	
-within
-	carryBallOnBallPlacement::OP_carryBallOnBallPlacement::O__(id__)
-assert P_carryBallOnBallPlacement_OP_carryBallOnBallPlacement :[deadlock-free]	
-assert P_carryBallOnBallPlacement_OP_carryBallOnBallPlacement;RUN({r__}) :[deadlock-free]
-assert P_carryBallOnBallPlacement_OP_carryBallOnBallPlacement :[deterministic]
-assert P_carryBallOnBallPlacement_OP_carryBallOnBallPlacement :[divergence-free]
 
 -- generate carryBallOnBallPlacement_BehaviorController
 P_carryBallOnBallPlacement_BehaviorController = let
@@ -45,10 +46,8 @@ P_carryBallOnBallPlacement_BehaviorController = let
 	
 	
 		
-	const_carryBallOnBallPlacement_BehaviorController_moveAwayOp_TIME_LIMIT_TO_BEHAVE = 30
 within
-	carryBallOnBallPlacement::BehaviorController::O__(id__,
-			   	const_carryBallOnBallPlacement_BehaviorController_moveAwayOp_TIME_LIMIT_TO_BEHAVE)
+	carryBallOnBallPlacement::BehaviorController::O__(id__)
 
 assert P_carryBallOnBallPlacement_BehaviorController :[deadlock-free]	
 assert P_carryBallOnBallPlacement_BehaviorController;RUN({r__}) :[deadlock-free]
@@ -63,8 +62,7 @@ P_carryBallOnBallPlacement_BehaviorController_stm_ref0 = let
 	
 within
 	carryBallOnBallPlacement::BehaviorController::stm_ref0::O__(
-		id__,
-		const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE
+		id__
 	)
 assert P_carryBallOnBallPlacement_BehaviorController_stm_ref0 :[deadlock-free]	
 assert P_carryBallOnBallPlacement_BehaviorController_stm_ref0;RUN({r__}) :[deadlock-free]

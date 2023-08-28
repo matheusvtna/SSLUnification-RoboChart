@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 19-06-2023 14:53:57
+-- Automatically generated on 27-08-2023 20:09:11
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -9,24 +9,25 @@
 
 include "file_carryBall.csp"
 
-
--- generate OP_carryBall
-P_OP_carryBall = let
+-- generate CarryBallSTM
+P_CarryBallSTM = let
 	id__ = 0
 	
 	
 	
-	
 within
-	OP_carryBall::O__(id__)
-assert P_OP_carryBall :[deadlock-free]	
-assert P_OP_carryBall;RUN({r__}) :[deadlock-free]
-assert P_OP_carryBall :[deterministic]
-assert P_OP_carryBall :[divergence-free]
+	CarryBallSTM::O__(
+		id__
+	)
+assert P_CarryBallSTM :[deadlock-free]	
+assert P_CarryBallSTM;RUN({r__}) :[deadlock-free]
+assert P_CarryBallSTM :[deterministic]
+assert P_CarryBallSTM :[divergence-free]
 -- timed deadlock free
-assert prioritise(P_OP_carryBall[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+assert prioritise(P_CarryBallSTM[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
 
 -- timelock free
-assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_OP_carryBall
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_CarryBallSTM
+
 
 

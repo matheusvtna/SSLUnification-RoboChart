@@ -4,22 +4,18 @@ import utils
 //                 CARRY BALL
 // --------------------------------------------
 interface CarryBallI {
-	carryBall()
+	event startCarryBall
+	event stopCarryBall
 }
 
-// This operation makes robot move to a target position
+// This state machine makes robot move to a target position
 // by carrying the ball. It succeeds when the ball is
 // at the target position and it fails if the robot
 // loses the ball on carry.
-//
-// @param ball: Ball.
-// @param angleThreshold: real.
-//
 // TODO: Add a FSM output -> makes robot move...
-operation carryBall() {	
+stm CarryBallSTM {	
 	// Behavior Tree Control Interfaces.
 	requires NodeStatusI
-	uses BehaviorTreeControl
 		
 	// Conditional variables.
 	var allyHasBall: boolean
@@ -62,7 +58,6 @@ operation carryBall() {
 	transition abort {		
 		from sCarryBall
 		to sFinal
-		trigger behaviorHasChanged
 		action nodeStatus = NODE_STATUS::ABORTED
 	}
 }

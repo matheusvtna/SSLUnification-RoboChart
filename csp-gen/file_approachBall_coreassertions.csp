@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 19-06-2023 14:53:57
+-- Automatically generated on 27-08-2023 20:38:47
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -9,19 +9,20 @@
 
 include "file_approachBall.csp"
 
-
--- generate OP_approachBall
-P_OP_approachBall = let
+-- generate ApproachBallSTM
+P_ApproachBallSTM = let
 	id__ = 0
 	
 	
 	
-	
 within
-	OP_approachBall::O__(id__)
-assert P_OP_approachBall :[deadlock-free]	
-assert P_OP_approachBall;RUN({r__}) :[deadlock-free]
-assert P_OP_approachBall :[deterministic]
-assert P_OP_approachBall :[divergence-free]
+	ApproachBallSTM::O__(
+		id__
+	)
+assert P_ApproachBallSTM :[deadlock-free]	
+assert P_ApproachBallSTM;RUN({r__}) :[deadlock-free]
+assert P_ApproachBallSTM :[deterministic]
+assert P_ApproachBallSTM :[divergence-free]
+
 
 

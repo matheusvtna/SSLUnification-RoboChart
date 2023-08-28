@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 19-06-2023 14:53:57
+-- Automatically generated on 27-08-2023 20:30:55
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -9,24 +9,25 @@
 
 include "file_goToBehindBall.csp"
 
-
--- generate OP_goToBehindBall
-P_OP_goToBehindBall = let
+-- generate GoToBehindBallSTM
+P_GoToBehindBallSTM = let
 	id__ = 0
 	
 	
 	
-	
 within
-	OP_goToBehindBall::O__(id__)
-assert P_OP_goToBehindBall :[deadlock-free]	
-assert P_OP_goToBehindBall;RUN({r__}) :[deadlock-free]
-assert P_OP_goToBehindBall :[deterministic]
-assert P_OP_goToBehindBall :[divergence-free]
+	GoToBehindBallSTM::O__(
+		id__
+	)
+assert P_GoToBehindBallSTM :[deadlock-free]	
+assert P_GoToBehindBallSTM;RUN({r__}) :[deadlock-free]
+assert P_GoToBehindBallSTM :[deterministic]
+assert P_GoToBehindBallSTM :[divergence-free]
 -- timed deadlock free
-assert prioritise(P_OP_goToBehindBall[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+assert prioritise(P_GoToBehindBallSTM[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
 
 -- timelock free
-assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_OP_goToBehindBall
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_GoToBehindBallSTM
+
 
 

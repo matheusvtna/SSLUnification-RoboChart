@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 19-06-2023 14:57:58
+-- Automatically generated on 27-08-2023 20:10:47
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -9,21 +9,22 @@
 
 include "file_moveAwayFromPosition.csp"
 
-
--- generate OP_moveAwayFromPosition
-P_OP_moveAwayFromPosition = let
+-- generate MoveAwayFromPositionSTM
+P_MoveAwayFromPositionSTM = let
 	id__ = 0
 	
 	
-	
-	const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE = 30
+	const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE = 30
 	
 within
-	OP_moveAwayFromPosition::O__(id__,
-			    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
-assert P_OP_moveAwayFromPosition :[deadlock-free]	
-assert P_OP_moveAwayFromPosition;RUN({r__}) :[deadlock-free]
-assert P_OP_moveAwayFromPosition :[deterministic]
-assert P_OP_moveAwayFromPosition :[divergence-free]
+	MoveAwayFromPositionSTM::O__(
+		id__,
+		const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE
+	)
+assert P_MoveAwayFromPositionSTM :[deadlock-free]	
+assert P_MoveAwayFromPositionSTM;RUN({r__}) :[deadlock-free]
+assert P_MoveAwayFromPositionSTM :[deterministic]
+assert P_MoveAwayFromPositionSTM :[divergence-free]
+
 
 

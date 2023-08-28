@@ -8,7 +8,3 @@ enumeration NODE_STATUS {
 interface NodeStatusI {
 	var nodeStatus : NODE_STATUS
 }
-
-interface BehaviorTreeControl {
-	event behaviorHasChanged
-}

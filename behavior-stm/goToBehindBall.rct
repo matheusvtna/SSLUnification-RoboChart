@@ -4,7 +4,8 @@ import utils
 //              GO TO BEHIND BALL
 // --------------------------------------------
 interface GoToBehindBallI {
-	goToBehindBall()
+	event startGoToBehindBall
+	event stopGoToBehindBall
 }
 
 // This operation makes robot move to behind the
@@ -15,10 +16,10 @@ interface GoToBehindBallI {
 // @param angleThreshold: real.
 //
 // TODO: Add a FSM output -> makes robot move...
-operation goToBehindBall() {
+stm GoToBehindBallSTM {
 	// Behavior Tree Control Interfaces.
 	requires NodeStatusI
-	uses BehaviorTreeControl
+	uses GoToBehindBallI
 
 	// Conditional variables.
 	var allyIsBehindBall: boolean
@@ -27,21 +28,27 @@ operation goToBehindBall() {
 
 	// States.
 	initial sInitial
+	state sStart {}
 	state sGoToBehindBall {
 		entry nodeStatus = NODE_STATUS::RUNNING			
-	}	
-	final sFinal
+	}		
 	
 	// Transitions.
-	transition goToBehindBall {
+	transition start {
 		from sInitial
-		to sGoToBehindBall
+		to sStart
 		// action moveToBehindBall()
+	}
+	
+	transition goToBehindBall{
+		from sStart
+		to sGoToBehindBall
+		trigger startGoToBehindBall
 	}
 	
 	transition success {		
 		from sGoToBehindBall
-		to sFinal
+		to sStart
 		condition (allyIsBehindBall /\ allyIsCloseToBall) 
 		action nodeStatus = NODE_STATUS::DONE
 	}
@@ -55,15 +62,15 @@ operation goToBehindBall() {
 	
 	transition fail {		
 		from sGoToBehindBall
-		to sFinal
+		to sStart
 		condition allyIsPushingBallWithHisBack
 		action nodeStatus = NODE_STATUS::FAILED
 	}
 	
 	transition abort {		
 		from sGoToBehindBall
-		to sFinal
-		trigger behaviorHasChanged
+		to sStart
+		trigger stopGoToBehindBall
 		action nodeStatus = NODE_STATUS::ABORTED
 	}
 }	

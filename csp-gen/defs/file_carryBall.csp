@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 19-06-2023 14:53:57
+-- Automatically generated on 27-08-2023 20:09:11
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -10,9 +10,7 @@
 
 
 
-
--- compileSelfContainedOperation
-module OP_carryBall
+module CarryBallSTM
 exports
 	transparent diamond
 	transparent sbisim
@@ -69,9 +67,8 @@ exports
 	sem__events = {|
 		terminate
 	,	set_EXT_nodeStatus, set_nodeStatus
-		, share__
 		|}
-	
+
 	-- Nodes --
 	-- declaring all nodes
 	
@@ -201,11 +198,33 @@ exports
 	-- END of Operation calls --
 	
 	-- STM processes
-	STM(id__) = -- RULE: [[stm:OperationDef]]_STM^nops : CSPProcess
-	Stateful(id__) \ {terminate}
+	STM(id__) = -- RULE: [[stm:StateMachineDef]]_STM^nops : CSPProcess
+	( 
+		(
+			(
+				(IteratedStateful(id__) \ {terminate} ; share__choice(terminate -> SKIP))
+			 	[[ share__ <- x__ | x__ <- {|set_EXT_nodeStatus|} ]]
+			)
+		[| {share__} |]
+		SKIP
+		)
+		[| union(sharedVarSync,{terminate}) |]
+		dbisim(sharedVarMemory(id__))
+	)\sharedVarHide
 	
-	STM_VS_O(id__) = -- RULE: [[stm:OperationDef]]_STM^nops : CSPProcess
-	Stateful(id__) \ {terminate}
+	STM_VS_O(id__) = -- RULE: [[stm:StateMachineDef]]_STM^nops : CSPProcess
+	( 
+		(
+			(
+				(IteratedStateful_VS_O(id__) \ {terminate} ; share__choice(terminate -> SKIP))
+			 	[[ share__ <- x__ | x__ <- {|set_EXT_nodeStatus|} ]]
+			)
+		[| {share__} |]
+		SKIP
+		)
+		[| union(sharedVarSync,{terminate}) |]
+		dbisim(sharedVarMemory(id__))
+	)\sharedVarHide
 	
 	-- Transitions
 	Transitions(id__) = ((let
@@ -215,6 +234,7 @@ exports
 			 	 [] dbisim((ballIsPositioned)&(internal__!NID_sCarryBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
 			 	 [] dbisim(((((not (ballIsPositioned))) and allyHasBall))&(internal__!NID_sCarryBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; sCarryBall::enter -> SKIP)))
 			 	 [] dbisim(((not (allyHasBall)))&(internal__!NID_sCarryBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_FAILED -> SKIP))) ; sFinal::enter -> SKIP)))
+			 	 [] dbisim((true)&(internal__!NID_sCarryBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
 			 ) ; Trans)
 			 []
 			 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
@@ -251,7 +271,7 @@ exports
 					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 					-- because CSPM modules are used for the semantics of Node.
 					flowevts = union(enterSS,{|exit,exited,interrupt|})
-					transSync = {|internal__.NID_sInitial,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall|}
+					transSync = {|internal__.NID_sInitial,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall|}
 				within
 					((
 					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
@@ -263,7 +283,7 @@ exports
 					   )
 					   )
 					 )
-					 [[sCarryBall::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall|}]]
+					 [[sCarryBall::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall|}]]
 					 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
 					 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 					 )
@@ -338,7 +358,7 @@ exports
 					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 					-- because CSPM modules are used for the semantics of Node.
 					flowevts = union(enterSS,{|exit,exited,interrupt|})
-					transSync = {|internal__.NID_sInitial,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall|}
+					transSync = {|internal__.NID_sInitial,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall|}
 				within
 					((
 					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
@@ -350,7 +370,7 @@ exports
 					   )
 					   )
 					 )
-					 [[sCarryBall::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall|}]]
+					 [[sCarryBall::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall|}]]
 					 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
 					 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 					 )
@@ -438,5 +458,24 @@ exports
 	VS_O__(id__) = sbisim(diamond(FVS__(id__)))
 	HEXT__(id__) = O__(id__) [|shared_variable_events|] SKIP
 	HUP__(id__) = O__(id__) [|{share__}|] SKIP
-			endmodule
+	
+	-- Shared memory
+	-- Shared memory variables
+	Memory_nodeStatus(nodeStatus) =
+		get_nodeStatus!nodeStatus -> Memory_nodeStatus(nodeStatus)
+		[]
+		set_nodeStatus?x__ -> Memory_nodeStatus(x__)
+		[]
+		set_EXT_nodeStatus?x__ -> Memory_nodeStatus(x__)
+		[]
+		terminate -> SKIP
+	
+	-- sharedVarMemory process
+	sharedVarMemory(id__) = Memory_nodeStatus(NODE_STATUS_RUNNING)
+	
+	sharedVarSync = {|get_nodeStatus,set_nodeStatus,set_EXT_nodeStatus|}
+	
+	sharedVarHide = {|get_nodeStatus|}
+endmodule
+
 

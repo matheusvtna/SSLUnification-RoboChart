@@ -4,25 +4,21 @@ import utils
 //           MOVE AWAY FROM POSITION
 // --------------------------------------------
 interface MoveAwayFromPositionI {
-	moveAwayFromPosition()
+	event startMoveAwayFromPosition
+	event stopMoveAwayFromPosition
 }
 
-// This operation makes robot move away to
+// This state machine makes robot move away to
 // a dangerous position, which can be any point
 // in the field. It succeeds when the robot
 // is at a certain distance from this point 
 // and fails if the robot takes too long to
 // move away from position.
 //
-// @param frame: Frame.
-// @param dangerousPosition: Point.
-// @param distanceThreshold: real.
-//
 // TODO: Add a FSM output -> makes robot move...
-operation moveAwayFromPosition() {
+stm MoveAwayFromPositionSTM {
 	// Behavior Tree Control Interfaces.
 	requires NodeStatusI
-	uses BehaviorTreeControl
 	
 	// Conditional variables.
 	var robotIsFarEnoughFromPosition: boolean
@@ -68,7 +64,6 @@ operation moveAwayFromPosition() {
 	transition abort {		
 		from sMoveAway
 		to sFinal
-		trigger behaviorHasChanged
 		action nodeStatus = NODE_STATUS::ABORTED
 	}
 }

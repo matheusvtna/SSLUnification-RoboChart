@@ -4,22 +4,20 @@ import utils
 //              APPROACH BALL
 // --------------------------------------------
 interface ApproachBallI {
-	approachBall()
+	event startApproachBall
+	event stopApproachBall
 }
 
-// This operation makes robot move to ball smoothly.
+// This state machine makes robot move to ball smoothly.
 // It succeeds when the robot touches the ball and
 // fails when the robot is not behind the ball or
 // close to it.
 //
-// @param ball: Ball.
-// @param angleThreshold: real.
-//
 // TODO: Add a FSM output -> makes robot move...
-operation approachBall() {
+stm ApproachBallSTM {
 	// Behavior Tree Control Interfaces.
 	requires NodeStatusI
-	uses BehaviorTreeControl
+	uses ApproachBallI
 	
 	// Conditional variables.
 	var allyIsBehindBall: boolean
@@ -28,6 +26,7 @@ operation approachBall() {
 	
 	// States.
 	initial sInitial
+	state sStart {}
 	state sApproach {
 		entry nodeStatus = NODE_STATUS::RUNNING
 	}	
@@ -36,7 +35,13 @@ operation approachBall() {
 	// Transitions.
 	transition start {
 		from sInitial
+		to sStart
+	}
+	
+	transition approachBall {
+		from sStart
 		to sApproach
+		trigger startApproachBall
 	}
 	
 	transition success {		
@@ -63,7 +68,7 @@ operation approachBall() {
 	transition abort {		
 		from sApproach
 		to sFinal
-		trigger behaviorHasChanged
+		trigger stopApproachBall
 		action nodeStatus = NODE_STATUS::ABORTED
 	}
 }	

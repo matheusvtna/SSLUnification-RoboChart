@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 19-06-2023 14:57:58
+-- Automatically generated on 27-08-2023 20:10:48
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -10,9 +10,7 @@
 
 
 
-
--- compileSelfContainedOperation
-module OP_moveAwayFromPosition
+module MoveAwayFromPositionSTM
 exports
 	transparent diamond
 	transparent sbisim
@@ -68,7 +66,6 @@ exports
 	sem__events = {|
 		terminate
 	,	set_EXT_nodeStatus, set_nodeStatus
-		, share__
 		|}
 	
 	channel clockReset, clockResetL, clockResetR 
@@ -76,12 +73,24 @@ exports
 	localClockResets = {||}
 	
 	
-	channel get_CLID_sFinal : core_clock_type 
 	channel get_CLID_sMoveAway : core_clock_type 
+	channel get_CLID_sFinal : core_clock_type 
 	--channel increment__
 	
+	CLID_sMoveAway_clock_type(id__,
+			          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
+		let
+			max = (clock_type_max(Union({
+	{},
+	({const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE|TIME_LIMIT_TO_BEHAVE <- core_nat}),
+	({const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE|TIME_LIMIT_TO_BEHAVE <- core_nat})
+	}))+1)
+		ctype = {0..max}
+	within
+		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
+	
 	CLID_sFinal_clock_type(id__,
-			          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
+			          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 		let
 			max = (clock_type_max(Union({
 	{}
@@ -90,20 +99,8 @@ exports
 	within
 		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
-	CLID_sMoveAway_clock_type(id__,
-			          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
-		let
-			max = (clock_type_max(Union({
-	{},
-	({const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE|TIME_LIMIT_TO_BEHAVE <- core_nat}),
-	({const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE|TIME_LIMIT_TO_BEHAVE <- core_nat})
-	}))+1)
-		ctype = {0..max}
-	within
-		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
-	
-	
+
 		-- Nodes --
 		-- declaring all nodes
 		
@@ -116,7 +113,7 @@ exports
 			
 			Timed(OneStep) {
 				D__(id__,
-						    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
+						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 					dbisim(let
 						Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
 						
@@ -127,8 +124,8 @@ exports
 						Inactive [| {terminate} |> SKIP)
 				
 				VS_O__(id__,
-						    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = D__(id__,
-						    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = D__(id__,
+						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 			}
 		
 		endmodule
@@ -164,7 +161,7 @@ exports
 				--  Note that FDR has problems with efficiently compiling the process below
 				-- 	if using a different recursion pattern.
 				D__(id__,
-						    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
+						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 				dbisim(let
 					-- IMPLEMENTATION NOTE: 
 					-- The following should be defined as: Inactive = share__choice(Activation [] Termination),
@@ -186,7 +183,7 @@ exports
 					Inactive [| {terminate} |> SKIP)
 					
 				VS_O__(id__,
-						    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
+						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 				dbisim(let
 					Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
 					
@@ -206,7 +203,7 @@ exports
 				-- Clocks
 				
 				StateClocks(id__,
-						          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = terminate -> SKIP
+						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = terminate -> SKIP
 				
 				stateClockSync = {||}
 			}
@@ -227,7 +224,7 @@ exports
 			Timed(OneStep) {
 				--	Rule: behaviours(Node)
 				D__(id__,
-						    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
+						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 					dbisim(let
 						Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Entering
 						
@@ -238,8 +235,8 @@ exports
 						Inactive [| {terminate} |> SKIP)
 					
 				VS_O__(id__,
-						    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = D__(id__,
-						    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = D__(id__,
+						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 			}
 		
 		endmodule
@@ -259,25 +256,52 @@ exports
 	
 		-- STM processes
 		STM(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = -- RULE: [[stm:OperationDef]]_STM^nops : CSPProcess
-		Stateful(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) \ {terminate}
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = prioritise(-- RULE: [[stm:StateMachineDef]]_STM^nops : CSPProcess
+		( 
+			(
+				(
+					(IteratedStateful(id__,
+							    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) \ {terminate} ; share__choice(terminate -> SKIP))
+				 	[[ share__ <- x__ | x__ <- {|set_EXT_nodeStatus|} ]]
+				)
+			[| {share__} |]
+			SKIP
+			)
+			[| union(sharedVarSync,{terminate}) |]
+			dbisim(sharedVarMemory(id__,
+					    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
+		)\sharedVarHide
+		,<{terminate},{tock}>)
 		
 		STM_VS_O(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = -- RULE: [[stm:OperationDef]]_STM^nops : CSPProcess
-		Stateful(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) \ {terminate}
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = prioritise(-- RULE: [[stm:StateMachineDef]]_STM^nops : CSPProcess
+		( 
+			(
+				(
+					(IteratedStateful_VS_O(id__,
+							    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) \ {terminate} ; share__choice(terminate -> SKIP))
+				 	[[ share__ <- x__ | x__ <- {|set_EXT_nodeStatus|} ]]
+				)
+			[| {share__} |]
+			SKIP
+			)
+			[| union(sharedVarSync,{terminate}) |]
+			dbisim(sharedVarMemory(id__,
+					    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
+		)\sharedVarHide
+		,<{terminate},{tock}>)
 		
 		-- Transitions
 		Transitions(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = ((let
-			Trans = share__choice(get_robotIsFarEnoughFromPosition?robotIsFarEnoughFromPosition -> get_CLID_sMoveAway?sMoveAway:CLID_sMoveAway_clock_type(id__,
-					          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) -> TimeOut_1(
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = ((let
+			Trans = share__choice(get_CLID_sMoveAway?sMoveAway:CLID_sMoveAway_clock_type(id__,
+					          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) -> get_robotIsFarEnoughFromPosition?robotIsFarEnoughFromPosition -> TimeOut_1(
 				 (share__ -> SKIP
 				 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sMoveAway::enter -> SKIP))))
 				 [] dbisim((robotIsFarEnoughFromPosition)&(internal__!NID_sMoveAway -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
-				 [] dbisim(((((not (robotIsFarEnoughFromPosition))) and ((not ((((sMoveAway>const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) and ((not (robotIsFarEnoughFromPosition))))))))))&(internal__!NID_sMoveAway -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; sMoveAway::enter -> SKIP)))
-				 [] dbisim((((sMoveAway>const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) and ((not (robotIsFarEnoughFromPosition)))))&(internal__!NID_sMoveAway -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_FAILED -> SKIP))) ; sFinal::enter -> SKIP)))
+				 [] dbisim(((((not (robotIsFarEnoughFromPosition))) and ((not ((((sMoveAway>const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) and ((not (robotIsFarEnoughFromPosition))))))))))&(internal__!NID_sMoveAway -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; sMoveAway::enter -> SKIP)))
+				 [] dbisim((((sMoveAway>const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) and ((not (robotIsFarEnoughFromPosition)))))&(internal__!NID_sMoveAway -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_FAILED -> SKIP))) ; sFinal::enter -> SKIP)))
+				 [] dbisim((true)&(internal__!NID_sMoveAway -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
 				 []
 				 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
 				 []
@@ -295,7 +319,7 @@ exports
 		
 		-- Named process definitions
 		MachineBody(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 			dbisim((
 			let
 				finalNodesEntered = {|sFinal::entered|}
@@ -315,37 +339,37 @@ exports
 						-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 						-- because CSPM modules are used for the semantics of Node.
 						flowevts = union(enterSS,{|exit,exited,interrupt|})
-						transSync = {|internal__.NID_sInitial,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway|}
+						transSync = {|internal__.NID_sInitial,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway|}
 					within
 						((
 						 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
 						   sInitial::D__(id__,
-						   		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+						   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 						   [| { share__, terminate } |] (
 						   sMoveAway::D__(id__,
-						   		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+						   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 						   [| { share__, terminate } |] (
 						   sFinal::D__(id__,
-						   		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+						   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 						   )
 						   )
 						 )
-						 [[sMoveAway::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway|}]]
+						 [[sMoveAway::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway|}]]
 						 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
 						 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 )
 						  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-						  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition,sMoveAway::entered <- sMoveAway::enteredL]]
+						  [[sMoveAway::entered <- sMoveAway::enteredL,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
 						 )
 						 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-						 			,setL_robotIsFarEnoughFromPosition
 						 			,sMoveAway::enteredL
+						 			,setL_robotIsFarEnoughFromPosition
 						|}) |]
 						 ((sInitial::enter -> Transitions(id__,
-						 		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
-						  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition,sMoveAway::enteredL |} ]]
+						 		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
+						  [[ share__ <- x__ | x__ <- {| share__,sMoveAway::enteredL,setL_robotIsFarEnoughFromPosition |} ]]
 						 )
-						)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,sMoveAway::enteredL <- sMoveAway::entered]]
+						)[[sMoveAway::enteredL <- sMoveAway::entered,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
 						)
 					)
 					 \ hideSet)
@@ -353,35 +377,35 @@ exports
 				)
 				 [| union(stateClockSync,{terminate}) |]
 				 StateClocks(id__,
-				 		          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+				 		          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 				)\diff(stateClockSync,enteredSS))
 				 [| {| interrupt |} |] SKIP)
 			)
 			)
 		
 		Behaviour(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 			dbisim((let
 				stateClockSync = {|get_CLID_sMoveAway,sMoveAway::entered|}
 			 within
 				(MachineBody(id__,
-						    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) [| union(stateClockSync,{terminate}) |] StateClocks(id__,
-						          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)) \ union(stateClockSync,enteredSS)
+						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) [| union(stateClockSync,{terminate}) |] StateClocks(id__,
+						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)) \ union(stateClockSync,enteredSS)
 			)
 			)
 		
 		IteratedBehaviour(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 			dbisim((let
 				stateClockSync = {|get_CLID_sMoveAway,sMoveAway::entered|}
 			 within
 				(dbisim(
 					sbisim(
 						MachineBody(id__,
-								    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+								    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 						[| {|get_CLID_sMoveAway,sMoveAway::entered,terminate|} |]
 						dbisim(Clock_CLID_sMoveAway(id__,0,
-								          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
+								          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 					)\{|get_CLID_sMoveAway|}
 				)
 				) \ union(stateClockSync,enteredSS)
@@ -389,27 +413,27 @@ exports
 			)
 		
 		Stateful(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 			((let
 				getsetLocalChannels = {|get_robotIsFarEnoughFromPosition,set_robotIsFarEnoughFromPosition|}
 				clockSync = {||}
 			within
 				(Behaviour(id__,
-						    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) 
+						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) 
 				 [| union(union(getsetLocalChannels,clockSync),{terminate}) |] 
 				 (varMemory(id__,
-				 		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) [| {terminate} |] Clocks(id__,
-				 		          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
+				 		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) [| {terminate} |] Clocks(id__,
+				 		          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 			 	)\union(getsetLocalChannels,clockSync)
 			)
 			)
 		
 		IteratedStateful(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) =
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) =
 			(dbisim(
 				sbisim(
 					IteratedBehaviour(id__,
-							    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+							    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 					[| {|get_robotIsFarEnoughFromPosition,set_robotIsFarEnoughFromPosition,terminate|} |]
 					Memory_robotIsFarEnoughFromPosition(true)
 				)\{|get_robotIsFarEnoughFromPosition,set_robotIsFarEnoughFromPosition|}
@@ -418,7 +442,7 @@ exports
 		
 		-- Visible counterparts
 		MachineBody_VS_O(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 			dbisim((
 			let
 				finalNodesEntered = {|sFinal::entered|}
@@ -438,37 +462,37 @@ exports
 						-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 						-- because CSPM modules are used for the semantics of Node.
 						flowevts = union(enterSS,{|exit,exited,interrupt|})
-						transSync = {|internal__.NID_sInitial,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway|}
+						transSync = {|internal__.NID_sInitial,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway|}
 					within
 						((
 						 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
 						   sInitial::VS_O__(id__,
-						   		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+						   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 						   [| { share__, terminate } |] (
 						   sMoveAway::VS_O__(id__,
-						   		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+						   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 						   [| { share__, terminate } |] (
 						   sFinal::VS_O__(id__,
-						   		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+						   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 						   )
 						   )
 						 )
-						 [[sMoveAway::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway|}]]
+						 [[sMoveAway::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway|}]]
 						 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
 						 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 )
 						  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-						  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition,sMoveAway::entered <- sMoveAway::enteredL]]
+						  [[sMoveAway::entered <- sMoveAway::enteredL,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
 						 )
 						 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-						 			,setL_robotIsFarEnoughFromPosition
 						 			,sMoveAway::enteredL
+						 			,setL_robotIsFarEnoughFromPosition
 						|}) |]
 						 ((sInitial::enter -> Transitions(id__,
-						 		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
-						  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition,sMoveAway::enteredL |} ]]
+						 		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
+						  [[ share__ <- x__ | x__ <- {| share__,sMoveAway::enteredL,setL_robotIsFarEnoughFromPosition |} ]]
 						 )
-						)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,sMoveAway::enteredL <- sMoveAway::entered]]
+						)[[sMoveAway::enteredL <- sMoveAway::entered,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
 						)
 					)
 					 \ hideSet)
@@ -476,35 +500,35 @@ exports
 				)
 				 [| union(stateClockSync,{terminate}) |]
 				 StateClocks(id__,
-				 		          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+				 		          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 				)\diff(stateClockSync,enteredSS))
 				 [| {| interrupt |} |] SKIP)
 			)
 			)
 		
 		Behaviour_VS_O(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 			dbisim((let
 				stateClockSync = {|get_CLID_sMoveAway,sMoveAway::entered|}
 			 within
 				(MachineBody_VS_O(id__,
-						    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) [| union(stateClockSync,{terminate}) |] StateClocks(id__,
-						          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)) \ diff(union(stateClockSync,enteredSS),enteredSS)
+						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) [| union(stateClockSync,{terminate}) |] StateClocks(id__,
+						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)) \ diff(union(stateClockSync,enteredSS),enteredSS)
 			)
 			)
 		
 		IteratedBehaviour_VS_O(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 			dbisim((let
 				stateClockSync = {|get_CLID_sMoveAway,sMoveAway::entered|}
 			 within
 				(dbisim(
 					sbisim(
 						MachineBody_VS_O(id__,
-								    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+								    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 						[| {|get_CLID_sMoveAway,sMoveAway::entered,terminate|} |]
 						dbisim(Clock_CLID_sMoveAway(id__,0,
-								          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
+								          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 					)\{|get_CLID_sMoveAway|}
 				)
 				) \ diff(union(stateClockSync,enteredSS),enteredSS)
@@ -512,27 +536,27 @@ exports
 			)
 		
 		Stateful_VS_O(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 			dbisim((let
 				getsetLocalChannels = {|get_robotIsFarEnoughFromPosition,set_robotIsFarEnoughFromPosition|}
 				clockSync = {||}
 			within
 				(Behaviour_VS_O(id__,
-						    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) 
+						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) 
 				 [| union(union(getsetLocalChannels,clockSync),{terminate}) |] 
 				 (varMemory(id__,
-				 		    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) [| {terminate} |] Clocks(id__,
-				 		          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
+				 		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) [| {terminate} |] Clocks(id__,
+				 		          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 			 	)\union(getsetLocalChannels,clockSync)
 			)
 			)
 		
 		IteratedStateful_VS_O(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) =
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) =
 			(dbisim(
 				sbisim(
 					IteratedBehaviour_VS_O(id__,
-							    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+							    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 					[| {|get_robotIsFarEnoughFromPosition,set_robotIsFarEnoughFromPosition,terminate|} |]
 					Memory_robotIsFarEnoughFromPosition(true)
 				)\{|get_robotIsFarEnoughFromPosition,set_robotIsFarEnoughFromPosition|}
@@ -552,61 +576,81 @@ exports
 		
 		-- varMemory process
 		varMemory(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = Memory_robotIsFarEnoughFromPosition(true)
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = Memory_robotIsFarEnoughFromPosition(true)
 		
 		getsetLocalChannels = {|get_robotIsFarEnoughFromPosition,set_robotIsFarEnoughFromPosition|}
 		
 		-- Definition of the behaviour of state machines (default, optimised, visible, visible and optimised)
 		FVS__(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = STM_VS_O(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) \ localClockResets
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = STM_VS_O(id__,
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) \ localClockResets
 		D__(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = timed_priority(STM(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) \ union(internal_events,localClockResets))
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = timed_priority(STM(id__,
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) \ union(internal_events,localClockResets))
 		O__(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = dbisim(D__(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = dbisim(D__(id__,
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 		VS__(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = FVS__(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = FVS__(id__,
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 		VS_O__(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = dbisim(FVS__(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = dbisim(FVS__(id__,
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 		HEXT__(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = O__(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) [|shared_variable_events|] SKIP
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = O__(id__,
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) [|shared_variable_events|] SKIP
 		FVS_C__(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = dbisim(timed_priority(STM(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) \ internal_events))
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = dbisim(timed_priority(STM(id__,
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) \ internal_events))
 		HUP__(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = timed_priority(O__(id__,
-				    const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) [|{share__}|] SKIP)
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = timed_priority(O__(id__,
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) [|{share__}|] SKIP)
 		
 		-- Clocks
 		
 		Clocks(id__,
-				          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = terminate -> SKIP
+				          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = terminate -> SKIP
 		
 		clockSync = {||}
 		
 		Clock_CLID_sMoveAway(id__,x__,
-				          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = 
+				          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 			TimeOut_1(
 				sMoveAway::entered -> Clock_CLID_sMoveAway(id__,0,
-						          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 				[]
 				get_CLID_sMoveAway!x__ -> Clock_CLID_sMoveAway(id__,x__,
-						          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)
+						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 				[]
 				terminate -> SKIP,Clock_CLID_sMoveAway(id__,clock_type_plus(x__,1,CLID_sMoveAway_clock_type(id__,
-						          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE)),
-						          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
+						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)),
+						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 		
 		StateClocks(id__,
-				          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE) = dbisim(Clock_CLID_sMoveAway(id__,0,
-				          const_moveAwayFromPosition_TIME_LIMIT_TO_BEHAVE))
+				          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = dbisim(Clock_CLID_sMoveAway(id__,0,
+				          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 		
 		stateClockSync = {|get_CLID_sMoveAway,sMoveAway::entered|}
+		
+		-- Shared memory
+		-- Shared memory variables
+		Memory_nodeStatus(nodeStatus) =
+			get_nodeStatus!nodeStatus -> Memory_nodeStatus(nodeStatus)
+			[]
+			set_nodeStatus?x__ -> Memory_nodeStatus(x__)
+			[]
+			set_EXT_nodeStatus?x__ -> Memory_nodeStatus(x__)
+			[]
+			terminate -> SKIP
+		
+		-- sharedVarMemory process
+		sharedVarMemory(id__,
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = Memory_nodeStatus(NODE_STATUS_RUNNING)
+		
+		sharedVarSync = {|get_nodeStatus,set_nodeStatus,set_EXT_nodeStatus|}
+		
+		sharedVarHide = {|get_nodeStatus|}
 		}
-			endmodule
+endmodule
+
 

@@ -1,0 +1,38 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 27-08-2023 20:09:11
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_carryBall_defs.csp"
+include "core_timed_defs.csp"
+include "core_defs.csp"
+include "state_timed_defs.csp"
+include "CarryBallSTM.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+
+transparent wbisim
+channel r__
+-- generate CarryBallSTM
+P_CarryBallSTM = let
+	id__ = 0
+	
+	
+	
+within
+	CarryBallSTM::O__(
+		id__
+	)
+assert P_CarryBallSTM :[deadlock-free]	
+assert P_CarryBallSTM;RUN({r__}) :[deadlock-free]
+assert P_CarryBallSTM :[deterministic]
+assert P_CarryBallSTM :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_CarryBallSTM[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_CarryBallSTM

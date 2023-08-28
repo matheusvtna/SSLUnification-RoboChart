@@ -1,0 +1,30 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 27-08-2023 20:30:55
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_goToBehindBall_defs.csp"
+include "core_defs.csp"
+include "state_defs.csp"
+include "GoToBehindBallSTM.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+channel r__
+-- generate GoToBehindBallSTM
+P_GoToBehindBallSTM = let
+	id__ = 0
+	
+	
+	
+within
+	GoToBehindBallSTM::O__(
+		id__
+	)
+assert P_GoToBehindBallSTM :[deadlock-free]	
+assert P_GoToBehindBallSTM;RUN({r__}) :[deadlock-free]
+assert P_GoToBehindBallSTM :[deterministic]
+assert P_GoToBehindBallSTM :[divergence-free]

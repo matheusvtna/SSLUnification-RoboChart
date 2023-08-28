@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 19-06-2023 14:57:58
+-- Automatically generated on 27-08-2023 20:59:19
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -17,8 +17,11 @@ exports
 	-- Transition identifiers
 	-- declaring identifiers of transitions
 	datatype NIDS = 
-	              NID_i0|
-	              NID_f0
+	              NID_sInitial|
+	              NID_sWaitTactic|
+	              NID_jCheckCurrentTactic|
+	              NID_jStopLastTactic|
+	              NID_jStartCurrentTactic
 	
 	channel internal__ : NIDS
 	
@@ -29,6 +32,8 @@ exports
 	channel terminate
 	
 	-- Variable channels
+	channel get_currentTactic, set_currentTactic, setL_currentTactic, setR_currentTactic: Tactic
+	channel get_lastTactic, set_lastTactic, setL_lastTactic, setR_lastTactic: Tactic
 	channel get_nodeStatus, set_nodeStatus, setL_nodeStatus, setR_nodeStatus: NODE_STATUS
 	
 	-- Shared variable channels
@@ -36,17 +41,33 @@ exports
 	-- Local variable channels for defined operations that are required by the state machine
 	
 	-- Declaring state machine events
+	channel receiveFrame__: NIDS.InOut.core_string
+	channel receiveFrame: InOut.core_string
+	channel receiveField__: NIDS.InOut.core_string
+	channel receiveField: InOut.core_string
+	channel receiveTactic__: NIDS.InOut.Tactic
+	channel receiveTactic: InOut.Tactic
+	channel startCarryBallOnBallPlacementBehavior__: NIDS.InOut
+	channel startCarryBallOnBallPlacementBehavior: InOut
+	channel stopCarryBallOnBallPlacementBehavior__: NIDS.InOut
+	channel stopCarryBallOnBallPlacementBehavior: InOut
+	channel startHaltBehavior__: NIDS.InOut
+	channel startHaltBehavior: InOut
+	channel stopHaltBehavior__: NIDS.InOut
+	channel stopHaltBehavior: InOut
 	
 	-- Declaring call and ret events for undefined operations
-	channel carryBallOnBallPlacementCall
 	
 	enterSS = {|
-	i0::enter,
-	f0::enter
+	sInitial::enter,
+	sWaitTactic::enter,
+	jCheckCurrentTactic::enter,
+	jStopLastTactic::enter,
+	jStartCurrentTactic::enter
 	|}
 	
 	enteredSS = 	{|
-	f0::entered
+	sWaitTactic::entered
 	|}
 	
 	internal_events = union(enteredSS,union(enterSS,{|interrupt,exited|}))
@@ -57,7 +78,13 @@ exports
 	-- channel set with all visible events
 	sem__events = {|
 		terminate
-	,	carryBallOnBallPlacementCall
+	,	receiveFrame,
+		receiveField,
+		receiveTactic,
+		startCarryBallOnBallPlacementBehavior,
+		stopCarryBallOnBallPlacementBehavior,
+		startHaltBehavior,
+		stopHaltBehavior
 		|}
 	
 	channel clockReset, clockResetL, clockResetR 
@@ -65,12 +92,13 @@ exports
 	localClockResets = {||}
 	
 	
-	channel get_CLID_f0 : core_clock_type 
+	channel get_CLID_sWaitTactic : core_clock_type 
 	--channel increment__
 	
-	CLID_f0_clock_type(id__) = 
+	CLID_sWaitTactic_clock_type(id__) = 
 		let
 			max = (clock_type_max(Union({
+	{}
 	}))+1)
 		ctype = {0..max}
 	within
@@ -82,8 +110,8 @@ exports
 		-- declaring all nodes
 		
 		----------------------------------------------------------------------
-		-- Initial: i0
-		module i0
+		-- Initial: sInitial
+		module sInitial
 		exports
 		
 			channel enter, interrupt
@@ -107,23 +135,141 @@ exports
 		
 		
 		----------------------------------------------------------------------
-		-- Final state: f0
-		module f0
+		-- State: sWaitTactic
+		module sWaitTactic
+		
+		enterSS = {}
+		
+		enteredSS = {}
 		
 		exports
 		
+			--  Declarations
+			
 			channel enter, entered, interrupt
 			channel enteredL, enteredR
 			
+							
+			
+			--channel increment__
+			
+			
+			--	Nodes
+			-- declaring all nodes
+			
+			
 			Timed(OneStep) {
 				--	Rule: behaviours(Node)
+				--  Note that FDR has problems with efficiently compiling the process below
+				-- 	if using a different recursion pattern.
+				D__(id__) = 
+				dbisim(let
+					-- IMPLEMENTATION NOTE: 
+					-- The following should be defined as: Inactive = share__choice(Activation [] Termination),
+					-- however FDR struggles with that form in certain cases. So we use the exception operator
+					-- instead to 'terminate'.
+					
+					Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+					
+					Termination = terminate -> SKIP
+					
+					Active 		= SKIP ; 
+							 	  Behaviour ; 
+							 	  share__choice(exit -> SKIP) ; SKIP ; 
+							 	  share__choice(exited -> SKIP) ; Inactive
+				
+					Behaviour 	= entered -> During
+					During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+				within
+					Inactive [| {terminate} |> SKIP)
+					
+				VS_O__(id__) = 
+				dbisim(let
+					Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+					
+					Termination = terminate -> SKIP
+					
+					Active 		= SKIP ; 
+							 	  Behaviour ; 
+							 	  share__choice(exit -> SKIP) ; SKIP ; 
+							 	  share__choice(exited -> SKIP) ; Inactive
+				
+					Behaviour 	= entered -> During
+					During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+				within
+					Inactive [| {terminate} |> SKIP)
+				
+				
+				-- Clocks
+				
+				StateClocks(id__) = terminate -> SKIP
+				
+				stateClockSync = {||}
+			}
+		
+		endmodule
+		----------------------------------------------------------------------
+		
+		
+		----------------------------------------------------------------------
+		-- Junction: jCheckCurrentTactic
+		module jCheckCurrentTactic
+		exports
+		
+			channel enter, interrupt
+			
+			Timed(OneStep) {
 				D__(id__) = 
 					dbisim(let
-						Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Entering
+						Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
 						
-						Entering 	= entered -> SKIP ; Active
-						Active		= share__choice(terminate -> SKIP [] interrupt -> SKIP) ; Interrupted
-						Interrupted	= share__choice(exit -> exited -> Inactive)
+						Active 		= share__choice(interrupt -> SKIP) ; Inactive
+					within
+						Inactive [| {terminate} |> SKIP)
+					
+				VS_O__(id__) = D__(id__)
+			}
+		
+		endmodule
+		----------------------------------------------------------------------
+		
+		
+		----------------------------------------------------------------------
+		-- Junction: jStopLastTactic
+		module jStopLastTactic
+		exports
+		
+			channel enter, interrupt
+			
+			Timed(OneStep) {
+				D__(id__) = 
+					dbisim(let
+						Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+						
+						Active 		= share__choice(interrupt -> SKIP) ; Inactive
+					within
+						Inactive [| {terminate} |> SKIP)
+					
+				VS_O__(id__) = D__(id__)
+			}
+		
+		endmodule
+		----------------------------------------------------------------------
+		
+		
+		----------------------------------------------------------------------
+		-- Junction: jStartCurrentTactic
+		module jStartCurrentTactic
+		exports
+		
+			channel enter, interrupt
+			
+			Timed(OneStep) {
+				D__(id__) = 
+					dbisim(let
+						Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+						
+						Active 		= share__choice(interrupt -> SKIP) ; Inactive
 					within
 						Inactive [| {terminate} |> SKIP)
 					
@@ -142,7 +288,6 @@ exports
 		-- If it is in the context of a controller, the required operations not provided by the
 		-- controller will be declared here, and the defined operations will be defined in the
 		-- context of the Controller module, and therefore within scope of the state machine module.
-		CALL__carryBallOnBallPlacement(id__) = EDeadline(carryBallOnBallPlacementCall,0)
 		
 		-- END of Operation calls --
 	
@@ -179,17 +324,22 @@ exports
 		
 		-- Transitions
 		Transitions(id__) = ((let
-			Trans = TimeOut_1(
+			Trans = share__choice(get_lastTactic?lastTactic -> get_currentTactic?currentTactic -> TimeOut_1(
 				 (share__ -> SKIP
-				 [] dbisim((true)&(internal__!NID_i0 -> SKIP ;  ((true&CALL__carryBallOnBallPlacement(
-				 			id__
-				 		) ; f0::enter -> SKIP))))
+				 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sWaitTactic::enter -> SKIP))))
+				 [] dbisim((true)&(receiveTactic__!NID_sWaitTactic.in?currentTactic:{currentTactic|currentTactic <- Tactic, true} -> share__choice(set_currentTactic!currentTactic -> SKIP) ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; jCheckCurrentTactic::enter -> SKIP)))
+				 [] dbisim(((currentTactic==lastTactic))&(internal__!NID_jCheckCurrentTactic -> SKIP ;  ((SKIP ; sWaitTactic::enter -> SKIP))))
+				 [] dbisim(((currentTactic!=lastTactic))&(internal__!NID_jCheckCurrentTactic -> SKIP ;  ((SKIP ; jStopLastTactic::enter -> SKIP))))
+				 [] dbisim(((lastTactic==Tactic_PLACE_BALL_IN_POSITION))&(internal__!NID_jStopLastTactic -> SKIP ;  ((true&(share__choice(stopCarryBallOnBallPlacementBehavior.out -> SKIP)) ; jStartCurrentTactic::enter -> SKIP))))
+				 [] dbisim(((currentTactic==Tactic_PLACE_BALL_IN_POSITION))&(internal__!NID_jStopLastTactic -> SKIP ;  ((true&(share__choice(startCarryBallOnBallPlacementBehavior.out -> SKIP)) ; jStartCurrentTactic::enter -> SKIP))))
+				 [] dbisim((true)&(internal__!NID_jStartCurrentTactic -> SKIP ;  ((SKIP ; sWaitTactic::enter -> SKIP))))
 				 []
 				 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
 				 []
 				 terminate -> SKIP
 				 )
 			,SKIP);Trans
+			)
 		within
 			Trans [|{terminate}|> SKIP
 		)
@@ -202,15 +352,18 @@ exports
 		MachineBody(id__) = 
 			dbisim((
 			let
-				finalNodesEntered = {|f0::entered|}
+				finalNodesEntered = {||}
 			within
 				(dbisim((dbisim((let
 					-- IMPLEMENTATION NOTE:
 					-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
 					-- modules for defining the semantics of each node.
 					enterSS = {|
-					i0::enter,
-					f0::enter
+					sInitial::enter,
+					sWaitTactic::enter,
+					jCheckCurrentTactic::enter,
+					jStopLastTactic::enter,
+					jStartCurrentTactic::enter
 					|}
 					hideSet = union(enterSS,{|exit,exited,internal__|})
 				within 
@@ -218,29 +371,57 @@ exports
 						-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 						-- because CSPM modules are used for the semantics of Node.
 						flowevts = union(enterSS,{|exit,exited,interrupt|})
-						transSync = {|internal__.NID_i0|}
+						transSync = {|internal__.NID_sInitial,receiveTactic__.NID_sWaitTactic.in,internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic,internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic,internal__.NID_jStartCurrentTactic|}
 					within
 						((
 						 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
-						   i0::D__(id__)
+						   sInitial::D__(id__)
 						   [| { share__, terminate } |] (
-						   f0::D__(id__)
+						   sWaitTactic::D__(id__)
+						   [| { share__, terminate } |] (
+						   jCheckCurrentTactic::D__(id__)
+						   [| { share__, terminate } |] (
+						   jStopLastTactic::D__(id__)
+						   [| { share__, terminate } |] (
+						   jStartCurrentTactic::D__(id__)
+						   )
+						   )
+						   )
 						   )
 						 )
-						 [[f0::interrupt <- x__ | x__ <- {|interrupt|}]]
-						 [[i0::interrupt <- x__ | x__ <- {|internal__.NID_i0|}]]
+						 [[sWaitTactic::interrupt <- x__ | x__ <- {|interrupt,receiveTactic__.NID_sWaitTactic.in|}]]
+						 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
+						 [[jCheckCurrentTactic::interrupt <- x__ | x__ <- {|internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic|}]]
+						 [[jStopLastTactic::interrupt <- x__ | x__ <- {|internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic|}]]
+						 [[jStartCurrentTactic::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentTactic|}]]
 						 )
-						  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+						  [[ share__ <- x__ | x__ <- {| share__,setR_currentTactic |} ]] 
+						  [[set_lastTactic <- setL_lastTactic,set_currentTactic <- setL_currentTactic]]
 						 )
 						 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-						|}) |]
-						 ((i0::enter -> Transitions(id__))
-						  [[ share__ <- x__ | x__ <- {| share__ |} ]]
+						 			,setL_lastTactic
+						 			,setL_currentTactic
+						 			,setR_currentTactic
+						 			|}) |]
+						 ((sInitial::enter -> Transitions(id__))
+						  [[ share__ <- x__ | x__ <- {| share__,setL_lastTactic,setL_currentTactic |} ]]
+						  [[set_currentTactic <- setR_currentTactic]]
 						 )
-						)
+						)[[setL_lastTactic <- set_lastTactic,setL_currentTactic <- set_currentTactic]]
+						 [[setR_currentTactic <- set_currentTactic]]
 						)
 					)
 					 \ hideSet)
+					[[
+						receiveFrame__.x____ <- receiveFrame,
+						receiveField__.x____ <- receiveField,
+						receiveTactic__.x____ <- receiveTactic,
+						startCarryBallOnBallPlacementBehavior__.x____ <- startCarryBallOnBallPlacementBehavior,
+						stopCarryBallOnBallPlacementBehavior__.x____ <- stopCarryBallOnBallPlacementBehavior,
+						startHaltBehavior__.x____ <- startHaltBehavior,
+						stopHaltBehavior__.x____ <- stopHaltBehavior
+						| x____ <- NIDS
+					]]
 				)
 				)
 				 [| union(stateClockSync,{terminate}) |]
@@ -252,7 +433,7 @@ exports
 		
 		Behaviour(id__) = 
 			dbisim((let
-				stateClockSync = {||}
+				stateClockSync = {|get_CLID_sWaitTactic,sWaitTactic::entered|}
 			 within
 				(MachineBody(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ union(stateClockSync,enteredSS)
 			)
@@ -260,15 +441,24 @@ exports
 		
 		IteratedBehaviour(id__) = 
 			dbisim((let
-				stateClockSync = {||}
+				stateClockSync = {|get_CLID_sWaitTactic,sWaitTactic::entered|}
 			 within
-				(MachineBody(id__)) \ union(stateClockSync,enteredSS)
+				(dbisim(
+					sbisim(
+						MachineBody(id__)
+						[| {|get_CLID_sWaitTactic,sWaitTactic::entered,terminate|} |]
+						dbisim(Clock_CLID_sWaitTactic(id__,0))
+					)\{|get_CLID_sWaitTactic|}
+				)
+				) \ union(stateClockSync,enteredSS)
 			)
 			)
 		
 		Stateful(id__) = 
 			((let
-				getsetLocalChannels = {|get_nodeStatus,set_nodeStatus|}
+				getsetLocalChannels = {|get_currentTactic,set_currentTactic,
+				get_lastTactic,set_lastTactic,
+				get_nodeStatus,set_nodeStatus|}
 				clockSync = {||}
 			within
 				(Behaviour(id__) 
@@ -281,10 +471,22 @@ exports
 		IteratedStateful(id__) =
 			(dbisim(
 				sbisim(
-					IteratedBehaviour(id__)
-					[| {|get_nodeStatus,set_nodeStatus,terminate|} |]
-					Memory_nodeStatus(NODE_STATUS_RUNNING)
-				)\{|get_nodeStatus,set_nodeStatus|}
+					dbisim(
+						sbisim(
+							dbisim(
+								sbisim(
+									IteratedBehaviour(id__)
+									[| {|get_nodeStatus,set_nodeStatus,terminate|} |]
+									Memory_nodeStatus(NODE_STATUS_RUNNING)
+								)\{|get_nodeStatus,set_nodeStatus|}
+							)
+							[| {|get_lastTactic,set_lastTactic,terminate|} |]
+							Memory_lastTactic(Tactic_HALT)
+						)\{|get_lastTactic,set_lastTactic|}
+					)
+					[| {|get_currentTactic,set_currentTactic,terminate|} |]
+					Memory_currentTactic(Tactic_HALT)
+				)\{|get_currentTactic,set_currentTactic|}
 			)
 			)
 		
@@ -292,15 +494,18 @@ exports
 		MachineBody_VS_O(id__) = 
 			dbisim((
 			let
-				finalNodesEntered = {|f0::entered|}
+				finalNodesEntered = {||}
 			within
 				(dbisim((dbisim((let
 					-- IMPLEMENTATION NOTE:
 					-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
 					-- modules for defining the semantics of each node.
 					enterSS = {|
-					i0::enter,
-					f0::enter
+					sInitial::enter,
+					sWaitTactic::enter,
+					jCheckCurrentTactic::enter,
+					jStopLastTactic::enter,
+					jStartCurrentTactic::enter
 					|}
 					hideSet = union(enterSS,{|exit,exited,internal__|})
 				within 
@@ -308,29 +513,57 @@ exports
 						-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 						-- because CSPM modules are used for the semantics of Node.
 						flowevts = union(enterSS,{|exit,exited,interrupt|})
-						transSync = {|internal__.NID_i0|}
+						transSync = {|internal__.NID_sInitial,receiveTactic__.NID_sWaitTactic.in,internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic,internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic,internal__.NID_jStartCurrentTactic|}
 					within
 						((
 						 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
-						   i0::VS_O__(id__)
+						   sInitial::VS_O__(id__)
 						   [| { share__, terminate } |] (
-						   f0::VS_O__(id__)
+						   sWaitTactic::VS_O__(id__)
+						   [| { share__, terminate } |] (
+						   jCheckCurrentTactic::VS_O__(id__)
+						   [| { share__, terminate } |] (
+						   jStopLastTactic::VS_O__(id__)
+						   [| { share__, terminate } |] (
+						   jStartCurrentTactic::VS_O__(id__)
+						   )
+						   )
+						   )
 						   )
 						 )
-						 [[f0::interrupt <- x__ | x__ <- {|interrupt|}]]
-						 [[i0::interrupt <- x__ | x__ <- {|internal__.NID_i0|}]]
+						 [[sWaitTactic::interrupt <- x__ | x__ <- {|interrupt,receiveTactic__.NID_sWaitTactic.in|}]]
+						 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
+						 [[jCheckCurrentTactic::interrupt <- x__ | x__ <- {|internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic|}]]
+						 [[jStopLastTactic::interrupt <- x__ | x__ <- {|internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic|}]]
+						 [[jStartCurrentTactic::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentTactic|}]]
 						 )
-						  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+						  [[ share__ <- x__ | x__ <- {| share__,setR_currentTactic |} ]] 
+						  [[set_lastTactic <- setL_lastTactic,set_currentTactic <- setL_currentTactic]]
 						 )
 						 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-						|}) |]
-						 ((i0::enter -> Transitions(id__))
-						  [[ share__ <- x__ | x__ <- {| share__ |} ]]
+						 			,setL_lastTactic
+						 			,setL_currentTactic
+						 			,setR_currentTactic
+						 			|}) |]
+						 ((sInitial::enter -> Transitions(id__))
+						  [[ share__ <- x__ | x__ <- {| share__,setL_lastTactic,setL_currentTactic |} ]]
+						  [[set_currentTactic <- setR_currentTactic]]
 						 )
-						)
+						)[[setL_lastTactic <- set_lastTactic,setL_currentTactic <- set_currentTactic]]
+						 [[setR_currentTactic <- set_currentTactic]]
 						)
 					)
 					 \ hideSet)
+					[[
+						receiveFrame__.x____ <- receiveFrame,
+						receiveField__.x____ <- receiveField,
+						receiveTactic__.x____ <- receiveTactic,
+						startCarryBallOnBallPlacementBehavior__.x____ <- startCarryBallOnBallPlacementBehavior,
+						stopCarryBallOnBallPlacementBehavior__.x____ <- stopCarryBallOnBallPlacementBehavior,
+						startHaltBehavior__.x____ <- startHaltBehavior,
+						stopHaltBehavior__.x____ <- stopHaltBehavior
+						| x____ <- NIDS
+					]]
 				)
 				)
 				 [| union(stateClockSync,{terminate}) |]
@@ -342,7 +575,7 @@ exports
 		
 		Behaviour_VS_O(id__) = 
 			dbisim((let
-				stateClockSync = {||}
+				stateClockSync = {|get_CLID_sWaitTactic,sWaitTactic::entered|}
 			 within
 				(MachineBody_VS_O(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ diff(union(stateClockSync,enteredSS),enteredSS)
 			)
@@ -350,15 +583,24 @@ exports
 		
 		IteratedBehaviour_VS_O(id__) = 
 			dbisim((let
-				stateClockSync = {||}
+				stateClockSync = {|get_CLID_sWaitTactic,sWaitTactic::entered|}
 			 within
-				(MachineBody_VS_O(id__)) \ diff(union(stateClockSync,enteredSS),enteredSS)
+				(dbisim(
+					sbisim(
+						MachineBody_VS_O(id__)
+						[| {|get_CLID_sWaitTactic,sWaitTactic::entered,terminate|} |]
+						dbisim(Clock_CLID_sWaitTactic(id__,0))
+					)\{|get_CLID_sWaitTactic|}
+				)
+				) \ diff(union(stateClockSync,enteredSS),enteredSS)
 			)
 			)
 		
 		Stateful_VS_O(id__) = 
 			dbisim((let
-				getsetLocalChannels = {|get_nodeStatus,set_nodeStatus|}
+				getsetLocalChannels = {|get_currentTactic,set_currentTactic,
+				get_lastTactic,set_lastTactic,
+				get_nodeStatus,set_nodeStatus|}
 				clockSync = {||}
 			within
 				(Behaviour_VS_O(id__) 
@@ -371,10 +613,22 @@ exports
 		IteratedStateful_VS_O(id__) =
 			(dbisim(
 				sbisim(
-					IteratedBehaviour_VS_O(id__)
-					[| {|get_nodeStatus,set_nodeStatus,terminate|} |]
-					Memory_nodeStatus(NODE_STATUS_RUNNING)
-				)\{|get_nodeStatus,set_nodeStatus|}
+					dbisim(
+						sbisim(
+							dbisim(
+								sbisim(
+									IteratedBehaviour_VS_O(id__)
+									[| {|get_nodeStatus,set_nodeStatus,terminate|} |]
+									Memory_nodeStatus(NODE_STATUS_RUNNING)
+								)\{|get_nodeStatus,set_nodeStatus|}
+							)
+							[| {|get_lastTactic,set_lastTactic,terminate|} |]
+							Memory_lastTactic(Tactic_HALT)
+						)\{|get_lastTactic,set_lastTactic|}
+					)
+					[| {|get_currentTactic,set_currentTactic,terminate|} |]
+					Memory_currentTactic(Tactic_HALT)
+				)\{|get_currentTactic,set_currentTactic|}
 			)
 			)
 		
@@ -382,6 +636,18 @@ exports
 		
 		-- Memory
 		-- Memory variables
+		Memory_currentTactic(currentTactic) =
+			get_currentTactic!currentTactic -> Memory_currentTactic(currentTactic)
+			[]
+			set_currentTactic?x__ -> Memory_currentTactic(x__)
+			[]
+			terminate -> SKIP
+		Memory_lastTactic(lastTactic) =
+			get_lastTactic!lastTactic -> Memory_lastTactic(lastTactic)
+			[]
+			set_lastTactic?x__ -> Memory_lastTactic(x__)
+			[]
+			terminate -> SKIP
 		Memory_nodeStatus(nodeStatus) =
 			get_nodeStatus!nodeStatus -> Memory_nodeStatus(nodeStatus)
 			[]
@@ -390,9 +656,15 @@ exports
 			terminate -> SKIP
 		
 		-- varMemory process
-		varMemory(id__) = Memory_nodeStatus(NODE_STATUS_RUNNING)
+		varMemory(id__) = Memory_currentTactic(Tactic_HALT)
+		[| { terminate } |] (
+		Memory_lastTactic(Tactic_HALT)
+		[| { terminate } |] (
+		Memory_nodeStatus(NODE_STATUS_RUNNING)
+		)
+		)
 		
-		getsetLocalChannels = {|get_nodeStatus,set_nodeStatus|}
+		getsetLocalChannels = {|get_currentTactic,set_currentTactic,get_lastTactic,set_lastTactic,get_nodeStatus,set_nodeStatus|}
 		
 		-- Definition of the behaviour of state machines (default, optimised, visible, visible and optimised)
 		FVS__(id__) = STM_VS_O(id__) \ localClockResets
@@ -410,10 +682,17 @@ exports
 		
 		clockSync = {||}
 		
+		Clock_CLID_sWaitTactic(id__,x__) = 
+			TimeOut_1(
+				sWaitTactic::entered -> Clock_CLID_sWaitTactic(id__,0)
+				[]
+				get_CLID_sWaitTactic!x__ -> Clock_CLID_sWaitTactic(id__,x__)
+				[]
+				terminate -> SKIP,Clock_CLID_sWaitTactic(id__,clock_type_plus(x__,1,CLID_sWaitTactic_clock_type(id__))))
 		
-		StateClocks(id__) = terminate -> SKIP
+		StateClocks(id__) = dbisim(Clock_CLID_sWaitTactic(id__,0))
 		
-		stateClockSync = {||}
+		stateClockSync = {|get_CLID_sWaitTactic,sWaitTactic::entered|}
 		
 		-- Shared memory
 		-- Shared memory variables
