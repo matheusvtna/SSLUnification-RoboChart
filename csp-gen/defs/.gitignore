@@ -6,3 +6,9 @@
 /file_goToBehindBall_defs.csp
 /file_moveAwayFromPosition.csp
 /file_moveAwayFromPosition_defs.csp
+/ApproachBallSTM.csp
+/ApproachBallSTM_coreassertions.csp
+/GoToBehindBallSTM.csp
+/GoToBehindBallSTM_coreassertions.csp
+/carryBallOnBallPlacement_CarryBallOnBallPlacementSTM.csp
+/carryBallOnBallPlacement_CarryBallOnBallPlacementSTM_coreassertions.csp

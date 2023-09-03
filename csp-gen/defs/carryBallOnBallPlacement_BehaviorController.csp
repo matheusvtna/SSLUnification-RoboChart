@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 27-08-2023 20:59:19
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 03-09-2023 17:41:38
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -324,7 +324,7 @@
 			
 			-- Transitions
 			Transitions(id__) = ((let
-				Trans = share__choice(get_lastTactic?lastTactic -> get_currentTactic?currentTactic -> (
+				Trans = share__choice(get_currentTactic?currentTactic -> get_lastTactic?lastTactic -> (
 					((share__ -> SKIP
 					 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sWaitTactic::enter -> SKIP))))
 					 	 [] dbisim((true)&(receiveTactic__!NID_sWaitTactic.in?currentTactic:{currentTactic|currentTactic <- Tactic, true} -> share__choice(set_currentTactic!currentTactic -> SKIP) ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; jCheckCurrentTactic::enter -> SKIP)))
@@ -396,18 +396,18 @@
 							 [[jStartCurrentTactic::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentTactic|}]]
 							 )
 							  [[ share__ <- x__ | x__ <- {| share__,setR_currentTactic |} ]] 
-							  [[set_lastTactic <- setL_lastTactic,set_currentTactic <- setL_currentTactic]]
+							  [[set_currentTactic <- setL_currentTactic,set_lastTactic <- setL_lastTactic]]
 							 )
 							 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-							 			,setL_lastTactic
 							 			,setL_currentTactic
+							 			,setL_lastTactic
 							 			,setR_currentTactic
 							 			|}) |]
 							 ((sInitial::enter -> Transitions(id__))
-							  [[ share__ <- x__ | x__ <- {| share__,setL_lastTactic,setL_currentTactic |} ]]
+							  [[ share__ <- x__ | x__ <- {| share__,setL_currentTactic,setL_lastTactic |} ]]
 							  [[set_currentTactic <- setR_currentTactic]]
 							 )
-							)[[setL_lastTactic <- set_lastTactic,setL_currentTactic <- set_currentTactic]]
+							)[[setL_currentTactic <- set_currentTactic,setL_lastTactic <- set_lastTactic]]
 							 [[setR_currentTactic <- set_currentTactic]]
 							)
 						)
@@ -512,18 +512,18 @@
 							 [[jStartCurrentTactic::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentTactic|}]]
 							 )
 							  [[ share__ <- x__ | x__ <- {| share__,setR_currentTactic |} ]] 
-							  [[set_lastTactic <- setL_lastTactic,set_currentTactic <- setL_currentTactic]]
+							  [[set_currentTactic <- setL_currentTactic,set_lastTactic <- setL_lastTactic]]
 							 )
 							 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-							 			,setL_lastTactic
 							 			,setL_currentTactic
+							 			,setL_lastTactic
 							 			,setR_currentTactic
 							 			|}) |]
 							 ((sInitial::enter -> Transitions(id__))
-							  [[ share__ <- x__ | x__ <- {| share__,setL_lastTactic,setL_currentTactic |} ]]
+							  [[ share__ <- x__ | x__ <- {| share__,setL_currentTactic,setL_lastTactic |} ]]
 							  [[set_currentTactic <- setR_currentTactic]]
 							 )
-							)[[setL_lastTactic <- set_lastTactic,setL_currentTactic <- set_currentTactic]]
+							)[[setL_currentTactic <- set_currentTactic,setL_lastTactic <- set_lastTactic]]
 							 [[setR_currentTactic <- set_currentTactic]]
 							)
 						)

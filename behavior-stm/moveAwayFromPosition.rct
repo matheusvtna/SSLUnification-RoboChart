@@ -19,6 +19,7 @@ interface MoveAwayFromPositionI {
 stm MoveAwayFromPositionSTM {
 	// Behavior Tree Control Interfaces.
 	requires NodeStatusI
+	uses MoveAwayFromPositionI
 	
 	// Conditional variables.
 	var robotIsFarEnoughFromPosition: boolean
@@ -28,20 +29,29 @@ stm MoveAwayFromPositionSTM {
 		
 	// States.
 	initial sInitial
+	
+	state sStart {}
+	
+	
 	state sMoveAway {
 		entry nodeStatus = NODE_STATUS::RUNNING 
 	}	
-	final sFinal
 	
 	// Transitions.
 	transition start {
 		from sInitial
-		to sMoveAway
+		to sStart
+	}
+	
+	transition moveAwayFromPosition {
+		from sStart
+		to sMoveAway 
+		trigger startMoveAwayFromPosition
 	}
 	
 	transition success {		
 		from sMoveAway
-		to sFinal
+		to sStart
 		condition robotIsFarEnoughFromPosition
 		action nodeStatus = NODE_STATUS::DONE
 	}
@@ -55,7 +65,7 @@ stm MoveAwayFromPositionSTM {
 	
 	transition fail {		
 		from sMoveAway
-		to sFinal
+		to sStart
 		// How to solve this warning? What this means? 
 		condition sinceEntry(sMoveAway) > TIME_LIMIT_TO_BEHAVE /\ (not robotIsFarEnoughFromPosition)
 		action nodeStatus = NODE_STATUS::FAILED
@@ -63,7 +73,8 @@ stm MoveAwayFromPositionSTM {
 	
 	transition abort {		
 		from sMoveAway
-		to sFinal
+		to sStart
+		trigger stopMoveAwayFromPosition
 		action nodeStatus = NODE_STATUS::ABORTED
 	}
 }

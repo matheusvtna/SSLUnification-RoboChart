@@ -1,20 +1,22 @@
 
 --
--- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 19-06-2023 14:53:58
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 03-09-2023 16:05:50
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
--- data definitions used by /SSLUnification/utils/behavior_tree.rct
-datatype NODE_STATUS = NODE_STATUS_RUNNING | NODE_STATUS_FAILED | NODE_STATUS_DONE
+-- data definitions used by platform:/resource/SSLUnification/utils/behavior_tree.rct
+datatype NODE_STATUS = NODE_STATUS_RUNNING | NODE_STATUS_FAILED | NODE_STATUS_DONE | NODE_STATUS_ABORTED
 NODE_STATUS_is(NODE_STATUS_RUNNING,NODE_STATUS_RUNNING) = true
 NODE_STATUS_is(_,NODE_STATUS_RUNNING) = false
 NODE_STATUS_is(NODE_STATUS_FAILED,NODE_STATUS_FAILED) = true
 NODE_STATUS_is(_,NODE_STATUS_FAILED) = false
 NODE_STATUS_is(NODE_STATUS_DONE,NODE_STATUS_DONE) = true
 NODE_STATUS_is(_,NODE_STATUS_DONE) = false
+NODE_STATUS_is(NODE_STATUS_ABORTED,NODE_STATUS_ABORTED) = true
+NODE_STATUS_is(_,NODE_STATUS_ABORTED) = false
 
 
 	

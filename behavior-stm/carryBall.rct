@@ -16,27 +16,36 @@ interface CarryBallI {
 stm CarryBallSTM {	
 	// Behavior Tree Control Interfaces.
 	requires NodeStatusI
-		
+	uses CarryBallI
+	
 	// Conditional variables.
 	var allyHasBall: boolean
 	var ballIsPositioned: boolean
 	
 	// States.
 	initial sInitial
+	
+	state sStart { }
+	
 	state sCarryBall {
 		entry nodeStatus = NODE_STATUS::RUNNING
 	}
-	final sFinal
 	
 	// Transitions.
 	transition start {
 		from sInitial
+		to sStart
+	}
+	
+	transition carryBall {
+		from sStart
 		to sCarryBall
+		trigger startCarryBall
 	}
 	
 	transition success {		
 		from sCarryBall
-		to sFinal
+		to sStart
 		condition ballIsPositioned
 		action nodeStatus = NODE_STATUS::DONE
 	}
@@ -50,14 +59,15 @@ stm CarryBallSTM {
 	
 	transition fail {		
 		from sCarryBall
-		to sFinal
+		to sStart
 		condition not allyHasBall
 		action nodeStatus = NODE_STATUS::FAILED
 	}
 	
 	transition abort {		
 		from sCarryBall
-		to sFinal
+		to sStart
+		trigger stopCarryBall
 		action nodeStatus = NODE_STATUS::ABORTED
 	}
 }

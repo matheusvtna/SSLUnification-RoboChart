@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 19-06-2023 14:53:58
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 03-09-2023 16:05:52
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -17,8 +17,9 @@ exports
 	-- Transition identifiers
 	-- declaring identifiers of transitions
 	datatype NIDS = 
-	              NID_f0|
-	              NID_i0
+	              NID_sInitial|
+	              NID_sDecision|
+	              NID_sFinal
 	
 	channel internal__ : NIDS
 	
@@ -29,22 +30,33 @@ exports
 	channel terminate
 	
 	-- Variable channels
+	channel get_tactic, set_tactic, setL_tactic, setR_tactic: Tactic
 	
 	-- Shared variable channels
 	
 	-- Local variable channels for defined operations that are required by the state machine
 	
 	-- Declaring state machine events
+	channel receiveGameEvent__: NIDS.InOut.core_string
+	channel receiveGameEvent: InOut.core_string
+	channel receiveFrame__: NIDS.InOut.core_string
+	channel receiveFrame: InOut.core_string
+	channel receiveField__: NIDS.InOut.core_string
+	channel receiveField: InOut.core_string
+	channel sendTactic__: NIDS.InOut.Tactic
+	channel sendTactic: InOut.Tactic
 	
 	-- Declaring call and ret events for undefined operations
 	
 	enterSS = {|
-	f0::enter,
-	i0::enter
+	sInitial::enter,
+	sDecision::enter,
+	sFinal::enter
 	|}
 	
 	enteredSS = 	{|
-	f0::entered
+	sDecision::entered,
+	sFinal::entered
 	|}
 	
 	internal_events = union(enteredSS,union(enterSS,{|interrupt,exited|}))
@@ -55,14 +67,107 @@ exports
 	-- channel set with all visible events
 	sem__events = {|
 		terminate
+	,	receiveGameEvent,
+		receiveFrame,
+		receiveField,
+		sendTactic
 		|}
 
 	-- Nodes --
 	-- declaring all nodes
 	
 	----------------------------------------------------------------------
-	-- Final state: f0
-	module f0
+	-- Initial: sInitial
+	module sInitial
+	exports
+	
+		channel enter, interrupt
+		
+		D__(id__) = 
+			dbisim(let
+				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+				
+				Termination = terminate -> SKIP
+				
+				Active 		= share__choice(interrupt -> SKIP) ; Inactive
+			within
+				Inactive [| {terminate} |> SKIP)
+		
+		VS_O__(id__) = D__(id__)
+	
+	endmodule
+	----------------------------------------------------------------------
+	
+	
+	----------------------------------------------------------------------
+	-- State: sDecision
+	module sDecision
+	
+	enterSS = {}
+	
+	enteredSS = {}
+	
+	exports
+	
+		--  Declarations
+		
+		channel enter, entered, interrupt
+		channel enteredL, enteredR
+		
+						
+		
+		--	Nodes
+		-- declaring all nodes
+		
+		
+		--	Rule: behaviours(Node)
+		--  Note that FDR has problems with efficiently compiling the process below
+		-- 	if using a different recursion pattern.
+		D__(id__) = 
+		dbisim(let
+			-- IMPLEMENTATION NOTE: 
+			-- The following should be defined as: Inactive = share__choice(Activation [] Termination),
+			-- however FDR struggles with that form in certain cases. So we use the exception operator
+			-- instead to 'terminate'.
+			
+			Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+			
+			Termination = terminate -> SKIP
+			
+			Active 		= SKIP ; 
+					 	  Behaviour ; 
+					 	  share__choice(exit -> SKIP) ; SKIP ; 
+					 	  share__choice(exited -> SKIP) ; Inactive
+		
+			Behaviour 	= entered -> During
+			During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+		within
+			Inactive [| {terminate} |> SKIP)
+			
+		VS_O__(id__) = 
+		dbisim(let
+			Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+			
+			Termination = terminate -> SKIP
+			
+			Active 		= SKIP ; 
+					 	  Behaviour ; 
+					 	  share__choice(exit -> SKIP) ; SKIP ; 
+					 	  share__choice(exited -> SKIP) ; Inactive
+		
+			Behaviour 	= entered -> During
+			During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+		within
+			Inactive [| {terminate} |> SKIP)
+		
+	
+	endmodule
+	----------------------------------------------------------------------
+	
+	
+	----------------------------------------------------------------------
+	-- Final state: sFinal
+	module sFinal
 	
 	exports
 	
@@ -80,29 +185,6 @@ exports
 			within
 				Inactive [| {terminate} |> SKIP)
 			
-		VS_O__(id__) = D__(id__)
-	
-	endmodule
-	----------------------------------------------------------------------
-	
-	
-	----------------------------------------------------------------------
-	-- Initial: i0
-	module i0
-	exports
-	
-		channel enter, interrupt
-		
-		D__(id__) = 
-			dbisim(let
-				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
-				
-				Termination = terminate -> SKIP
-				
-				Active 		= share__choice(interrupt -> SKIP) ; Inactive
-			within
-				Inactive [| {terminate} |> SKIP)
-		
 		VS_O__(id__) = D__(id__)
 	
 	endmodule
@@ -152,7 +234,8 @@ exports
 	Transitions(id__) = ((let
 		Trans = (
 			((share__ -> SKIP
-			 [] dbisim((true)&(internal__!NID_i0 -> SKIP ;  ((SKIP ; f0::enter -> SKIP))))
+			 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sDecision::enter -> SKIP))))
+			 	 [] dbisim((true)&(sendTactic__!NID_sDecision.in?tactic:{tactic|tactic <- Tactic, true} -> share__choice(set_tactic!tactic -> SKIP) ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_tactic!Tactic_PLACE_BALL_IN_POSITION -> SKIP))) ; sFinal::enter -> SKIP)))
 			 ) ; Trans)
 			 []
 			 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
@@ -171,15 +254,16 @@ exports
 	MachineBody(id__) = 
 		dbisim((
 		let
-			finalNodesEntered = {|f0::entered|}
+			finalNodesEntered = {|sFinal::entered|}
 		within
 			((let
 				-- IMPLEMENTATION NOTE:
 				-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
 				-- modules for defining the semantics of each node.
 				enterSS = {|
-				f0::enter,
-				i0::enter
+				sInitial::enter,
+				sDecision::enter,
+				sFinal::enter
 				|}
 				hideSet = union(enterSS,{|exit,exited,internal__|})
 			within 
@@ -187,29 +271,43 @@ exports
 					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 					-- because CSPM modules are used for the semantics of Node.
 					flowevts = union(enterSS,{|exit,exited,interrupt|})
-					transSync = {|internal__.NID_i0|}
+					transSync = {|internal__.NID_sInitial,sendTactic__.NID_sDecision.in|}
 				within
 					((
 					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
-					   f0::D__(id__)
+					   sInitial::D__(id__)
 					   [| { share__, terminate } |] (
-					   i0::D__(id__)
+					   sDecision::D__(id__)
+					   [| { share__, terminate } |] (
+					   sFinal::D__(id__)
+					   )
 					   )
 					 )
-					 [[f0::interrupt <- x__ | x__ <- {|interrupt|}]]
-					 [[i0::interrupt <- x__ | x__ <- {|internal__.NID_i0|}]]
+					 [[sDecision::interrupt <- x__ | x__ <- {|interrupt,sendTactic__.NID_sDecision.in|}]]
+					 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+					 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 					 )
-					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+					  [[ share__ <- x__ | x__ <- {| share__,setR_tactic |} ]] 
 					 )
 					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-					|}) |]
-					 ((i0::enter -> Transitions(id__))
+					 			,setR_tactic
+					 			|}) |]
+					 ((sInitial::enter -> Transitions(id__))
 					  [[ share__ <- x__ | x__ <- {| share__ |} ]]
+					  [[set_tactic <- setR_tactic]]
 					 )
 					)
+					 [[setR_tactic <- set_tactic]]
 					)
 				)
 				 \ hideSet)
+				[[
+					receiveGameEvent__.x____ <- receiveGameEvent,
+					receiveFrame__.x____ <- receiveFrame,
+					receiveField__.x____ <- receiveField,
+					sendTactic__.x____ <- sendTactic
+					| x____ <- NIDS
+				]]
 			)
 			 [| {| interrupt |} |] SKIP)
 		)
@@ -231,21 +329,29 @@ exports
 		)
 	
 	IteratedStateful(id__) =
-		(Behaviour(id__))
+		(dbisim(
+			sbisim(
+				Behaviour(id__)
+				[| {|get_tactic,set_tactic,terminate|} |]
+				Memory_tactic(Tactic_HALT)
+			)\{|get_tactic,set_tactic|}
+		)
+		)
 	
 	-- Visible counterparts
 	MachineBody_VS_O(id__) = 
 		dbisim((
 		let
-			finalNodesEntered = {|f0::entered|}
+			finalNodesEntered = {|sFinal::entered|}
 		within
 			((let
 				-- IMPLEMENTATION NOTE:
 				-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
 				-- modules for defining the semantics of each node.
 				enterSS = {|
-				f0::enter,
-				i0::enter
+				sInitial::enter,
+				sDecision::enter,
+				sFinal::enter
 				|}
 				hideSet = union(enterSS,{|exit,exited,internal__|})
 			within 
@@ -253,29 +359,43 @@ exports
 					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 					-- because CSPM modules are used for the semantics of Node.
 					flowevts = union(enterSS,{|exit,exited,interrupt|})
-					transSync = {|internal__.NID_i0|}
+					transSync = {|internal__.NID_sInitial,sendTactic__.NID_sDecision.in|}
 				within
 					((
 					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
-					   f0::VS_O__(id__)
+					   sInitial::VS_O__(id__)
 					   [| { share__, terminate } |] (
-					   i0::VS_O__(id__)
+					   sDecision::VS_O__(id__)
+					   [| { share__, terminate } |] (
+					   sFinal::VS_O__(id__)
+					   )
 					   )
 					 )
-					 [[f0::interrupt <- x__ | x__ <- {|interrupt|}]]
-					 [[i0::interrupt <- x__ | x__ <- {|internal__.NID_i0|}]]
+					 [[sDecision::interrupt <- x__ | x__ <- {|interrupt,sendTactic__.NID_sDecision.in|}]]
+					 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+					 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 					 )
-					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+					  [[ share__ <- x__ | x__ <- {| share__,setR_tactic |} ]] 
 					 )
 					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-					|}) |]
-					 ((i0::enter -> Transitions(id__))
+					 			,setR_tactic
+					 			|}) |]
+					 ((sInitial::enter -> Transitions(id__))
 					  [[ share__ <- x__ | x__ <- {| share__ |} ]]
+					  [[set_tactic <- setR_tactic]]
 					 )
 					)
+					 [[setR_tactic <- set_tactic]]
 					)
 				)
 				 \ hideSet)
+				[[
+					receiveGameEvent__.x____ <- receiveGameEvent,
+					receiveFrame__.x____ <- receiveFrame,
+					receiveField__.x____ <- receiveField,
+					sendTactic__.x____ <- sendTactic
+					| x____ <- NIDS
+				]]
 			)
 			 [| {| interrupt |} |] SKIP)
 		)
@@ -297,17 +417,30 @@ exports
 		)
 	
 	IteratedStateful_VS_O(id__) =
-		(Behaviour_VS_O(id__))
+		(dbisim(
+			sbisim(
+				Behaviour_VS_O(id__)
+				[| {|get_tactic,set_tactic,terminate|} |]
+				Memory_tactic(Tactic_HALT)
+			)\{|get_tactic,set_tactic|}
+		)
+		)
 	
 	-- END
 	
 	-- Memory
 	-- Memory variables
+	Memory_tactic(tactic) =
+		get_tactic!tactic -> Memory_tactic(tactic)
+		[]
+		set_tactic?x__ -> Memory_tactic(x__)
+		[]
+		terminate -> SKIP
 	
 	-- varMemory process
-	varMemory(id__) = terminate -> SKIP
+	varMemory(id__) = Memory_tactic(Tactic_HALT)
 	
-	getsetLocalChannels = {||}
+	getsetLocalChannels = {|get_tactic,set_tactic|}
 	
 	-- Definition of the behaviour of state machines (default, optimised, visible, visible and optimised)
 	FVS__(id__) = STM_VS_O(id__)

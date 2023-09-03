@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 27-08-2023 20:38:47
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 03-09-2023 17:41:38
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -19,8 +19,7 @@ exports
 	datatype NIDS = 
 	              NID_sInitial|
 	              NID_sStart|
-	              NID_sApproach|
-	              NID_sFinal
+	              NID_sApproach
 	
 	channel internal__ : NIDS
 	
@@ -52,14 +51,12 @@ exports
 	enterSS = {|
 	sInitial::enter,
 	sStart::enter,
-	sApproach::enter,
-	sFinal::enter
+	sApproach::enter
 	|}
 	
 	enteredSS = 	{|
 	sStart::entered,
-	sApproach::entered,
-	sFinal::entered
+	sApproach::entered
 	|}
 	
 	internal_events = union(enteredSS,union(enterSS,{|interrupt,exited|}))
@@ -233,32 +230,6 @@ exports
 	endmodule
 	----------------------------------------------------------------------
 	
-	
-	----------------------------------------------------------------------
-	-- Final state: sFinal
-	module sFinal
-	
-	exports
-	
-		channel enter, entered, interrupt
-		channel enteredL, enteredR
-		
-		--	Rule: behaviours(Node)
-		D__(id__) = 
-			dbisim(let
-				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Entering
-				
-				Entering 	= entered -> SKIP ; Active
-				Active		= share__choice(terminate -> SKIP [] interrupt -> SKIP) ; Interrupted
-				Interrupted	= share__choice(exit -> exited -> Inactive)
-			within
-				Inactive [| {terminate} |> SKIP)
-			
-		VS_O__(id__) = D__(id__)
-	
-	endmodule
-	----------------------------------------------------------------------
-	
 	-- END of Nodes --
 	
 	-- Operation calls --
@@ -305,10 +276,10 @@ exports
 			((share__ -> SKIP
 			 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sStart::enter -> SKIP))))
 			 	 [] dbisim((true)&(startApproachBall__!NID_sStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; sApproach::enter -> SKIP)))
-			 	 [] dbisim((allyHasBall)&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
+			 	 [] dbisim((allyHasBall)&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sStart::enter -> SKIP)))
 			 	 [] dbisim(((((not (allyHasBall))) and (not ((((not (allyIsBehindBall)) or (not (allyIsCloseToBall))))))))&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; sApproach::enter -> SKIP)))
-			 	 [] dbisim(((((not (allyIsBehindBall)) or (not (allyIsCloseToBall)))))&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_FAILED -> SKIP))) ; sFinal::enter -> SKIP)))
-			 	 [] dbisim((true)&(stopApproachBall__!NID_sApproach.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
+			 	 [] dbisim(((((not (allyIsBehindBall)) or (not (allyIsCloseToBall)))))&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_FAILED -> SKIP))) ; sStart::enter -> SKIP)))
+			 	 [] dbisim((true)&(stopApproachBall__!NID_sApproach.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sStart::enter -> SKIP)))
 			 ) ; Trans)
 			 []
 			 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
@@ -328,7 +299,7 @@ exports
 	MachineBody(id__) = 
 		dbisim((
 		let
-			finalNodesEntered = {|sFinal::entered|}
+			finalNodesEntered = {||}
 		within
 			((let
 				-- IMPLEMENTATION NOTE:
@@ -337,8 +308,7 @@ exports
 				enterSS = {|
 				sInitial::enter,
 				sStart::enter,
-				sApproach::enter,
-				sFinal::enter
+				sApproach::enter
 				|}
 				hideSet = union(enterSS,{|exit,exited,internal__|})
 			within 
@@ -355,15 +325,11 @@ exports
 					   sStart::D__(id__)
 					   [| { share__, terminate } |] (
 					   sApproach::D__(id__)
-					   [| { share__, terminate } |] (
-					   sFinal::D__(id__)
-					   )
 					   )
 					   )
 					 )
 					 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startApproachBall__.NID_sStart.in|}]]
 					 [[sApproach::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach,stopApproachBall__.NID_sApproach.in|}]]
-					 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
 					 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 					 )
 					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
@@ -432,7 +398,7 @@ exports
 	MachineBody_VS_O(id__) = 
 		dbisim((
 		let
-			finalNodesEntered = {|sFinal::entered|}
+			finalNodesEntered = {||}
 		within
 			((let
 				-- IMPLEMENTATION NOTE:
@@ -441,8 +407,7 @@ exports
 				enterSS = {|
 				sInitial::enter,
 				sStart::enter,
-				sApproach::enter,
-				sFinal::enter
+				sApproach::enter
 				|}
 				hideSet = union(enterSS,{|exit,exited,internal__|})
 			within 
@@ -459,15 +424,11 @@ exports
 					   sStart::VS_O__(id__)
 					   [| { share__, terminate } |] (
 					   sApproach::VS_O__(id__)
-					   [| { share__, terminate } |] (
-					   sFinal::VS_O__(id__)
-					   )
 					   )
 					   )
 					 )
 					 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startApproachBall__.NID_sStart.in|}]]
 					 [[sApproach::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach,stopApproachBall__.NID_sApproach.in|}]]
-					 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
 					 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 					 )
 					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 

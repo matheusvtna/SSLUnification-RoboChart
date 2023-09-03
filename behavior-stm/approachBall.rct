@@ -29,9 +29,8 @@ stm ApproachBallSTM {
 	state sStart {}
 	state sApproach {
 		entry nodeStatus = NODE_STATUS::RUNNING
-	}	
-	final sFinal
-	
+	}
+
 	// Transitions.
 	transition start {
 		from sInitial
@@ -46,7 +45,7 @@ stm ApproachBallSTM {
 	
 	transition success {		
 		from sApproach
-		to sFinal
+		to sStart
 		condition allyHasBall
 		action nodeStatus = NODE_STATUS::DONE
 	}
@@ -60,14 +59,14 @@ stm ApproachBallSTM {
 	
 	transition fail {
 		from sApproach
-		to sFinal
+		to sStart
 		condition (not allyIsBehindBall \/ not allyIsCloseToBall)
 		action nodeStatus = NODE_STATUS::FAILED
 	}
 	
 	transition abort {		
 		from sApproach
-		to sFinal
+		to sStart
 		trigger stopApproachBall
 		action nodeStatus = NODE_STATUS::ABORTED
 	}

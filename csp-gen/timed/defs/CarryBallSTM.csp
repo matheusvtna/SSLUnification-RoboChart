@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 27-08-2023 20:09:11
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 03-09-2023 17:41:14
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -18,8 +18,8 @@ exports
 	-- declaring identifiers of transitions
 	datatype NIDS = 
 	              NID_sInitial|
-	              NID_sCarryBall|
-	              NID_sFinal
+	              NID_sStart|
+	              NID_sCarryBall
 	
 	channel internal__ : NIDS
 	
@@ -40,18 +40,22 @@ exports
 	-- Local variable channels for defined operations that are required by the state machine
 	
 	-- Declaring state machine events
+	channel startCarryBall__: NIDS.InOut
+	channel startCarryBall: InOut
+	channel stopCarryBall__: NIDS.InOut
+	channel stopCarryBall: InOut
 	
 	-- Declaring call and ret events for undefined operations
 	
 	enterSS = {|
 	sInitial::enter,
-	sCarryBall::enter,
-	sFinal::enter
+	sStart::enter,
+	sCarryBall::enter
 	|}
 	
 	enteredSS = 	{|
-	sCarryBall::entered,
-	sFinal::entered
+	sStart::entered,
+	sCarryBall::entered
 	|}
 	
 	internal_events = union(enteredSS,union(enterSS,{|interrupt,exited|}))
@@ -64,6 +68,8 @@ exports
 	sem__events = {|
 		terminate
 	,	set_EXT_nodeStatus, set_nodeStatus
+	,	startCarryBall,
+		stopCarryBall
 		|}
 	
 	channel clockReset, clockResetL, clockResetR 
@@ -71,11 +77,11 @@ exports
 	localClockResets = {||}
 	
 	
-	channel get_CLID_sFinal : core_clock_type 
+	channel get_CLID_sStart : core_clock_type 
 	channel get_CLID_sCarryBall : core_clock_type 
 	--channel increment__
 	
-	CLID_sFinal_clock_type(id__) = 
+	CLID_sStart_clock_type(id__) = 
 		let
 			max = (clock_type_max(Union({
 	{}
@@ -117,6 +123,83 @@ exports
 						Inactive [| {terminate} |> SKIP)
 				
 				VS_O__(id__) = D__(id__)
+			}
+		
+		endmodule
+		----------------------------------------------------------------------
+		
+		
+		----------------------------------------------------------------------
+		-- State: sStart
+		module sStart
+		
+		enterSS = {}
+		
+		enteredSS = {}
+		
+		exports
+		
+			--  Declarations
+			
+			channel enter, entered, interrupt
+			channel enteredL, enteredR
+			
+							
+			
+			--channel increment__
+			
+			
+			--	Nodes
+			-- declaring all nodes
+			
+			
+			Timed(OneStep) {
+				--	Rule: behaviours(Node)
+				--  Note that FDR has problems with efficiently compiling the process below
+				-- 	if using a different recursion pattern.
+				D__(id__) = 
+				dbisim(let
+					-- IMPLEMENTATION NOTE: 
+					-- The following should be defined as: Inactive = share__choice(Activation [] Termination),
+					-- however FDR struggles with that form in certain cases. So we use the exception operator
+					-- instead to 'terminate'.
+					
+					Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+					
+					Termination = terminate -> SKIP
+					
+					Active 		= SKIP ; 
+							 	  Behaviour ; 
+							 	  share__choice(exit -> SKIP) ; SKIP ; 
+							 	  share__choice(exited -> SKIP) ; Inactive
+				
+					Behaviour 	= entered -> During
+					During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+				within
+					Inactive [| {terminate} |> SKIP)
+					
+				VS_O__(id__) = 
+				dbisim(let
+					Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+					
+					Termination = terminate -> SKIP
+					
+					Active 		= SKIP ; 
+							 	  Behaviour ; 
+							 	  share__choice(exit -> SKIP) ; SKIP ; 
+							 	  share__choice(exited -> SKIP) ; Inactive
+				
+					Behaviour 	= entered -> During
+					During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+				within
+					Inactive [| {terminate} |> SKIP)
+				
+				
+				-- Clocks
+				
+				StateClocks(id__) = terminate -> SKIP
+				
+				stateClockSync = {||}
 			}
 		
 		endmodule
@@ -199,34 +282,6 @@ exports
 		endmodule
 		----------------------------------------------------------------------
 		
-		
-		----------------------------------------------------------------------
-		-- Final state: sFinal
-		module sFinal
-		
-		exports
-		
-			channel enter, entered, interrupt
-			channel enteredL, enteredR
-			
-			Timed(OneStep) {
-				--	Rule: behaviours(Node)
-				D__(id__) = 
-					dbisim(let
-						Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Entering
-						
-						Entering 	= entered -> SKIP ; Active
-						Active		= share__choice(terminate -> SKIP [] interrupt -> SKIP) ; Interrupted
-						Interrupted	= share__choice(exit -> exited -> Inactive)
-					within
-						Inactive [| {terminate} |> SKIP)
-					
-				VS_O__(id__) = D__(id__)
-			}
-		
-		endmodule
-		----------------------------------------------------------------------
-		
 		-- END of Nodes --
 		
 		Timed(OneStep) {
@@ -274,11 +329,12 @@ exports
 		Transitions(id__) = ((let
 			Trans = share__choice(get_ballIsPositioned?ballIsPositioned -> get_allyHasBall?allyHasBall -> TimeOut_1(
 				 (share__ -> SKIP
-				 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sCarryBall::enter -> SKIP))))
-				 [] dbisim((ballIsPositioned)&(internal__!NID_sCarryBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
+				 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sStart::enter -> SKIP))))
+				 [] dbisim((true)&(startCarryBall__!NID_sStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; sCarryBall::enter -> SKIP)))
+				 [] dbisim((ballIsPositioned)&(internal__!NID_sCarryBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sStart::enter -> SKIP)))
 				 [] dbisim(((((not (ballIsPositioned))) and allyHasBall))&(internal__!NID_sCarryBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; sCarryBall::enter -> SKIP)))
-				 [] dbisim(((not (allyHasBall)))&(internal__!NID_sCarryBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_FAILED -> SKIP))) ; sFinal::enter -> SKIP)))
-				 [] dbisim((true)&(internal__!NID_sCarryBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
+				 [] dbisim(((not (allyHasBall)))&(internal__!NID_sCarryBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_FAILED -> SKIP))) ; sStart::enter -> SKIP)))
+				 [] dbisim((true)&(stopCarryBall__!NID_sCarryBall.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sStart::enter -> SKIP)))
 				 []
 				 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
 				 []
@@ -298,7 +354,7 @@ exports
 		MachineBody(id__) = 
 			dbisim((
 			let
-				finalNodesEntered = {|sFinal::entered|}
+				finalNodesEntered = {||}
 			within
 				(dbisim((dbisim((let
 					-- IMPLEMENTATION NOTE:
@@ -306,8 +362,8 @@ exports
 					-- modules for defining the semantics of each node.
 					enterSS = {|
 					sInitial::enter,
-					sCarryBall::enter,
-					sFinal::enter
+					sStart::enter,
+					sCarryBall::enter
 					|}
 					hideSet = union(enterSS,{|exit,exited,internal__|})
 				within 
@@ -315,20 +371,20 @@ exports
 						-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 						-- because CSPM modules are used for the semantics of Node.
 						flowevts = union(enterSS,{|exit,exited,interrupt|})
-						transSync = {|internal__.NID_sInitial,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall|}
+						transSync = {|internal__.NID_sInitial,startCarryBall__.NID_sStart.in,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall,stopCarryBall__.NID_sCarryBall.in|}
 					within
 						((
 						 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
 						   sInitial::D__(id__)
 						   [| { share__, terminate } |] (
-						   sCarryBall::D__(id__)
+						   sStart::D__(id__)
 						   [| { share__, terminate } |] (
-						   sFinal::D__(id__)
+						   sCarryBall::D__(id__)
 						   )
 						   )
 						 )
-						 [[sCarryBall::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall|}]]
-						 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+						 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startCarryBall__.NID_sStart.in|}]]
+						 [[sCarryBall::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall,stopCarryBall__.NID_sCarryBall.in|}]]
 						 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 )
 						  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
@@ -345,6 +401,11 @@ exports
 						)
 					)
 					 \ hideSet)
+					[[
+						startCarryBall__.x____ <- startCarryBall,
+						stopCarryBall__.x____ <- stopCarryBall
+						| x____ <- NIDS
+					]]
 				)
 				)
 				 [| union(stateClockSync,{terminate}) |]
@@ -356,7 +417,7 @@ exports
 		
 		Behaviour(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sCarryBall,sCarryBall::entered|}
+				stateClockSync = {|get_CLID_sStart,sStart::entered,get_CLID_sCarryBall,sCarryBall::entered|}
 			 within
 				(MachineBody(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ union(stateClockSync,enteredSS)
 			)
@@ -364,14 +425,20 @@ exports
 		
 		IteratedBehaviour(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sCarryBall,sCarryBall::entered|}
+				stateClockSync = {|get_CLID_sStart,sStart::entered,get_CLID_sCarryBall,sCarryBall::entered|}
 			 within
 				(dbisim(
 					sbisim(
-						MachineBody(id__)
-						[| {|get_CLID_sCarryBall,sCarryBall::entered,terminate|} |]
-						dbisim(Clock_CLID_sCarryBall(id__,0))
-					)\{|get_CLID_sCarryBall|}
+						dbisim(
+							sbisim(
+								MachineBody(id__)
+								[| {|get_CLID_sCarryBall,sCarryBall::entered,terminate|} |]
+								dbisim(Clock_CLID_sCarryBall(id__,0))
+							)\{|get_CLID_sCarryBall|}
+						)
+						[| {|get_CLID_sStart,sStart::entered,terminate|} |]
+						dbisim(Clock_CLID_sStart(id__,0))
+					)\{|get_CLID_sStart|}
 				)
 				) \ union(stateClockSync,enteredSS)
 			)
@@ -410,7 +477,7 @@ exports
 		MachineBody_VS_O(id__) = 
 			dbisim((
 			let
-				finalNodesEntered = {|sFinal::entered|}
+				finalNodesEntered = {||}
 			within
 				(dbisim((dbisim((let
 					-- IMPLEMENTATION NOTE:
@@ -418,8 +485,8 @@ exports
 					-- modules for defining the semantics of each node.
 					enterSS = {|
 					sInitial::enter,
-					sCarryBall::enter,
-					sFinal::enter
+					sStart::enter,
+					sCarryBall::enter
 					|}
 					hideSet = union(enterSS,{|exit,exited,internal__|})
 				within 
@@ -427,20 +494,20 @@ exports
 						-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 						-- because CSPM modules are used for the semantics of Node.
 						flowevts = union(enterSS,{|exit,exited,interrupt|})
-						transSync = {|internal__.NID_sInitial,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall|}
+						transSync = {|internal__.NID_sInitial,startCarryBall__.NID_sStart.in,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall,stopCarryBall__.NID_sCarryBall.in|}
 					within
 						((
 						 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
 						   sInitial::VS_O__(id__)
 						   [| { share__, terminate } |] (
-						   sCarryBall::VS_O__(id__)
+						   sStart::VS_O__(id__)
 						   [| { share__, terminate } |] (
-						   sFinal::VS_O__(id__)
+						   sCarryBall::VS_O__(id__)
 						   )
 						   )
 						 )
-						 [[sCarryBall::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall|}]]
-						 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+						 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startCarryBall__.NID_sStart.in|}]]
+						 [[sCarryBall::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sCarryBall,internal__.NID_sCarryBall,internal__.NID_sCarryBall,stopCarryBall__.NID_sCarryBall.in|}]]
 						 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 )
 						  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
@@ -457,6 +524,11 @@ exports
 						)
 					)
 					 \ hideSet)
+					[[
+						startCarryBall__.x____ <- startCarryBall,
+						stopCarryBall__.x____ <- stopCarryBall
+						| x____ <- NIDS
+					]]
 				)
 				)
 				 [| union(stateClockSync,{terminate}) |]
@@ -468,7 +540,7 @@ exports
 		
 		Behaviour_VS_O(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sCarryBall,sCarryBall::entered|}
+				stateClockSync = {|get_CLID_sStart,sStart::entered,get_CLID_sCarryBall,sCarryBall::entered|}
 			 within
 				(MachineBody_VS_O(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ diff(union(stateClockSync,enteredSS),enteredSS)
 			)
@@ -476,14 +548,20 @@ exports
 		
 		IteratedBehaviour_VS_O(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sCarryBall,sCarryBall::entered|}
+				stateClockSync = {|get_CLID_sStart,sStart::entered,get_CLID_sCarryBall,sCarryBall::entered|}
 			 within
 				(dbisim(
 					sbisim(
-						MachineBody_VS_O(id__)
-						[| {|get_CLID_sCarryBall,sCarryBall::entered,terminate|} |]
-						dbisim(Clock_CLID_sCarryBall(id__,0))
-					)\{|get_CLID_sCarryBall|}
+						dbisim(
+							sbisim(
+								MachineBody_VS_O(id__)
+								[| {|get_CLID_sCarryBall,sCarryBall::entered,terminate|} |]
+								dbisim(Clock_CLID_sCarryBall(id__,0))
+							)\{|get_CLID_sCarryBall|}
+						)
+						[| {|get_CLID_sStart,sStart::entered,terminate|} |]
+						dbisim(Clock_CLID_sStart(id__,0))
+					)\{|get_CLID_sStart|}
 				)
 				) \ diff(union(stateClockSync,enteredSS),enteredSS)
 			)
@@ -559,6 +637,13 @@ exports
 		
 		clockSync = {||}
 		
+		Clock_CLID_sStart(id__,x__) = 
+			TimeOut_1(
+				sStart::entered -> Clock_CLID_sStart(id__,0)
+				[]
+				get_CLID_sStart!x__ -> Clock_CLID_sStart(id__,x__)
+				[]
+				terminate -> SKIP,Clock_CLID_sStart(id__,clock_type_plus(x__,1,CLID_sStart_clock_type(id__))))
 		Clock_CLID_sCarryBall(id__,x__) = 
 			TimeOut_1(
 				sCarryBall::entered -> Clock_CLID_sCarryBall(id__,0)
@@ -567,9 +652,12 @@ exports
 				[]
 				terminate -> SKIP,Clock_CLID_sCarryBall(id__,clock_type_plus(x__,1,CLID_sCarryBall_clock_type(id__))))
 		
-		StateClocks(id__) = dbisim(Clock_CLID_sCarryBall(id__,0))
+		StateClocks(id__) = dbisim(Clock_CLID_sStart(id__,0))
+		[| { terminate } |] (
+		dbisim(Clock_CLID_sCarryBall(id__,0))
+		)
 		
-		stateClockSync = {|get_CLID_sCarryBall,sCarryBall::entered|}
+		stateClockSync = {|get_CLID_sStart,sStart::entered,get_CLID_sCarryBall,sCarryBall::entered|}
 		
 		-- Shared memory
 		-- Shared memory variables
