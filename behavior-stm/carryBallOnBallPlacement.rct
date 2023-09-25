@@ -62,160 +62,177 @@ stm CarryBallOnBallPlacementSTM {
 	state sWaitStart {
 		entry nodeStatus = NODE_STATUS::RUNNING	
 	}
-	state sGoToBehindBall {
-		entry nodeStatus = NODE_STATUS::RUNNING
-	}
-	state sGiveSpaceToGetBall {
-		entry nodeStatus = NODE_STATUS::RUNNING
-	}
-	state sApproachBall {
-		entry nodeStatus = NODE_STATUS::RUNNING
-	}
-	state sPlaceBall {
-		entry nodeStatus = NODE_STATUS::RUNNING
-	}
-	state sMoveAwayFromBall {
-		entry nodeStatus = NODE_STATUS::RUNNING
-	}
-	final sFinal
+	state sRun {
+		// Execution states.
+		initial sInitial
+		state sGoToBehindBall {
+			entry nodeStatus = NODE_STATUS::RUNNING
+		}
+		state sGiveSpaceToGetBall {
+			entry nodeStatus = NODE_STATUS::RUNNING
+		}
+		state sApproachBall {
+			entry nodeStatus = NODE_STATUS::RUNNING
+		}
+		state sPlaceBall {
+			entry nodeStatus = NODE_STATUS::RUNNING
+		}
+		state sMoveAwayFromBall {
+			entry nodeStatus = NODE_STATUS::RUNNING
+		}
+		final sFinal
+		
+		// Success conditions.
+		transition AdjustToCarryBall {
+			from sInitial
+			to sGoToBehindBall
+			action startGoToBehindBall
+		}	
+		transition TryGoToBehindBallAgain {
+			from sGiveSpaceToGetBall
+			to sGoToBehindBall
+			condition nodeStatus == NODE_STATUS::DONE
+			action stopMoveAwayFromPosition; startGoToBehindBall
+		}
+		transition GetBallControl {
+			from sGoToBehindBall
+			to sApproachBall
+			condition nodeStatus == NODE_STATUS::DONE
+			action stopGoToBehindBall; startApproachBall
+		}
+		transition PlaceBallInPosition {
+			from sApproachBall
+			to sPlaceBall
+			condition nodeStatus == NODE_STATUS::DONE
+			action stopApproachBall; startCarryBall
+		}
+		transition MoveAway {
+			from sPlaceBall
+			to sMoveAwayFromBall
+			condition nodeStatus == NODE_STATUS::DONE
+			action stopCarryBall; startMoveAwayFromPosition
+		}
+		transition Finish {
+			from sMoveAwayFromBall
+			to sFinal
+			condition nodeStatus == NODE_STATUS::DONE
+			action stopMoveAwayFromPosition
+		}
 	
-	// Success Transitions.
+		// Failure Transitions.
+		transition AvoidBall {
+			from sGoToBehindBall
+			to sGiveSpaceToGetBall
+			condition nodeStatus == NODE_STATUS::FAILED
+			action stopGoToBehindBall; startMoveAwayFromPosition
+		}
+		transition ReadjustToCarryBall {
+			from sApproachBall
+			to sGoToBehindBall
+			condition nodeStatus == NODE_STATUS::FAILED
+			action stopApproachBall; startGoToBehindBall
+		}
+		transition LostBallOnCarry {
+			from sPlaceBall
+			to sGoToBehindBall
+			condition nodeStatus == NODE_STATUS::FAILED
+			action stopCarryBall; startGoToBehindBall
+		}
+		transition FinishWithFailOnMoveAway {
+			from sMoveAwayFromBall
+			to sFinal
+			condition nodeStatus == NODE_STATUS::FAILED
+			action stopMoveAwayFromPosition
+		}
+		transition FinishWithFailOnAvoidBall {
+			from sGiveSpaceToGetBall
+			to sFinal
+			condition nodeStatus == NODE_STATUS::FAILED
+			action stopGoToBehindBall
+		}
+		transition BallIsOutOfPosition {
+			from sMoveAwayFromBall
+			to sGoToBehindBall
+			condition robotHasMovedAwayFromBall
+			action stopMoveAwayFromPosition; startGoToBehindBall
+		}
+		
+		// Self Transitions.
+		transition KeepGoToBehindBall {
+			from sGoToBehindBall
+			to sGoToBehindBall
+			condition nodeStatus == NODE_STATUS::RUNNING
+		}
+		transition KeepApproachBall {
+			from sApproachBall
+			to sApproachBall
+			condition nodeStatus == NODE_STATUS::RUNNING
+		}
+		transition KeepPlaceBall {
+			from sPlaceBall
+			to sPlaceBall
+			condition nodeStatus == NODE_STATUS::RUNNING
+		}
+		transition KeepMovingAway {
+			from sMoveAwayFromBall
+			to sMoveAwayFromBall
+			condition nodeStatus == NODE_STATUS::RUNNING
+		}
+		transition KeepGivingSpace {
+			from sGiveSpaceToGetBall
+			to sGiveSpaceToGetBall
+			condition nodeStatus == NODE_STATUS::RUNNING
+		}
+		
+		// Aborted Transitions.
+		transition GameEventChangedOnGoToBall {
+			from sGoToBehindBall
+			to sFinal
+			condition nodeStatus == NODE_STATUS::ABORTED
+			action stopGoToBehindBall
+		}
+		transition GameEventChangedApproachBall {
+			from sApproachBall
+			to sFinal
+			condition nodeStatus == NODE_STATUS::ABORTED
+			action stopApproachBall
+		}
+		transition GameEventChangedCarryBall {
+			from sPlaceBall
+			to sFinal
+			condition nodeStatus == NODE_STATUS::ABORTED
+			action stopCarryBall
+		}
+		transition GameEventChangedOnMoveAwayFromBall {
+			from sMoveAwayFromBall
+			to sFinal
+			condition nodeStatus == NODE_STATUS::ABORTED
+			action stopMoveAwayFromPosition
+		}
+		transition GameEventChangedOnGivingSpaceToBall {
+			from sGiveSpaceToGetBall
+			to sFinal
+			condition nodeStatus == NODE_STATUS::ABORTED
+			action stopMoveAwayFromPosition
+		}	
+	}	
+
 	transition waitStart {
 		from sInitial
 		to sWaitStart
 	}
-	transition AdjustToCarryBall {
+	
+	transition run {
 		from sWaitStart
-		to sGoToBehindBall
+		to sRun
 		trigger startCarryBallOnBallPlacement
-		action startGoToBehindBall
-	}	
-	transition TryGoToBehindBallAgain {
-		from sGiveSpaceToGetBall
-		to sGoToBehindBall
-		condition nodeStatus == NODE_STATUS::DONE
-		action stopMoveAwayFromPosition; startGoToBehindBall
-	}
-	transition GetBallControl {
-		from sGoToBehindBall
-		to sApproachBall
-		condition nodeStatus == NODE_STATUS::DONE
-		action stopGoToBehindBall; startApproachBall
-	}
-	transition PlaceBallInPosition {
-		from sApproachBall
-		to sPlaceBall
-		condition nodeStatus == NODE_STATUS::DONE
-		action stopApproachBall; startCarryBall
-	}
-	transition MoveAway {
-		from sPlaceBall
-		to sMoveAwayFromBall
-		condition nodeStatus == NODE_STATUS::DONE
-		action stopCarryBall; startMoveAwayFromPosition
-	}
-	transition Finish {
-		from sMoveAwayFromBall
-		to sFinal
-		condition nodeStatus == NODE_STATUS::DONE
-		action stopMoveAwayFromPosition
-	}
-
-	// Failure Transitions.
-	transition AvoidBall {
-		from sGoToBehindBall
-		to sGiveSpaceToGetBall
-		condition nodeStatus == NODE_STATUS::FAILED
-		action stopGoToBehindBall; startMoveAwayFromPosition
-	}
-	transition ReadjustToCarryBall {
-		from sApproachBall
-		to sGoToBehindBall
-		condition nodeStatus == NODE_STATUS::FAILED
-		action stopApproachBall; startGoToBehindBall
-	}
-	transition LostBallOnCarry {
-		from sPlaceBall
-		to sGoToBehindBall
-		condition nodeStatus == NODE_STATUS::FAILED
-		action stopCarryBall; startGoToBehindBall
-	}
-	transition FinishWithFailOnMoveAway {
-		from sMoveAwayFromBall
-		to sWaitStart
-		condition nodeStatus == NODE_STATUS::FAILED
-		action stopMoveAwayFromPosition
-	}
-	transition FinishWithFailOnAvoidBall {
-		from sGiveSpaceToGetBall
-		to sWaitStart
-		condition nodeStatus == NODE_STATUS::FAILED
-		action stopGoToBehindBall
-	}
-	transition BallIsOutOfPosition {
-		from sMoveAwayFromBall
-		to sGoToBehindBall
-		condition robotHasMovedAwayFromBall
-		action stopMoveAwayFromPosition; startGoToBehindBall
 	}
 	
-	// Self Transitions.
-	transition KeepGoToBehindBall {
-		from sGoToBehindBall
-		to sGoToBehindBall
-		condition nodeStatus == NODE_STATUS::RUNNING
-	}
-	transition KeepApproachBall {
-		from sApproachBall
-		to sApproachBall
-		condition nodeStatus == NODE_STATUS::RUNNING
-	}
-	transition KeepPlaceBall {
-		from sPlaceBall
-		to sPlaceBall
-		condition nodeStatus == NODE_STATUS::RUNNING
-	}
-	transition KeepMovingAway {
-		from sMoveAwayFromBall
-		to sMoveAwayFromBall
-		condition nodeStatus == NODE_STATUS::RUNNING
-	}
-	transition KeepGivingSpace {
-		from sGiveSpaceToGetBall
-		to sGiveSpaceToGetBall
-		condition nodeStatus == NODE_STATUS::RUNNING
-	}
-	
-	// Aborted Transitions.
-	transition GameEventChangedOnGoToBall {
-		from sGoToBehindBall
+	transition abort {
+		from sRun
 		to sWaitStart
-		condition nodeStatus == NODE_STATUS::ABORTED
-		action stopGoToBehindBall
-	}
-	transition GameEventChangedApproachBall {
-		from sApproachBall
-		to sWaitStart
-		condition nodeStatus == NODE_STATUS::ABORTED
-		action stopApproachBall
-	}
-	transition GameEventChangedCarryBall {
-		from sPlaceBall
-		to sWaitStart
-		condition nodeStatus == NODE_STATUS::ABORTED
-		action stopCarryBall
-	}
-	transition GameEventChangedOnMoveAwayFromBall {
-		from sMoveAwayFromBall
-		to sWaitStart
-		condition nodeStatus == NODE_STATUS::ABORTED
-		action stopMoveAwayFromPosition
-	}
-	transition GameEventChangedOnGivingSpaceToBall {
-		from sGiveSpaceToGetBall
-		to sWaitStart
-		condition nodeStatus == NODE_STATUS::ABORTED
-		action stopMoveAwayFromPosition
+		trigger stopCarryBallOnBallPlacement
+		action nodeStatus = NODE_STATUS::ABORTED
 	}
 }
 // END TODO
@@ -279,7 +296,7 @@ stm BehaviorSTM {
 		condition currentTactic != lastTactic
 	}	
 
-	// Trigger a `stopCarryBallOnBallPlacementBehavior` event to 
+	// Triggers a `stopCarryBallOnBallPlacementBehavior` event to 
 	// stop the CarryBallOnBallPlacementSTM if the last tactic was
 	// Tactic::PLACE_BALL_IN_POSITION and the new one it is not.
 	transition stopCarryBallOnBallPlacement {
@@ -289,20 +306,32 @@ stm BehaviorSTM {
 		action stopCarryBallOnBallPlacementBehavior
 	}
 	
-	// Trigger a `startCarryBallOnBallPlacementBehavior` event to 
+	// Triggers a `stopHalt` event to stop the HaltSTM if the last 
+	// tactic was Tactic::HALT and the new one it is not.
+	transition stopHalt {
+		from jStopLastTactic
+		to jStartCurrentTactic
+		condition lastTactic == Tactic :: HALT
+		action stopHaltBehavior
+	}
+
+	// Triggers a `startCarryBallOnBallPlacementBehavior` event to 
 	// start the CarryBallOnBallPlacementSTM if the current tactic
 	// is Tactic::PLACE_BALL_IN_POSITION.
 	transition startCarryBallOnBallPlacement {
-		from jStopLastTactic
-		to jStartCurrentTactic
-		condition currentTactic == Tactic::PLACE_BALL_IN_POSITION
-		action startCarryBallOnBallPlacementBehavior
-	}
-
-	// It resets the BehaviorSTM to wait for a new tactic again.
-	transition reset {
 		from jStartCurrentTactic
 		to sWaitTactic
+		condition currentTactic == Tactic :: PLACE_BALL_IN_POSITION
+		action startCarryBallOnBallPlacementBehavior
+	}
+	
+	// Trigger a `startHalt` event to start the HaltSTM if the current 
+	// tactic is Tactic::HALT.
+	transition startHalt {
+		from jStartCurrentTactic
+		to sWaitTactic
+		condition currentTactic == Tactic :: HALT
+		action startHaltBehavior
 	}
 }
 

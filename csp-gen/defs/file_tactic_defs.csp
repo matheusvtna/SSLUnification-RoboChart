@@ -1,13 +1,13 @@
 
 --
--- RoboChart generator version 3.0.0.202306261132
--- Automatically generated on 03-09-2023 16:05:50
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 24-09-2023 21:47:01
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
--- data definitions used by platform:/resource/SSLUnification/utils/tactic.rct
+-- data definitions used by /SSLUnification/utils/tactic.rct
 datatype Tactic = Tactic_HALT | Tactic_PLACE_BALL_IN_POSITION
 Tactic_is(Tactic_HALT,Tactic_HALT) = true
 Tactic_is(_,Tactic_HALT) = false

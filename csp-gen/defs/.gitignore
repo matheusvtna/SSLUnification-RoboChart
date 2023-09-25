@@ -12,3 +12,5 @@
 /GoToBehindBallSTM_coreassertions.csp
 /carryBallOnBallPlacement_CarryBallOnBallPlacementSTM.csp
 /carryBallOnBallPlacement_CarryBallOnBallPlacementSTM_coreassertions.csp
+/file_tactic.csp
+/file_tactic_defs.csp
