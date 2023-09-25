@@ -184,38 +184,7 @@ stm CarryBallOnBallPlacementSTM {
 			to sGiveSpaceToGetBall
 			condition nodeStatus == NODE_STATUS::RUNNING
 		}
-		
-		// Aborted Transitions.
-		transition GameEventChangedOnGoToBall {
-			from sGoToBehindBall
-			to sFinal
-			condition nodeStatus == NODE_STATUS::ABORTED
-			action stopGoToBehindBall
-		}
-		transition GameEventChangedApproachBall {
-			from sApproachBall
-			to sFinal
-			condition nodeStatus == NODE_STATUS::ABORTED
-			action stopApproachBall
-		}
-		transition GameEventChangedCarryBall {
-			from sPlaceBall
-			to sFinal
-			condition nodeStatus == NODE_STATUS::ABORTED
-			action stopCarryBall
-		}
-		transition GameEventChangedOnMoveAwayFromBall {
-			from sMoveAwayFromBall
-			to sFinal
-			condition nodeStatus == NODE_STATUS::ABORTED
-			action stopMoveAwayFromPosition
-		}
-		transition GameEventChangedOnGivingSpaceToBall {
-			from sGiveSpaceToGetBall
-			to sFinal
-			condition nodeStatus == NODE_STATUS::ABORTED
-			action stopMoveAwayFromPosition
-		}	
+			
 	}	
 
 	transition waitStart {
