@@ -56,29 +56,30 @@ stm CarryBallOnBallPlacementSTM {
 	
 	// Conditional variables.
 	var robotHasMovedAwayFromBall: boolean
-
+	var runningStm: string
+	
 	// States.
 	initial sInitial
 	state sWaitStart {
-		entry nodeStatus = NODE_STATUS::RUNNING	
+		entry nodeStatus = NODE_STATUS::RUNNING; runningStm = ""
 	}
 	state sRun {
 		// Execution states.
 		initial sInitial
 		state sGoToBehindBall {
-			entry nodeStatus = NODE_STATUS::RUNNING
+			entry nodeStatus = NODE_STATUS::RUNNING; runningStm = "sGoToBehindBall"
 		}
 		state sGiveSpaceToGetBall {
-			entry nodeStatus = NODE_STATUS::RUNNING
+			entry nodeStatus = NODE_STATUS::RUNNING; runningStm = "sGiveSpaceToGetBall"
 		}
 		state sApproachBall {
-			entry nodeStatus = NODE_STATUS::RUNNING
+			entry nodeStatus = NODE_STATUS::RUNNING; runningStm = "sApproachBall"
 		}
 		state sPlaceBall {
-			entry nodeStatus = NODE_STATUS::RUNNING
+			entry nodeStatus = NODE_STATUS::RUNNING; runningStm = "sPlaceBall"
 		}
 		state sMoveAwayFromBall {
-			entry nodeStatus = NODE_STATUS::RUNNING
+			entry nodeStatus = NODE_STATUS::RUNNING; runningStm = "sMoveAwayFromBalls"
 		}
 		final sFinal
 		
@@ -232,7 +233,16 @@ stm CarryBallOnBallPlacementSTM {
 		from sRun
 		to sWaitStart
 		trigger stopCarryBallOnBallPlacement
-		action nodeStatus = NODE_STATUS::ABORTED
+		action nodeStatus = NODE_STATUS::ABORTED; if runningStm == "sGoToBehindBall" then stopGoToBehindBall else 
+			if runningStm == "sApproachBall" then stopApproachBall else 
+				if runningStm == "sPlaceBall" then stopCarryBall else 
+					if runningStm == "sMoveAwayFromBall" then stopMoveAwayFromPosition else 
+						if runningStm == "sGiveSpaceToGetBall" then stopMoveAwayFromPosition end 
+						end 
+					end 
+				end 
+			end
+				
 	}
 }
 // END TODO
