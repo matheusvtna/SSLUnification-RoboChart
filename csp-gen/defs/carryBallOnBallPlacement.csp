@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202306261132
--- Automatically generated on 06-11-2023 22:05:20
+-- Automatically generated on 06-11-2023 22:25:00
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -1528,23 +1528,23 @@ exports
 				 	]]
 				 )
 				 )
-				  [[ share__ <- x__ | x__ <- {| share__,setR_robotHasMovedAwayFromBall,setR_nodeStatus,setR_runningStm |} ]] 
-				  [[set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_nodeStatus <- setL_nodeStatus,set_runningStm <- setL_runningStm]]
+				  [[ share__ <- x__ | x__ <- {| share__,setR_runningStm,setR_nodeStatus,setR_robotHasMovedAwayFromBall |} ]] 
+				  [[set_runningStm <- setL_runningStm,set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall]]
 				 )
 				 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-				 			,setL_robotHasMovedAwayFromBall
-				 			,setL_nodeStatus
 				 			,setL_runningStm
-				 			,setR_robotHasMovedAwayFromBall
+				 			,setL_nodeStatus
+				 			,setL_robotHasMovedAwayFromBall
+				 			,setR_runningStm
 				 			 			,setR_nodeStatus
-				 			 			,setR_runningStm
+				 			 			,setR_robotHasMovedAwayFromBall
 				 			|}) |]
 				 ((During)
-				  [[ share__ <- x__ | x__ <- {| share__,setL_robotHasMovedAwayFromBall,setL_nodeStatus,setL_runningStm |} ]]
-				  [[set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_nodeStatus <- setR_nodeStatus,set_runningStm <- setR_runningStm]]
+				  [[ share__ <- x__ | x__ <- {| share__,setL_runningStm,setL_nodeStatus,setL_robotHasMovedAwayFromBall |} ]]
+				  [[set_runningStm <- setR_runningStm,set_nodeStatus <- setR_nodeStatus,set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall]]
 				 )
-				)[[setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_nodeStatus <- set_nodeStatus,setL_runningStm <- set_runningStm]]
-				 [[setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_nodeStatus <- set_nodeStatus,setR_runningStm <- set_runningStm]]
+				)[[setL_runningStm <- set_runningStm,setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall]]
+				 [[setR_runningStm <- set_runningStm,setR_nodeStatus <- set_nodeStatus,setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall]]
 				)\union(enteredSS,{terminate}) 
 			)
 			During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -1646,23 +1646,23 @@ exports
 				 	]]
 				 )
 				 )
-				  [[ share__ <- x__ | x__ <- {| share__,setR_robotHasMovedAwayFromBall,setR_nodeStatus,setR_runningStm |} ]] 
-				  [[set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_nodeStatus <- setL_nodeStatus,set_runningStm <- setL_runningStm]]
+				  [[ share__ <- x__ | x__ <- {| share__,setR_runningStm,setR_nodeStatus,setR_robotHasMovedAwayFromBall |} ]] 
+				  [[set_runningStm <- setL_runningStm,set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall]]
 				 )
 				 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-				 			,setL_robotHasMovedAwayFromBall
-				 			,setL_nodeStatus
 				 			,setL_runningStm
-				 			,setR_robotHasMovedAwayFromBall
+				 			,setL_nodeStatus
+				 			,setL_robotHasMovedAwayFromBall
+				 			,setR_runningStm
 				 			 			,setR_nodeStatus
-				 			 			,setR_runningStm
+				 			 			,setR_robotHasMovedAwayFromBall
 				 			|}) |]
 				 ((During)
-				  [[ share__ <- x__ | x__ <- {| share__,setL_robotHasMovedAwayFromBall,setL_nodeStatus,setL_runningStm |} ]]
-				  [[set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_nodeStatus <- setR_nodeStatus,set_runningStm <- setR_runningStm]]
+				  [[ share__ <- x__ | x__ <- {| share__,setL_runningStm,setL_nodeStatus,setL_robotHasMovedAwayFromBall |} ]]
+				  [[set_runningStm <- setR_runningStm,set_nodeStatus <- setR_nodeStatus,set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall]]
 				 )
-				)[[setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_nodeStatus <- set_nodeStatus,setL_runningStm <- set_runningStm]]
-				 [[setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_nodeStatus <- set_nodeStatus,setR_runningStm <- set_runningStm]]
+				)[[setL_runningStm <- set_runningStm,setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall]]
+				 [[setR_runningStm <- set_runningStm,setR_nodeStatus <- set_nodeStatus,setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall]]
 				)\{terminate} 
 			)
 			During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))

@@ -79,6 +79,18 @@ stm ApproachBallSTM {
 		trigger startApproachBall
 	}
 	
+	transition sucess {
+		from sRun
+		to sWaitStart
+		condition nodeStatus == NODE_STATUS :: DONE
+	}
+	
+	transition fail {
+		from sRun
+		to sWaitStart
+		condition nodeStatus == NODE_STATUS::FAILED
+	}
+	
 	
 	transition abortFromRunning {		
 		from sRun
