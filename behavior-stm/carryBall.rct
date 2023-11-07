@@ -26,58 +26,84 @@ stm CarryBallSTM {
 	initial sInitial
 	final sFinal
 	
-	state sStart { }
+	state sWaitStart { }
+	state sRun { 
+		initial sInitial
+		final sFinal
 	
-	state sCarryBall {
-		entry nodeStatus = NODE_STATUS::RUNNING
+	
+		state sCarryBall {
+			entry nodeStatus = NODE_STATUS::RUNNING
+		}
+		
+		// Transitions.
+		transition run {
+			from sInitial
+			to sCarryBall
+		}
+		
+		transition success {		
+			from sCarryBall
+			to sFinal
+			condition ballIsPositioned
+			action nodeStatus = NODE_STATUS::DONE
+		}
+		
+		transition recalculate {
+			from sCarryBall
+			to sCarryBall
+			condition (not ballIsPositioned) /\ allyHasBall
+			action nodeStatus = NODE_STATUS::RUNNING
+		}
+		
+		transition fail {		
+			from sCarryBall
+			to sFinal
+			condition not allyHasBall
+			action nodeStatus = NODE_STATUS::FAILED
+		}
+		
 	}
 	
-	// Transitions.
-	transition start {
+	transition waitStart {
 		from sInitial
-		to sStart
+		to sWaitStart
 	}
 	
-	transition carryBall {
-		from sStart
-		to sCarryBall
+	transition run {
+		from sWaitStart
+		to sRun
 		trigger startCarryBall
 	}
 	
 	transition success {		
-		from sCarryBall
-		to sStart
+		from sRun
+		to sWaitStart
 		condition ballIsPositioned
 		action nodeStatus = NODE_STATUS::DONE
 	}
-	
-	transition recalculate {
-		from sCarryBall
-		to sCarryBall
-		condition (not ballIsPositioned) /\ allyHasBall
-		action nodeStatus = NODE_STATUS::RUNNING
-	}
-	
+		
 	transition fail {		
-		from sCarryBall
-		to sStart
-		condition not allyHasBall
-		action nodeStatus = NODE_STATUS::FAILED
+			from sRun
+			to sWaitStart
+			action nodeStatus = NODE_STATUS::FAILED
+		}
+	
+	
+	transition abortWaitStart {		
+		from sWaitStart
+		to sFinal
+		trigger stopCarryBall
+		action nodeStatus = NODE_STATUS::ABORTED
 	}
 	
-	transition abortFromCarryBall {		
-		from sCarryBall
+	transition abortRun {
+		from sRun
 		to sFinal
 		trigger stopCarryBall
 		action nodeStatus = NODE_STATUS::ABORTED
 	}
 	
 	
-	transition aborFromtStart {		
-		from sStart
-		to sFinal
-		trigger stopCarryBall
-		action nodeStatus = NODE_STATUS::ABORTED
-	}
 	
 }

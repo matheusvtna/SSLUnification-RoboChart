@@ -30,54 +30,69 @@ stm GoToBehindBallSTM {
 	initial sInitial
 	final sFinal
 	
-	state sStart {}
-	state sGoToBehindBall {
-		entry nodeStatus = NODE_STATUS::RUNNING			
-	}		
+	state sWaitStart {}
+	
+	state sRun {
+		
+		initial sInitial
+		final sFinal
+		
+		state sGoToBehindBall {
+			entry nodeStatus = NODE_STATUS::RUNNING			
+		}
+		
+		transition start {
+			from sInitial
+			to sGoToBehindBall
+		}
+		
+		transition success {		
+			from sGoToBehindBall
+			to sFinal
+			condition (allyIsBehindBall /\ allyIsCloseToBall) 
+			action nodeStatus = NODE_STATUS::DONE
+		}
+		
+		
+		transition recalculate {
+			from sGoToBehindBall
+			to sGoToBehindBall
+			condition not (allyIsBehindBall /\ allyIsCloseToBall) /\ not allyIsPushingBallWithHisBack
+			action nodeStatus = NODE_STATUS::RUNNING
+		}
+		
+		transition fail {		
+			from sGoToBehindBall
+			to sFinal
+			condition allyIsPushingBallWithHisBack
+			action nodeStatus = NODE_STATUS::FAILED
+		}
+	}
+		
 	
 	// Transitions.
-	transition start {
+	transition waitStart {
 		from sInitial
-		to sStart
-		// action moveToBehindBall()
+		to sWaitStart
 	}
 	
 	transition goToBehindBall{
-		from sStart
-		to sGoToBehindBall
+		from sWaitStart
+		to sRun
 		trigger startGoToBehindBall
 	}
 	
-	transition success {		
-		from sGoToBehindBall
-		to sStart
-		condition (allyIsBehindBall /\ allyIsCloseToBall) 
-		action nodeStatus = NODE_STATUS::DONE
-	}
 	
-	transition recalculate {
-		from sGoToBehindBall
-		to sGoToBehindBall
-		condition not (allyIsBehindBall /\ allyIsCloseToBall) /\ not allyIsPushingBallWithHisBack
-		action nodeStatus = NODE_STATUS::RUNNING
-	}
-	
-	transition fail {		
-		from sGoToBehindBall
-		to sStart
-		condition allyIsPushingBallWithHisBack
-		action nodeStatus = NODE_STATUS::FAILED
-	}
 	
 	transition abortFromRunning {		
-		from sGoToBehindBall
+		from sRun
 		to sFinal
 		trigger stopGoToBehindBall
 		action nodeStatus = NODE_STATUS::ABORTED
 	}
 	
 	transition abortFromStart {		
-		from sStart
+		from sWaitStart
 		to sFinal
 		trigger stopGoToBehindBall
 		action nodeStatus = NODE_STATUS::ABORTED

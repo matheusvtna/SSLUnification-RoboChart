@@ -31,56 +31,67 @@ stm MoveAwayFromPositionSTM {
 	initial sInitial
 	final sFinal
 	
-	state sStart {}
-	
-	
-	state sMoveAway {
-		entry nodeStatus = NODE_STATUS::RUNNING 
-	}	
+	state sWaitStart {}
+	state sRun { 
+		
+		initial sInitial
+		final sFinal
+		
+		
+		state sMoveAway {
+			entry nodeStatus = NODE_STATUS::RUNNING 
+		}	
+		
+		transition start {
+			from sInitial
+			to sMoveAway
+		}
+		
+		transition success {		
+			from sMoveAway
+			to sFinal
+			condition robotIsFarEnoughFromPosition
+			action nodeStatus = NODE_STATUS::DONE
+		}
+		
+		transition recalculate {
+			from sMoveAway
+			to sMoveAway
+			condition (not robotIsFarEnoughFromPosition) /\ (not (sinceEntry(sMoveAway) > TIME_LIMIT_TO_BEHAVE /\ (not robotIsFarEnoughFromPosition)))
+			action nodeStatus = NODE_STATUS::RUNNING
+		}
+		
+		transition fail {		
+			from sMoveAway
+			to sFinal
+			// How to solve this warning? What this means? 
+			condition sinceEntry(sMoveAway) > TIME_LIMIT_TO_BEHAVE /\ (not robotIsFarEnoughFromPosition)
+			action nodeStatus = NODE_STATUS::FAILED
+		}
+		
+	}
 	
 	// Transitions.
-	transition start {
+	transition waitStart {
 		from sInitial
-		to sStart
+		to sRun
 	}
 	
 	transition moveAwayFromPosition {
-		from sStart
-		to sMoveAway 
+		from sWaitStart
+		to sRun 
 		trigger startMoveAwayFromPosition
 	}
 	
-	transition success {		
-		from sMoveAway
-		to sStart
-		condition robotIsFarEnoughFromPosition
-		action nodeStatus = NODE_STATUS::DONE
-	}
-	
-	transition recalculate {
-		from sMoveAway
-		to sMoveAway
-		condition (not robotIsFarEnoughFromPosition) /\ (not (sinceEntry(sMoveAway) > TIME_LIMIT_TO_BEHAVE /\ (not robotIsFarEnoughFromPosition)))
-		action nodeStatus = NODE_STATUS::RUNNING
-	}
-	
-	transition fail {		
-		from sMoveAway
-		to sStart
-		// How to solve this warning? What this means? 
-		condition sinceEntry(sMoveAway) > TIME_LIMIT_TO_BEHAVE /\ (not robotIsFarEnoughFromPosition)
-		action nodeStatus = NODE_STATUS::FAILED
-	}
-	
 	transition abortFromRunning {		
-		from sMoveAway
+		from sRun
 		to sFinal
 		trigger stopMoveAwayFromPosition
 		action nodeStatus = NODE_STATUS::ABORTED
 	}
 	
 	transition abortFromStart {
-		from sStart
+		from sWaitStart
 		to sFinal
 		trigger stopMoveAwayFromPosition
 		action nodeStatus = NODE_STATUS::ABORTED

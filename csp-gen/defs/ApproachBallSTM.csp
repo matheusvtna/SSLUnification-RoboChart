@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202306261132
--- Automatically generated on 06-11-2023 21:05:40
+-- Automatically generated on 06-11-2023 21:52:24
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -19,8 +19,8 @@ exports
 	datatype NIDS = 
 	              NID_sInitial|
 	              NID_sFinal|
-	              NID_sStart|
-	              NID_sApproach
+	              NID_sWaitStart|
+	              NID_sRun
 	
 	channel internal__ : NIDS
 	
@@ -52,14 +52,14 @@ exports
 	enterSS = {|
 	sInitial::enter,
 	sFinal::enter,
-	sStart::enter,
-	sApproach::enter
+	sWaitStart::enter,
+	sRun::enter
 	|}
 	
 	enteredSS = 	{|
 	sFinal::entered,
-	sStart::entered,
-	sApproach::entered
+	sWaitStart::entered,
+	sRun::entered
 	|}
 	
 	internal_events = union(enteredSS,union(enterSS,{|interrupt,exited|}))
@@ -129,8 +129,8 @@ exports
 	
 	
 	----------------------------------------------------------------------
-	-- State: sStart
-	module sStart
+	-- State: sWaitStart
+	module sWaitStart
 	
 	enterSS = {}
 	
@@ -195,13 +195,18 @@ exports
 	
 	
 	----------------------------------------------------------------------
-	-- State: sApproach
-	module sApproach
+	-- State: sRun
+	module sRun
 	
-	enterSS = {}
-	
-	enteredSS = {}
-	
+	enterSS = 
+			{|			sInitial::enter,
+				sFinal::enter,
+				sApproach::enter
+			|}
+	enteredSS = 
+			{|			sFinal::entered,
+				sApproach::entered
+			|}
 	exports
 	
 		--  Declarations
@@ -210,9 +215,133 @@ exports
 		channel enteredL, enteredR
 		
 						
+		-- declaring identifiers of transitions
+		datatype NIDS = 
+		              NID_sInitial|
+		              NID_sFinal|
+		              NID_sApproach
+		
+		channel internal__ : NIDS
+		channel startApproachBall__: NIDS.InOut
+		channel stopApproachBall__: NIDS.InOut
 		
 		--	Nodes
 		-- declaring all nodes
+		
+		----------------------------------------------------------------------
+		-- Initial: sInitial
+		module sInitial
+		exports
+		
+			channel enter, interrupt
+			
+			D__(id__) = 
+				dbisim(let
+					Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+					
+					Termination = terminate -> SKIP
+					
+					Active 		= share__choice(interrupt -> SKIP) ; Inactive
+				within
+					Inactive [| {terminate} |> SKIP)
+			
+			VS_O__(id__) = D__(id__)
+		
+		endmodule
+		----------------------------------------------------------------------
+		
+		
+		----------------------------------------------------------------------
+		-- Final state: sFinal
+		module sFinal
+		
+		exports
+		
+			channel enter, entered, interrupt
+			channel enteredL, enteredR
+			
+			--	Rule: behaviours(Node)
+			D__(id__) = 
+				dbisim(let
+					Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Entering
+					
+					Entering 	= entered -> SKIP ; Active
+					Active		= share__choice(terminate -> SKIP [] interrupt -> SKIP) ; Interrupted
+					Interrupted	= share__choice(exit -> exited -> Inactive)
+				within
+					Inactive [| {terminate} |> SKIP)
+				
+			VS_O__(id__) = D__(id__)
+		
+		endmodule
+		----------------------------------------------------------------------
+		
+		
+		----------------------------------------------------------------------
+		-- State: sApproach
+		module sApproach
+		
+		enterSS = {}
+		
+		enteredSS = {}
+		
+		exports
+		
+			--  Declarations
+			
+			channel enter, entered, interrupt
+			channel enteredL, enteredR
+			
+							
+			
+			--	Nodes
+			-- declaring all nodes
+			
+			
+			--	Rule: behaviours(Node)
+			--  Note that FDR has problems with efficiently compiling the process below
+			-- 	if using a different recursion pattern.
+			D__(id__) = 
+			dbisim(let
+				-- IMPLEMENTATION NOTE: 
+				-- The following should be defined as: Inactive = share__choice(Activation [] Termination),
+				-- however FDR struggles with that form in certain cases. So we use the exception operator
+				-- instead to 'terminate'.
+				
+				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+				
+				Termination = terminate -> SKIP
+				
+				Active 		= share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; 
+						 	  Behaviour ; 
+						 	  share__choice(exit -> SKIP) ; SKIP ; 
+						 	  share__choice(exited -> SKIP) ; Inactive
+			
+				Behaviour 	= entered -> During
+				During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+			within
+				Inactive [| {terminate} |> SKIP)
+				
+			VS_O__(id__) = 
+			dbisim(let
+				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+				
+				Termination = terminate -> SKIP
+				
+				Active 		= share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; 
+						 	  Behaviour ; 
+						 	  share__choice(exit -> SKIP) ; SKIP ; 
+						 	  share__choice(exited -> SKIP) ; Inactive
+			
+				Behaviour 	= entered -> During
+				During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+			within
+				Inactive [| {terminate} |> SKIP)
+			
+		
+		endmodule
+		----------------------------------------------------------------------
+		
 		
 		
 		--	Rule: behaviours(Node)
@@ -229,13 +358,90 @@ exports
 			
 			Termination = terminate -> SKIP
 			
-			Active 		= share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; 
+			Active 		= SKIP ; 
 					 	  Behaviour ; 
 					 	  share__choice(exit -> SKIP) ; SKIP ; 
 					 	  share__choice(exited -> SKIP) ; Inactive
 		
-			Behaviour 	= entered -> During
-			During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+		
+			Behaviour 	= dbisim(
+				((
+				 (((let
+				 	-- IMPLEMENTATION NOTE:
+				 	-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
+				 	-- modules for defining the semantics of each node.
+				 	enterSS = {|
+				 	sInitial::enter,
+				 	sFinal::enter,
+				 	sApproach::enter
+				 	|}
+				 	hideSet = union(enterSS,{|exit,exited,internal__|})
+				 within 
+				 	((let
+				 		-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
+				 		-- because CSPM modules are used for the semantics of Node.
+				 		flowevts = union(enterSS,{|exit,exited,interrupt|})
+				 		transSync = {|internal__.NID_sInitial,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach|}
+				 	within
+				 		((
+				 		 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
+				 		   sInitial::D__(id__)
+				 		   [| { share__, terminate } |] (
+				 		   sFinal::D__(id__)
+				 		   [| { share__, terminate } |] (
+				 		   sApproach::D__(id__)
+				 		   )
+				 		   )
+				 		 )
+				 		 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+				 		 [[sApproach::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach|}]]
+				 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
+				 		 )
+				 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+				 		  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+				 		 )
+				 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+				 		 			,setL_allyIsCloseToBall
+				 		 			,setL_allyHasBall
+				 		 			,setL_allyIsBehindBall
+				 		|}) |]
+				 		 ((sInitial::enter -> Transitions(id__))
+				 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyHasBall,setL_allyIsBehindBall |} ]]
+				 		 )
+				 		)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+				 		)
+				 	)
+				 	 \ hideSet)
+				 	[[
+				 		startApproachBall__.x____ <- startApproachBall,
+				 		stopApproachBall__.x____ <- stopApproachBall
+				 		| x____ <- NIDS
+				 	]]
+				 )
+				 )
+				  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsCloseToBall,setR_nodeStatus,setR_allyHasBall,setR_allyIsBehindBall |} ]] 
+				  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+				 )
+				 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+				 			,setL_allyIsCloseToBall
+				 			,setL_nodeStatus
+				 			,setL_allyHasBall
+				 			,setL_allyIsBehindBall
+				 			,setR_allyIsCloseToBall
+				 			 			,setR_nodeStatus
+				 			 			,setR_allyHasBall
+				 			 			,setR_allyIsBehindBall
+				 			|}) |]
+				 ((During)
+				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_nodeStatus,setL_allyHasBall,setL_allyIsBehindBall |} ]]
+				  [[set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall,set_allyIsBehindBall <- setR_allyIsBehindBall]]
+				 )
+				)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+				 [[setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall,setR_allyIsBehindBall <- set_allyIsBehindBall]]
+				)\union(enteredSS,{terminate}) 
+			)
+			During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
+					 	  ; entered -> ((CRUN(enteredSS) ||| SKIP ; SStop) /\ interrupt -> share__choice(terminate -> SKIP))
 		within
 			Inactive [| {terminate} |> SKIP)
 			
@@ -245,15 +451,111 @@ exports
 			
 			Termination = terminate -> SKIP
 			
-			Active 		= share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; 
+			Active 		= SKIP ; 
 					 	  Behaviour ; 
 					 	  share__choice(exit -> SKIP) ; SKIP ; 
 					 	  share__choice(exited -> SKIP) ; Inactive
 		
-			Behaviour 	= entered -> During
-			During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+		
+			Behaviour 	= dbisim(
+				((
+				 (((let
+				 	-- IMPLEMENTATION NOTE:
+				 	-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
+				 	-- modules for defining the semantics of each node.
+				 	enterSS = {|
+				 	sInitial::enter,
+				 	sFinal::enter,
+				 	sApproach::enter
+				 	|}
+				 	hideSet = union(enterSS,{|exit,exited,internal__|})
+				 within 
+				 	((let
+				 		-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
+				 		-- because CSPM modules are used for the semantics of Node.
+				 		flowevts = union(enterSS,{|exit,exited,interrupt|})
+				 		transSync = {|internal__.NID_sInitial,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach|}
+				 	within
+				 		((
+				 		 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
+				 		   sInitial::VS_O__(id__)
+				 		   [| { share__, terminate } |] (
+				 		   sFinal::VS_O__(id__)
+				 		   [| { share__, terminate } |] (
+				 		   sApproach::VS_O__(id__)
+				 		   )
+				 		   )
+				 		 )
+				 		 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+				 		 [[sApproach::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach|}]]
+				 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
+				 		 )
+				 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+				 		  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+				 		 )
+				 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+				 		 			,setL_allyIsCloseToBall
+				 		 			,setL_allyHasBall
+				 		 			,setL_allyIsBehindBall
+				 		|}) |]
+				 		 ((sInitial::enter -> Transitions(id__))
+				 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyHasBall,setL_allyIsBehindBall |} ]]
+				 		 )
+				 		)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+				 		)
+				 	)
+				 	 \ hideSet)
+				 	[[
+				 		startApproachBall__.x____ <- startApproachBall,
+				 		stopApproachBall__.x____ <- stopApproachBall
+				 		| x____ <- NIDS
+				 	]]
+				 )
+				 )
+				  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsCloseToBall,setR_nodeStatus,setR_allyHasBall,setR_allyIsBehindBall |} ]] 
+				  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+				 )
+				 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+				 			,setL_allyIsCloseToBall
+				 			,setL_nodeStatus
+				 			,setL_allyHasBall
+				 			,setL_allyIsBehindBall
+				 			,setR_allyIsCloseToBall
+				 			 			,setR_nodeStatus
+				 			 			,setR_allyHasBall
+				 			 			,setR_allyIsBehindBall
+				 			|}) |]
+				 ((During)
+				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_nodeStatus,setL_allyHasBall,setL_allyIsBehindBall |} ]]
+				  [[set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall,set_allyIsBehindBall <- setR_allyIsBehindBall]]
+				 )
+				)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+				 [[setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall,setR_allyIsBehindBall <- set_allyIsBehindBall]]
+				)\{terminate} 
+			)
+			During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
+					 	  ; entered -> ((CRUN(enteredSS) ||| SKIP ; SStop) /\ interrupt -> share__choice(terminate -> SKIP))
 		within
 			Inactive [| {terminate} |> SKIP)
+		
+		Transitions(id__) = ((let
+			Trans = share__choice(get_allyIsCloseToBall?allyIsCloseToBall -> get_allyHasBall?allyHasBall -> get_allyIsBehindBall?allyIsBehindBall -> (
+				((share__ -> SKIP
+				 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sApproach::enter -> SKIP))))
+				 	 [] dbisim((allyHasBall)&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
+				 	 [] dbisim(((((not (allyIsBehindBall)) or (not (allyIsCloseToBall)))))&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_FAILED -> SKIP))) ; sFinal::enter -> SKIP)))
+				 	 [] dbisim(((((not (allyHasBall))) and (not ((((not (allyIsBehindBall)) or (not (allyIsCloseToBall))))))))&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; sApproach::enter -> SKIP)))
+				 ) ; Trans)
+				 []
+				 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
+				 []
+				 terminate -> SKIP
+			)
+			)
+		within
+			Trans
+		)
+		)
 		
 	
 	endmodule
@@ -301,21 +603,17 @@ exports
 	
 	-- Transitions
 	Transitions(id__) = ((let
-		Trans = share__choice(get_allyIsCloseToBall?allyIsCloseToBall -> get_allyHasBall?allyHasBall -> get_allyIsBehindBall?allyIsBehindBall -> (
+		Trans = (
 			((share__ -> SKIP
-			 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sStart::enter -> SKIP))))
-			 	 [] dbisim((true)&(startApproachBall__!NID_sStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; sApproach::enter -> SKIP)))
-			 	 [] dbisim((allyHasBall)&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sStart::enter -> SKIP)))
-			 	 [] dbisim(((((not (allyHasBall))) and (not ((((not (allyIsBehindBall)) or (not (allyIsCloseToBall))))))))&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; sApproach::enter -> SKIP)))
-			 	 [] dbisim(((((not (allyIsBehindBall)) or (not (allyIsCloseToBall)))))&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_FAILED -> SKIP))) ; sStart::enter -> SKIP)))
-			 	 [] dbisim((true)&(stopApproachBall__!NID_sApproach.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
-			 	 [] dbisim((true)&(stopApproachBall__!NID_sStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
+			 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sWaitStart::enter -> SKIP))))
+			 	 [] dbisim((true)&(startApproachBall__!NID_sWaitStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; sRun::enter -> SKIP)))
+			 	 [] dbisim((true)&(stopApproachBall__!NID_sRun.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
+			 	 [] dbisim((true)&(stopApproachBall__!NID_sWaitStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
 			 ) ; Trans)
 			 []
 			 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
 			 []
 			 terminate -> SKIP
-		)
 		)
 	within
 		Trans
@@ -338,8 +636,8 @@ exports
 				enterSS = {|
 				sInitial::enter,
 				sFinal::enter,
-				sStart::enter,
-				sApproach::enter
+				sWaitStart::enter,
+				sRun::enter
 				|}
 				hideSet = union(enterSS,{|exit,exited,internal__|})
 			within 
@@ -347,7 +645,7 @@ exports
 					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 					-- because CSPM modules are used for the semantics of Node.
 					flowevts = union(enterSS,{|exit,exited,interrupt|})
-					transSync = {|internal__.NID_sInitial,startApproachBall__.NID_sStart.in,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach,stopApproachBall__.NID_sApproach.in,stopApproachBall__.NID_sStart.in|}
+					transSync = {|internal__.NID_sInitial,startApproachBall__.NID_sWaitStart.in,stopApproachBall__.NID_sRun.in,stopApproachBall__.NID_sWaitStart.in|}
 				within
 					((
 					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
@@ -355,30 +653,26 @@ exports
 					   [| { share__, terminate } |] (
 					   sFinal::D__(id__)
 					   [| { share__, terminate } |] (
-					   sStart::D__(id__)
+					   sWaitStart::D__(id__)
 					   [| { share__, terminate } |] (
-					   sApproach::D__(id__)
+					   sRun::D__(id__)
 					   )
 					   )
 					   )
 					 )
 					 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
-					 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startApproachBall__.NID_sStart.in,stopApproachBall__.NID_sStart.in|}]]
-					 [[sApproach::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach,stopApproachBall__.NID_sApproach.in|}]]
+					 [[sWaitStart::interrupt <- x__ | x__ <- {|interrupt,startApproachBall__.NID_sWaitStart.in,stopApproachBall__.NID_sWaitStart.in|}]]
+					 [[sRun::interrupt <- x__ | x__ <- {|interrupt,stopApproachBall__.NID_sRun.in|}]]
 					 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 					 )
 					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-					  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
 					 )
 					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-					 			,setL_allyIsCloseToBall
-					 			,setL_allyHasBall
-					 			,setL_allyIsBehindBall
 					|}) |]
 					 ((sInitial::enter -> Transitions(id__))
-					  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyHasBall,setL_allyIsBehindBall |} ]]
+					  [[ share__ <- x__ | x__ <- {| share__ |} ]]
 					 )
-					)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+					)
 					)
 				)
 				 \ hideSet)
@@ -442,8 +736,8 @@ exports
 				enterSS = {|
 				sInitial::enter,
 				sFinal::enter,
-				sStart::enter,
-				sApproach::enter
+				sWaitStart::enter,
+				sRun::enter
 				|}
 				hideSet = union(enterSS,{|exit,exited,internal__|})
 			within 
@@ -451,7 +745,7 @@ exports
 					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 					-- because CSPM modules are used for the semantics of Node.
 					flowevts = union(enterSS,{|exit,exited,interrupt|})
-					transSync = {|internal__.NID_sInitial,startApproachBall__.NID_sStart.in,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach,stopApproachBall__.NID_sApproach.in,stopApproachBall__.NID_sStart.in|}
+					transSync = {|internal__.NID_sInitial,startApproachBall__.NID_sWaitStart.in,stopApproachBall__.NID_sRun.in,stopApproachBall__.NID_sWaitStart.in|}
 				within
 					((
 					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
@@ -459,30 +753,26 @@ exports
 					   [| { share__, terminate } |] (
 					   sFinal::VS_O__(id__)
 					   [| { share__, terminate } |] (
-					   sStart::VS_O__(id__)
+					   sWaitStart::VS_O__(id__)
 					   [| { share__, terminate } |] (
-					   sApproach::VS_O__(id__)
+					   sRun::VS_O__(id__)
 					   )
 					   )
 					   )
 					 )
 					 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
-					 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startApproachBall__.NID_sStart.in,stopApproachBall__.NID_sStart.in|}]]
-					 [[sApproach::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach,stopApproachBall__.NID_sApproach.in|}]]
+					 [[sWaitStart::interrupt <- x__ | x__ <- {|interrupt,startApproachBall__.NID_sWaitStart.in,stopApproachBall__.NID_sWaitStart.in|}]]
+					 [[sRun::interrupt <- x__ | x__ <- {|interrupt,stopApproachBall__.NID_sRun.in|}]]
 					 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 					 )
 					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-					  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
 					 )
 					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-					 			,setL_allyIsCloseToBall
-					 			,setL_allyHasBall
-					 			,setL_allyIsBehindBall
 					|}) |]
 					 ((sInitial::enter -> Transitions(id__))
-					  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyHasBall,setL_allyIsBehindBall |} ]]
+					  [[ share__ <- x__ | x__ <- {| share__ |} ]]
 					 )
-					)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+					)
 					)
 				)
 				 \ hideSet)

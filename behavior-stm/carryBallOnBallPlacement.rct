@@ -63,25 +63,25 @@ stm CarryBallOnBallPlacementSTM {
 	final sFinal
 	
 	state sWaitStart {
-		entry nodeStatus = NODE_STATUS::RUNNING; runningStm = ""
+		entry nodeStatus = NODE_STATUS :: RUNNING
 	}
 	state sRun {
 		// Execution states.
 		initial sInitial
 		state sGoToBehindBall {
-			entry nodeStatus = NODE_STATUS::RUNNING; runningStm = "sGoToBehindBall"
+			entry nodeStatus = NODE_STATUS::RUNNING
 		}
 		state sGiveSpaceToGetBall {
-			entry nodeStatus = NODE_STATUS::RUNNING; runningStm = "sGiveSpaceToGetBall"
+			entry nodeStatus = NODE_STATUS::RUNNING
 		}
 		state sApproachBall {
-			entry nodeStatus = NODE_STATUS::RUNNING; runningStm = "sApproachBall"
+			entry nodeStatus = NODE_STATUS::RUNNING
 		}
 		state sPlaceBall {
-			entry nodeStatus = NODE_STATUS::RUNNING; runningStm = "sPlaceBall"
+			entry nodeStatus = NODE_STATUS::RUNNING
 		}
 		state sMoveAwayFromBall {
-			entry nodeStatus = NODE_STATUS::RUNNING; runningStm = "sMoveAwayFromBalls"
+			entry nodeStatus = NODE_STATUS::RUNNING
 		}
 		final sFinal
 		

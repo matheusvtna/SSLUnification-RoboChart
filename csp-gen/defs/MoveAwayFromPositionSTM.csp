@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202306261132
--- Automatically generated on 06-11-2023 21:00:32
+-- Automatically generated on 06-11-2023 22:05:19
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -19,8 +19,8 @@ exports
 	datatype NIDS = 
 	              NID_sInitial|
 	              NID_sFinal|
-	              NID_sStart|
-	              NID_sMoveAway
+	              NID_sWaitStart|
+	              NID_sRun
 	
 	channel internal__ : NIDS
 	
@@ -50,14 +50,14 @@ exports
 	enterSS = {|
 	sInitial::enter,
 	sFinal::enter,
-	sStart::enter,
-	sMoveAway::enter
+	sWaitStart::enter,
+	sRun::enter
 	|}
 	
 	enteredSS = 	{|
 	sFinal::entered,
-	sStart::entered,
-	sMoveAway::entered
+	sWaitStart::entered,
+	sRun::entered
 	|}
 	
 	internal_events = union(enteredSS,union(enterSS,{|interrupt,exited|}))
@@ -133,8 +133,8 @@ exports
 	
 	
 	----------------------------------------------------------------------
-	-- State: sStart
-	module sStart
+	-- State: sWaitStart
+	module sWaitStart
 	
 	enterSS = {}
 	
@@ -201,13 +201,18 @@ exports
 	
 	
 	----------------------------------------------------------------------
-	-- State: sMoveAway
-	module sMoveAway
+	-- State: sRun
+	module sRun
 	
-	enterSS = {}
-	
-	enteredSS = {}
-	
+	enterSS = 
+			{|			sInitial::enter,
+				sFinal::enter,
+				sMoveAway::enter
+			|}
+	enteredSS = 
+			{|			sFinal::entered,
+				sMoveAway::entered
+			|}
 	exports
 	
 		--  Declarations
@@ -216,9 +221,141 @@ exports
 		channel enteredL, enteredR
 		
 						
+		-- declaring identifiers of transitions
+		datatype NIDS = 
+		              NID_sInitial|
+		              NID_sFinal|
+		              NID_sMoveAway
+		
+		channel internal__ : NIDS
+		channel startMoveAwayFromPosition__: NIDS.InOut
+		channel stopMoveAwayFromPosition__: NIDS.InOut
 		
 		--	Nodes
 		-- declaring all nodes
+		
+		----------------------------------------------------------------------
+		-- Initial: sInitial
+		module sInitial
+		exports
+		
+			channel enter, interrupt
+			
+			D__(id__,
+					    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
+				dbisim(let
+					Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+					
+					Termination = terminate -> SKIP
+					
+					Active 		= share__choice(interrupt -> SKIP) ; Inactive
+				within
+					Inactive [| {terminate} |> SKIP)
+			
+			VS_O__(id__,
+					    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = D__(id__,
+					    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
+		
+		endmodule
+		----------------------------------------------------------------------
+		
+		
+		----------------------------------------------------------------------
+		-- Final state: sFinal
+		module sFinal
+		
+		exports
+		
+			channel enter, entered, interrupt
+			channel enteredL, enteredR
+			
+			--	Rule: behaviours(Node)
+			D__(id__,
+					    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
+				dbisim(let
+					Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Entering
+					
+					Entering 	= entered -> SKIP ; Active
+					Active		= share__choice(terminate -> SKIP [] interrupt -> SKIP) ; Interrupted
+					Interrupted	= share__choice(exit -> exited -> Inactive)
+				within
+					Inactive [| {terminate} |> SKIP)
+				
+			VS_O__(id__,
+					    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = D__(id__,
+					    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
+		
+		endmodule
+		----------------------------------------------------------------------
+		
+		
+		----------------------------------------------------------------------
+		-- State: sMoveAway
+		module sMoveAway
+		
+		enterSS = {}
+		
+		enteredSS = {}
+		
+		exports
+		
+			--  Declarations
+			
+			channel enter, entered, interrupt
+			channel enteredL, enteredR
+			
+							
+			
+			--	Nodes
+			-- declaring all nodes
+			
+			
+			--	Rule: behaviours(Node)
+			--  Note that FDR has problems with efficiently compiling the process below
+			-- 	if using a different recursion pattern.
+			D__(id__,
+					    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
+			dbisim(let
+				-- IMPLEMENTATION NOTE: 
+				-- The following should be defined as: Inactive = share__choice(Activation [] Termination),
+				-- however FDR struggles with that form in certain cases. So we use the exception operator
+				-- instead to 'terminate'.
+				
+				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+				
+				Termination = terminate -> SKIP
+				
+				Active 		= share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; 
+						 	  Behaviour ; 
+						 	  share__choice(exit -> SKIP) ; SKIP ; 
+						 	  share__choice(exited -> SKIP) ; Inactive
+			
+				Behaviour 	= entered -> During
+				During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+			within
+				Inactive [| {terminate} |> SKIP)
+				
+			VS_O__(id__,
+					    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
+			dbisim(let
+				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+				
+				Termination = terminate -> SKIP
+				
+				Active 		= share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; 
+						 	  Behaviour ; 
+						 	  share__choice(exit -> SKIP) ; SKIP ; 
+						 	  share__choice(exited -> SKIP) ; Inactive
+			
+				Behaviour 	= entered -> During
+				During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+			within
+				Inactive [| {terminate} |> SKIP)
+			
+		
+		endmodule
+		----------------------------------------------------------------------
+		
 		
 		
 		--	Rule: behaviours(Node)
@@ -236,13 +373,88 @@ exports
 			
 			Termination = terminate -> SKIP
 			
-			Active 		= share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; 
+			Active 		= SKIP ; 
 					 	  Behaviour ; 
 					 	  share__choice(exit -> SKIP) ; SKIP ; 
 					 	  share__choice(exited -> SKIP) ; Inactive
 		
-			Behaviour 	= entered -> During
-			During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+		
+			Behaviour 	= dbisim(
+				((
+				 (((let
+				 	-- IMPLEMENTATION NOTE:
+				 	-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
+				 	-- modules for defining the semantics of each node.
+				 	enterSS = {|
+				 	sInitial::enter,
+				 	sFinal::enter,
+				 	sMoveAway::enter
+				 	|}
+				 	hideSet = union(enterSS,{|exit,exited,internal__|})
+				 within 
+				 	((let
+				 		-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
+				 		-- because CSPM modules are used for the semantics of Node.
+				 		flowevts = union(enterSS,{|exit,exited,interrupt|})
+				 		transSync = {|internal__.NID_sInitial,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway|}
+				 	within
+				 		((
+				 		 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
+				 		   sInitial::D__(id__,
+				 		   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
+				 		   [| { share__, terminate } |] (
+				 		   sFinal::D__(id__,
+				 		   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
+				 		   [| { share__, terminate } |] (
+				 		   sMoveAway::D__(id__,
+				 		   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
+				 		   )
+				 		   )
+				 		 )
+				 		 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+				 		 [[sMoveAway::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway|}]]
+				 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
+				 		 )
+				 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+				 		  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
+				 		 )
+				 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+				 		 			,setL_robotIsFarEnoughFromPosition
+				 		|}) |]
+				 		 ((sInitial::enter -> Transitions(id__,
+				 		 		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
+				 		  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition |} ]]
+				 		 )
+				 		)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+				 		)
+				 	)
+				 	 \ hideSet)
+				 	[[
+				 		startMoveAwayFromPosition__.x____ <- startMoveAwayFromPosition,
+				 		stopMoveAwayFromPosition__.x____ <- stopMoveAwayFromPosition
+				 		| x____ <- NIDS
+				 	]]
+				 )
+				 )
+				  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotIsFarEnoughFromPosition |} ]] 
+				  [[set_nodeStatus <- setL_nodeStatus,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
+				 )
+				 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+				 			,setL_nodeStatus
+				 			,setL_robotIsFarEnoughFromPosition
+				 			,setR_nodeStatus
+				 			 			,setR_robotIsFarEnoughFromPosition
+				 			|}) |]
+				 ((During)
+				  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotIsFarEnoughFromPosition |} ]]
+				  [[set_nodeStatus <- setR_nodeStatus,set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition]]
+				 )
+				)[[setL_nodeStatus <- set_nodeStatus,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+				 [[setR_nodeStatus <- set_nodeStatus,setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+				)\union(enteredSS,{terminate}) 
+			)
+			During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
+					 	  ; entered -> ((CRUN(enteredSS) ||| SKIP ; SStop) /\ interrupt -> share__choice(terminate -> SKIP))
 		within
 			Inactive [| {terminate} |> SKIP)
 			
@@ -253,15 +465,110 @@ exports
 			
 			Termination = terminate -> SKIP
 			
-			Active 		= share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; 
+			Active 		= SKIP ; 
 					 	  Behaviour ; 
 					 	  share__choice(exit -> SKIP) ; SKIP ; 
 					 	  share__choice(exited -> SKIP) ; Inactive
 		
-			Behaviour 	= entered -> During
-			During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+		
+			Behaviour 	= dbisim(
+				((
+				 (((let
+				 	-- IMPLEMENTATION NOTE:
+				 	-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
+				 	-- modules for defining the semantics of each node.
+				 	enterSS = {|
+				 	sInitial::enter,
+				 	sFinal::enter,
+				 	sMoveAway::enter
+				 	|}
+				 	hideSet = union(enterSS,{|exit,exited,internal__|})
+				 within 
+				 	((let
+				 		-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
+				 		-- because CSPM modules are used for the semantics of Node.
+				 		flowevts = union(enterSS,{|exit,exited,interrupt|})
+				 		transSync = {|internal__.NID_sInitial,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway|}
+				 	within
+				 		((
+				 		 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
+				 		   sInitial::VS_O__(id__,
+				 		   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
+				 		   [| { share__, terminate } |] (
+				 		   sFinal::VS_O__(id__,
+				 		   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
+				 		   [| { share__, terminate } |] (
+				 		   sMoveAway::VS_O__(id__,
+				 		   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
+				 		   )
+				 		   )
+				 		 )
+				 		 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+				 		 [[sMoveAway::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway|}]]
+				 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
+				 		 )
+				 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+				 		  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
+				 		 )
+				 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+				 		 			,setL_robotIsFarEnoughFromPosition
+				 		|}) |]
+				 		 ((sInitial::enter -> Transitions(id__,
+				 		 		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
+				 		  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition |} ]]
+				 		 )
+				 		)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+				 		)
+				 	)
+				 	 \ hideSet)
+				 	[[
+				 		startMoveAwayFromPosition__.x____ <- startMoveAwayFromPosition,
+				 		stopMoveAwayFromPosition__.x____ <- stopMoveAwayFromPosition
+				 		| x____ <- NIDS
+				 	]]
+				 )
+				 )
+				  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotIsFarEnoughFromPosition |} ]] 
+				  [[set_nodeStatus <- setL_nodeStatus,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
+				 )
+				 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+				 			,setL_nodeStatus
+				 			,setL_robotIsFarEnoughFromPosition
+				 			,setR_nodeStatus
+				 			 			,setR_robotIsFarEnoughFromPosition
+				 			|}) |]
+				 ((During)
+				  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotIsFarEnoughFromPosition |} ]]
+				  [[set_nodeStatus <- setR_nodeStatus,set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition]]
+				 )
+				)[[setL_nodeStatus <- set_nodeStatus,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+				 [[setR_nodeStatus <- set_nodeStatus,setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+				)\{terminate} 
+			)
+			During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
+					 	  ; entered -> ((CRUN(enteredSS) ||| SKIP ; SStop) /\ interrupt -> share__choice(terminate -> SKIP))
 		within
 			Inactive [| {terminate} |> SKIP)
+		
+		Transitions(id__,
+				    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = ((let
+			Trans = share__choice(get_robotIsFarEnoughFromPosition?robotIsFarEnoughFromPosition -> (
+				((share__ -> SKIP
+				 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sMoveAway::enter -> SKIP))))
+				 	 [] dbisim((robotIsFarEnoughFromPosition)&(internal__!NID_sMoveAway -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
+				 	 [] dbisim((true)&(internal__!NID_sMoveAway -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; sMoveAway::enter -> SKIP)))
+				 	 [] dbisim((true)&(internal__!NID_sMoveAway -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_FAILED -> SKIP))) ; sFinal::enter -> SKIP)))
+				 ) ; Trans)
+				 []
+				 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
+				 []
+				 terminate -> SKIP
+			)
+			)
+		within
+			Trans
+		)
+		)
 		
 	
 	endmodule
@@ -316,21 +623,17 @@ exports
 	-- Transitions
 	Transitions(id__,
 			    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = ((let
-		Trans = share__choice(get_robotIsFarEnoughFromPosition?robotIsFarEnoughFromPosition -> (
+		Trans = (
 			((share__ -> SKIP
-			 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sStart::enter -> SKIP))))
-			 	 [] dbisim((true)&(startMoveAwayFromPosition__!NID_sStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; sMoveAway::enter -> SKIP)))
-			 	 [] dbisim((robotIsFarEnoughFromPosition)&(internal__!NID_sMoveAway -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sStart::enter -> SKIP)))
-			 	 [] dbisim((true)&(internal__!NID_sMoveAway -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; sMoveAway::enter -> SKIP)))
-			 	 [] dbisim((true)&(internal__!NID_sMoveAway -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_FAILED -> SKIP))) ; sStart::enter -> SKIP)))
-			 	 [] dbisim((true)&(stopMoveAwayFromPosition__!NID_sMoveAway.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
-			 	 [] dbisim((true)&(stopMoveAwayFromPosition__!NID_sStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
+			 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sRun::enter -> SKIP))))
+			 	 [] dbisim((true)&(startMoveAwayFromPosition__!NID_sWaitStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; sRun::enter -> SKIP)))
+			 	 [] dbisim((true)&(stopMoveAwayFromPosition__!NID_sRun.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
+			 	 [] dbisim((true)&(stopMoveAwayFromPosition__!NID_sWaitStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
 			 ) ; Trans)
 			 []
 			 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
 			 []
 			 terminate -> SKIP
-		)
 		)
 	within
 		Trans
@@ -354,8 +657,8 @@ exports
 				enterSS = {|
 				sInitial::enter,
 				sFinal::enter,
-				sStart::enter,
-				sMoveAway::enter
+				sWaitStart::enter,
+				sRun::enter
 				|}
 				hideSet = union(enterSS,{|exit,exited,internal__|})
 			within 
@@ -363,7 +666,7 @@ exports
 					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 					-- because CSPM modules are used for the semantics of Node.
 					flowevts = union(enterSS,{|exit,exited,interrupt|})
-					transSync = {|internal__.NID_sInitial,startMoveAwayFromPosition__.NID_sStart.in,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway,stopMoveAwayFromPosition__.NID_sMoveAway.in,stopMoveAwayFromPosition__.NID_sStart.in|}
+					transSync = {|internal__.NID_sInitial,startMoveAwayFromPosition__.NID_sWaitStart.in,stopMoveAwayFromPosition__.NID_sRun.in,stopMoveAwayFromPosition__.NID_sWaitStart.in|}
 				within
 					((
 					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
@@ -373,31 +676,29 @@ exports
 					   sFinal::D__(id__,
 					   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 					   [| { share__, terminate } |] (
-					   sStart::D__(id__,
+					   sWaitStart::D__(id__,
 					   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 					   [| { share__, terminate } |] (
-					   sMoveAway::D__(id__,
+					   sRun::D__(id__,
 					   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 					   )
 					   )
 					   )
 					 )
 					 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
-					 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startMoveAwayFromPosition__.NID_sStart.in,stopMoveAwayFromPosition__.NID_sStart.in|}]]
-					 [[sMoveAway::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway,stopMoveAwayFromPosition__.NID_sMoveAway.in|}]]
+					 [[sWaitStart::interrupt <- x__ | x__ <- {|interrupt,startMoveAwayFromPosition__.NID_sWaitStart.in,stopMoveAwayFromPosition__.NID_sWaitStart.in|}]]
+					 [[sRun::interrupt <- x__ | x__ <- {|interrupt,stopMoveAwayFromPosition__.NID_sRun.in|}]]
 					 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 					 )
 					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-					  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
 					 )
 					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-					 			,setL_robotIsFarEnoughFromPosition
 					|}) |]
 					 ((sInitial::enter -> Transitions(id__,
 					 		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-					  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition |} ]]
+					  [[ share__ <- x__ | x__ <- {| share__ |} ]]
 					 )
-					)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+					)
 					)
 				)
 				 \ hideSet)
@@ -459,8 +760,8 @@ exports
 				enterSS = {|
 				sInitial::enter,
 				sFinal::enter,
-				sStart::enter,
-				sMoveAway::enter
+				sWaitStart::enter,
+				sRun::enter
 				|}
 				hideSet = union(enterSS,{|exit,exited,internal__|})
 			within 
@@ -468,7 +769,7 @@ exports
 					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 					-- because CSPM modules are used for the semantics of Node.
 					flowevts = union(enterSS,{|exit,exited,interrupt|})
-					transSync = {|internal__.NID_sInitial,startMoveAwayFromPosition__.NID_sStart.in,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway,stopMoveAwayFromPosition__.NID_sMoveAway.in,stopMoveAwayFromPosition__.NID_sStart.in|}
+					transSync = {|internal__.NID_sInitial,startMoveAwayFromPosition__.NID_sWaitStart.in,stopMoveAwayFromPosition__.NID_sRun.in,stopMoveAwayFromPosition__.NID_sWaitStart.in|}
 				within
 					((
 					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
@@ -478,31 +779,29 @@ exports
 					   sFinal::VS_O__(id__,
 					   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 					   [| { share__, terminate } |] (
-					   sStart::VS_O__(id__,
+					   sWaitStart::VS_O__(id__,
 					   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 					   [| { share__, terminate } |] (
-					   sMoveAway::VS_O__(id__,
+					   sRun::VS_O__(id__,
 					   		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
 					   )
 					   )
 					   )
 					 )
 					 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
-					 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startMoveAwayFromPosition__.NID_sStart.in,stopMoveAwayFromPosition__.NID_sStart.in|}]]
-					 [[sMoveAway::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sMoveAway,internal__.NID_sMoveAway,internal__.NID_sMoveAway,stopMoveAwayFromPosition__.NID_sMoveAway.in|}]]
+					 [[sWaitStart::interrupt <- x__ | x__ <- {|interrupt,startMoveAwayFromPosition__.NID_sWaitStart.in,stopMoveAwayFromPosition__.NID_sWaitStart.in|}]]
+					 [[sRun::interrupt <- x__ | x__ <- {|interrupt,stopMoveAwayFromPosition__.NID_sRun.in|}]]
 					 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 					 )
 					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-					  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
 					 )
 					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-					 			,setL_robotIsFarEnoughFromPosition
 					|}) |]
 					 ((sInitial::enter -> Transitions(id__,
 					 		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-					  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition |} ]]
+					  [[ share__ <- x__ | x__ <- {| share__ |} ]]
 					 )
-					)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+					)
 					)
 				)
 				 \ hideSet)

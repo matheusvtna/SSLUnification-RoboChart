@@ -28,53 +28,67 @@ stm ApproachBallSTM {
 	initial sInitial
 	final sFinal
 	
-	state sStart {}
-	state sApproach {
-		entry nodeStatus = NODE_STATUS::RUNNING
-	}
+	state sWaitStart { }
+	
+	state sRun {
+		initial sInitial
+		final sFinal
+		
+		state sApproach {
+			entry nodeStatus = NODE_STATUS::RUNNING
+		}
 
 	// Transitions.
-	transition start {
+		transition start {
+			from sInitial
+			to sApproach
+		}
+		
+		transition success {		
+			from sApproach
+			to sFinal
+			condition allyHasBall
+			action nodeStatus = NODE_STATUS::DONE
+		}
+		
+		transition fail {
+			from sApproach
+			to sFinal
+			condition (not allyIsBehindBall \/ not allyIsCloseToBall)
+			action nodeStatus = NODE_STATUS::FAILED
+		}
+		
+		transition recalculate {
+			from sApproach
+			to sApproach
+			condition (not allyHasBall) /\ not (not allyIsBehindBall \/ not allyIsCloseToBall)
+			action nodeStatus = NODE_STATUS::RUNNING
+		}
+		
+		
+	} 
+	
+	transition waitStart {
 		from sInitial
-		to sStart
+		to sWaitStart
 	}
 	
 	transition approachBall {
-		from sStart
-		to sApproach
+		from sWaitStart
+		to sRun
 		trigger startApproachBall
 	}
 	
-	transition success {		
-		from sApproach
-		to sStart
-		condition allyHasBall
-		action nodeStatus = NODE_STATUS::DONE
-	}
-	
-	transition recalculate {
-		from sApproach
-		to sApproach
-		condition (not allyHasBall) /\ not (not allyIsBehindBall \/ not allyIsCloseToBall)
-		action nodeStatus = NODE_STATUS::RUNNING
-	}
-	
-	transition fail {
-		from sApproach
-		to sStart
-		condition (not allyIsBehindBall \/ not allyIsCloseToBall)
-		action nodeStatus = NODE_STATUS::FAILED
-	}
 	
 	transition abortFromRunning {		
-		from sApproach
+		from sRun
 		to sFinal
 		trigger stopApproachBall
 		action nodeStatus = NODE_STATUS::ABORTED
 	}
 
 	transition abortFromStart {
-		from sStart
+		from sWaitStart
 		to sFinal
 		trigger stopApproachBall
 		action nodeStatus = NODE_STATUS :: ABORTED
