@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 24-09-2023 21:46:59
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 06-11-2023 21:05:40
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -21,6 +21,7 @@ exports
 	-- declaring identifiers of transitions
 	datatype NIDS = 
 	              NID_sInitial|
+	              NID_sFinal|
 	              NID_sStart|
 	              NID_sApproach
 	
@@ -53,11 +54,13 @@ exports
 	
 	enterSS = {|
 	sInitial::enter,
+	sFinal::enter,
 	sStart::enter,
 	sApproach::enter
 	|}
 	
 	enteredSS = 	{|
+	sFinal::entered,
 	sStart::entered,
 	sApproach::entered
 	|}
@@ -96,6 +99,32 @@ exports
 			within
 				Inactive [| {terminate} |> SKIP)
 		
+		VS_O__(id__) = D__(id__)
+	
+	endmodule
+	----------------------------------------------------------------------
+	
+	
+	----------------------------------------------------------------------
+	-- Final state: sFinal
+	module sFinal
+	
+	exports
+	
+		channel enter, entered, interrupt
+		channel enteredL, enteredR
+		
+		--	Rule: behaviours(Node)
+		D__(id__) = 
+			dbisim(let
+				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Entering
+				
+				Entering 	= entered -> SKIP ; Active
+				Active		= share__choice(terminate -> SKIP [] interrupt -> SKIP) ; Interrupted
+				Interrupted	= share__choice(exit -> exited -> Inactive)
+			within
+				Inactive [| {terminate} |> SKIP)
+			
 		VS_O__(id__) = D__(id__)
 	
 	endmodule
@@ -275,14 +304,15 @@ exports
 	
 	-- Transitions
 	Transitions(id__) = ((let
-		Trans = share__choice(get_allyHasBall?allyHasBall -> get_allyIsCloseToBall?allyIsCloseToBall -> get_allyIsBehindBall?allyIsBehindBall -> (
+		Trans = share__choice(get_allyIsCloseToBall?allyIsCloseToBall -> get_allyHasBall?allyHasBall -> get_allyIsBehindBall?allyIsBehindBall -> (
 			((share__ -> SKIP
 			 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sStart::enter -> SKIP))))
 			 	 [] dbisim((true)&(startApproachBall__!NID_sStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; sApproach::enter -> SKIP)))
 			 	 [] dbisim((allyHasBall)&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sStart::enter -> SKIP)))
 			 	 [] dbisim(((((not (allyHasBall))) and (not ((((not (allyIsBehindBall)) or (not (allyIsCloseToBall))))))))&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; sApproach::enter -> SKIP)))
 			 	 [] dbisim(((((not (allyIsBehindBall)) or (not (allyIsCloseToBall)))))&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_FAILED -> SKIP))) ; sStart::enter -> SKIP)))
-			 	 [] dbisim((true)&(stopApproachBall__!NID_sApproach.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sStart::enter -> SKIP)))
+			 	 [] dbisim((true)&(stopApproachBall__!NID_sApproach.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
+			 	 [] dbisim((true)&(stopApproachBall__!NID_sStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
 			 ) ; Trans)
 			 []
 			 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
@@ -302,7 +332,7 @@ exports
 	MachineBody(id__) = 
 		dbisim((
 		let
-			finalNodesEntered = {||}
+			finalNodesEntered = {|sFinal::entered|}
 		within
 			((let
 				-- IMPLEMENTATION NOTE:
@@ -310,6 +340,7 @@ exports
 				-- modules for defining the semantics of each node.
 				enterSS = {|
 				sInitial::enter,
+				sFinal::enter,
 				sStart::enter,
 				sApproach::enter
 				|}
@@ -319,34 +350,38 @@ exports
 					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 					-- because CSPM modules are used for the semantics of Node.
 					flowevts = union(enterSS,{|exit,exited,interrupt|})
-					transSync = {|internal__.NID_sInitial,startApproachBall__.NID_sStart.in,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach,stopApproachBall__.NID_sApproach.in|}
+					transSync = {|internal__.NID_sInitial,startApproachBall__.NID_sStart.in,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach,stopApproachBall__.NID_sApproach.in,stopApproachBall__.NID_sStart.in|}
 				within
 					((
 					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
 					   sInitial::D__(id__)
+					   [| { share__, terminate } |] (
+					   sFinal::D__(id__)
 					   [| { share__, terminate } |] (
 					   sStart::D__(id__)
 					   [| { share__, terminate } |] (
 					   sApproach::D__(id__)
 					   )
 					   )
+					   )
 					 )
-					 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startApproachBall__.NID_sStart.in|}]]
+					 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+					 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startApproachBall__.NID_sStart.in,stopApproachBall__.NID_sStart.in|}]]
 					 [[sApproach::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach,stopApproachBall__.NID_sApproach.in|}]]
 					 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 					 )
 					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-					  [[set_allyHasBall <- setL_allyHasBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+					  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
 					 )
 					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-					 			,setL_allyHasBall
 					 			,setL_allyIsCloseToBall
+					 			,setL_allyHasBall
 					 			,setL_allyIsBehindBall
 					|}) |]
 					 ((sInitial::enter -> Transitions(id__))
-					  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_allyIsCloseToBall,setL_allyIsBehindBall |} ]]
+					  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyHasBall,setL_allyIsBehindBall |} ]]
 					 )
-					)[[setL_allyHasBall <- set_allyHasBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+					)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
 					)
 				)
 				 \ hideSet)
@@ -401,7 +436,7 @@ exports
 	MachineBody_VS_O(id__) = 
 		dbisim((
 		let
-			finalNodesEntered = {||}
+			finalNodesEntered = {|sFinal::entered|}
 		within
 			((let
 				-- IMPLEMENTATION NOTE:
@@ -409,6 +444,7 @@ exports
 				-- modules for defining the semantics of each node.
 				enterSS = {|
 				sInitial::enter,
+				sFinal::enter,
 				sStart::enter,
 				sApproach::enter
 				|}
@@ -418,34 +454,38 @@ exports
 					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 					-- because CSPM modules are used for the semantics of Node.
 					flowevts = union(enterSS,{|exit,exited,interrupt|})
-					transSync = {|internal__.NID_sInitial,startApproachBall__.NID_sStart.in,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach,stopApproachBall__.NID_sApproach.in|}
+					transSync = {|internal__.NID_sInitial,startApproachBall__.NID_sStart.in,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach,stopApproachBall__.NID_sApproach.in,stopApproachBall__.NID_sStart.in|}
 				within
 					((
 					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
 					   sInitial::VS_O__(id__)
+					   [| { share__, terminate } |] (
+					   sFinal::VS_O__(id__)
 					   [| { share__, terminate } |] (
 					   sStart::VS_O__(id__)
 					   [| { share__, terminate } |] (
 					   sApproach::VS_O__(id__)
 					   )
 					   )
+					   )
 					 )
-					 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startApproachBall__.NID_sStart.in|}]]
+					 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+					 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startApproachBall__.NID_sStart.in,stopApproachBall__.NID_sStart.in|}]]
 					 [[sApproach::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sApproach,internal__.NID_sApproach,internal__.NID_sApproach,stopApproachBall__.NID_sApproach.in|}]]
 					 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 					 )
 					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-					  [[set_allyHasBall <- setL_allyHasBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+					  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
 					 )
 					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-					 			,setL_allyHasBall
 					 			,setL_allyIsCloseToBall
+					 			,setL_allyHasBall
 					 			,setL_allyIsBehindBall
 					|}) |]
 					 ((sInitial::enter -> Transitions(id__))
-					  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_allyIsCloseToBall,setL_allyIsBehindBall |} ]]
+					  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyHasBall,setL_allyIsBehindBall |} ]]
 					 )
-					)[[setL_allyHasBall <- set_allyHasBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+					)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
 					)
 				)
 				 \ hideSet)

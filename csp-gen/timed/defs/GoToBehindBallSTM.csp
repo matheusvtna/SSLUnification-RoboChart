@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 24-09-2023 21:46:59
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 06-11-2023 20:59:28
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -18,6 +18,7 @@ exports
 	-- declaring identifiers of transitions
 	datatype NIDS = 
 	              NID_sInitial|
+	              NID_sFinal|
 	              NID_sStart|
 	              NID_sGoToBehindBall
 	
@@ -50,11 +51,13 @@ exports
 	
 	enterSS = {|
 	sInitial::enter,
+	sFinal::enter,
 	sStart::enter,
 	sGoToBehindBall::enter
 	|}
 	
 	enteredSS = 	{|
+	sFinal::entered,
 	sStart::entered,
 	sGoToBehindBall::entered
 	|}
@@ -78,11 +81,12 @@ exports
 	localClockResets = {||}
 	
 	
-	channel get_CLID_sStart : core_clock_type 
 	channel get_CLID_sGoToBehindBall : core_clock_type 
+	channel get_CLID_sFinal : core_clock_type 
+	channel get_CLID_sStart : core_clock_type 
 	--channel increment__
 	
-	CLID_sStart_clock_type(id__) = 
+	CLID_sGoToBehindBall_clock_type(id__) = 
 		let
 			max = (clock_type_max(Union({
 	{}
@@ -91,7 +95,16 @@ exports
 	within
 		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
-	CLID_sGoToBehindBall_clock_type(id__) = 
+	CLID_sFinal_clock_type(id__) = 
+		let
+			max = (clock_type_max(Union({
+	{}
+	}))+1)
+		ctype = {0..max}
+	within
+		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
+	
+	CLID_sStart_clock_type(id__) = 
 		let
 			max = (clock_type_max(Union({
 	{}
@@ -123,6 +136,34 @@ exports
 					within
 						Inactive [| {terminate} |> SKIP)
 				
+				VS_O__(id__) = D__(id__)
+			}
+		
+		endmodule
+		----------------------------------------------------------------------
+		
+		
+		----------------------------------------------------------------------
+		-- Final state: sFinal
+		module sFinal
+		
+		exports
+		
+			channel enter, entered, interrupt
+			channel enteredL, enteredR
+			
+			Timed(OneStep) {
+				--	Rule: behaviours(Node)
+				D__(id__) = 
+					dbisim(let
+						Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Entering
+						
+						Entering 	= entered -> SKIP ; Active
+						Active		= share__choice(terminate -> SKIP [] interrupt -> SKIP) ; Interrupted
+						Interrupted	= share__choice(exit -> exited -> Inactive)
+					within
+						Inactive [| {terminate} |> SKIP)
+					
 				VS_O__(id__) = D__(id__)
 			}
 		
@@ -328,14 +369,15 @@ exports
 		
 		-- Transitions
 		Transitions(id__) = ((let
-			Trans = share__choice(get_allyIsCloseToBall?allyIsCloseToBall -> get_allyIsBehindBall?allyIsBehindBall -> get_allyIsPushingBallWithHisBack?allyIsPushingBallWithHisBack -> TimeOut_1(
+			Trans = share__choice(get_allyIsCloseToBall?allyIsCloseToBall -> get_allyIsPushingBallWithHisBack?allyIsPushingBallWithHisBack -> get_allyIsBehindBall?allyIsBehindBall -> TimeOut_1(
 				 (share__ -> SKIP
 				 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sStart::enter -> SKIP))))
 				 [] dbisim((true)&(startGoToBehindBall__!NID_sStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; sGoToBehindBall::enter -> SKIP)))
 				 [] dbisim((((allyIsBehindBall and allyIsCloseToBall)))&(internal__!NID_sGoToBehindBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sStart::enter -> SKIP)))
 				 [] dbisim((((not (((allyIsBehindBall and allyIsCloseToBall)))) and (not (allyIsPushingBallWithHisBack))))&(internal__!NID_sGoToBehindBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; sGoToBehindBall::enter -> SKIP)))
 				 [] dbisim((allyIsPushingBallWithHisBack)&(internal__!NID_sGoToBehindBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_FAILED -> SKIP))) ; sStart::enter -> SKIP)))
-				 [] dbisim((true)&(stopGoToBehindBall__!NID_sGoToBehindBall.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sStart::enter -> SKIP)))
+				 [] dbisim((true)&(stopGoToBehindBall__!NID_sGoToBehindBall.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
+				 [] dbisim((true)&(stopGoToBehindBall__!NID_sStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP))) ; sFinal::enter -> SKIP)))
 				 []
 				 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
 				 []
@@ -355,7 +397,7 @@ exports
 		MachineBody(id__) = 
 			dbisim((
 			let
-				finalNodesEntered = {||}
+				finalNodesEntered = {|sFinal::entered|}
 			within
 				(dbisim((dbisim((let
 					-- IMPLEMENTATION NOTE:
@@ -363,6 +405,7 @@ exports
 					-- modules for defining the semantics of each node.
 					enterSS = {|
 					sInitial::enter,
+					sFinal::enter,
 					sStart::enter,
 					sGoToBehindBall::enter
 					|}
@@ -372,34 +415,38 @@ exports
 						-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 						-- because CSPM modules are used for the semantics of Node.
 						flowevts = union(enterSS,{|exit,exited,interrupt|})
-						transSync = {|internal__.NID_sInitial,startGoToBehindBall__.NID_sStart.in,internal__.NID_sGoToBehindBall,internal__.NID_sGoToBehindBall,internal__.NID_sGoToBehindBall,stopGoToBehindBall__.NID_sGoToBehindBall.in|}
+						transSync = {|internal__.NID_sInitial,startGoToBehindBall__.NID_sStart.in,internal__.NID_sGoToBehindBall,internal__.NID_sGoToBehindBall,internal__.NID_sGoToBehindBall,stopGoToBehindBall__.NID_sGoToBehindBall.in,stopGoToBehindBall__.NID_sStart.in|}
 					within
 						((
 						 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
 						   sInitial::D__(id__)
+						   [| { share__, terminate } |] (
+						   sFinal::D__(id__)
 						   [| { share__, terminate } |] (
 						   sStart::D__(id__)
 						   [| { share__, terminate } |] (
 						   sGoToBehindBall::D__(id__)
 						   )
 						   )
+						   )
 						 )
-						 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startGoToBehindBall__.NID_sStart.in|}]]
+						 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+						 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startGoToBehindBall__.NID_sStart.in,stopGoToBehindBall__.NID_sStart.in|}]]
 						 [[sGoToBehindBall::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sGoToBehindBall,internal__.NID_sGoToBehindBall,internal__.NID_sGoToBehindBall,stopGoToBehindBall__.NID_sGoToBehindBall.in|}]]
 						 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 )
 						  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-						  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+						  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setL_allyIsBehindBall]]
 						 )
 						 [| union(union(union(flowevts,transSync),{terminate}),{|share__
 						 			,setL_allyIsCloseToBall
-						 			,setL_allyIsBehindBall
 						 			,setL_allyIsPushingBallWithHisBack
+						 			,setL_allyIsBehindBall
 						|}) |]
 						 ((sInitial::enter -> Transitions(id__))
-						  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyIsBehindBall,setL_allyIsPushingBallWithHisBack |} ]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack,setL_allyIsBehindBall |} ]]
 						 )
-						)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+						)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsBehindBall <- set_allyIsBehindBall]]
 						)
 					)
 					 \ hideSet)
@@ -419,7 +466,7 @@ exports
 		
 		Behaviour(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sStart,sStart::entered,get_CLID_sGoToBehindBall,sGoToBehindBall::entered|}
+				stateClockSync = {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,get_CLID_sStart,sStart::entered|}
 			 within
 				(MachineBody(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ union(stateClockSync,enteredSS)
 			)
@@ -427,20 +474,20 @@ exports
 		
 		IteratedBehaviour(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sStart,sStart::entered,get_CLID_sGoToBehindBall,sGoToBehindBall::entered|}
+				stateClockSync = {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,get_CLID_sStart,sStart::entered|}
 			 within
 				(dbisim(
 					sbisim(
 						dbisim(
 							sbisim(
 								MachineBody(id__)
-								[| {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,terminate|} |]
-								dbisim(Clock_CLID_sGoToBehindBall(id__,0))
-							)\{|get_CLID_sGoToBehindBall|}
+								[| {|get_CLID_sStart,sStart::entered,terminate|} |]
+								dbisim(Clock_CLID_sStart(id__,0))
+							)\{|get_CLID_sStart|}
 						)
-						[| {|get_CLID_sStart,sStart::entered,terminate|} |]
-						dbisim(Clock_CLID_sStart(id__,0))
-					)\{|get_CLID_sStart|}
+						[| {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,terminate|} |]
+						dbisim(Clock_CLID_sGoToBehindBall(id__,0))
+					)\{|get_CLID_sGoToBehindBall|}
 				)
 				) \ union(stateClockSync,enteredSS)
 			)
@@ -486,7 +533,7 @@ exports
 		MachineBody_VS_O(id__) = 
 			dbisim((
 			let
-				finalNodesEntered = {||}
+				finalNodesEntered = {|sFinal::entered|}
 			within
 				(dbisim((dbisim((let
 					-- IMPLEMENTATION NOTE:
@@ -494,6 +541,7 @@ exports
 					-- modules for defining the semantics of each node.
 					enterSS = {|
 					sInitial::enter,
+					sFinal::enter,
 					sStart::enter,
 					sGoToBehindBall::enter
 					|}
@@ -503,34 +551,38 @@ exports
 						-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 						-- because CSPM modules are used for the semantics of Node.
 						flowevts = union(enterSS,{|exit,exited,interrupt|})
-						transSync = {|internal__.NID_sInitial,startGoToBehindBall__.NID_sStart.in,internal__.NID_sGoToBehindBall,internal__.NID_sGoToBehindBall,internal__.NID_sGoToBehindBall,stopGoToBehindBall__.NID_sGoToBehindBall.in|}
+						transSync = {|internal__.NID_sInitial,startGoToBehindBall__.NID_sStart.in,internal__.NID_sGoToBehindBall,internal__.NID_sGoToBehindBall,internal__.NID_sGoToBehindBall,stopGoToBehindBall__.NID_sGoToBehindBall.in,stopGoToBehindBall__.NID_sStart.in|}
 					within
 						((
 						 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
 						   sInitial::VS_O__(id__)
+						   [| { share__, terminate } |] (
+						   sFinal::VS_O__(id__)
 						   [| { share__, terminate } |] (
 						   sStart::VS_O__(id__)
 						   [| { share__, terminate } |] (
 						   sGoToBehindBall::VS_O__(id__)
 						   )
 						   )
+						   )
 						 )
-						 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startGoToBehindBall__.NID_sStart.in|}]]
+						 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+						 [[sStart::interrupt <- x__ | x__ <- {|interrupt,startGoToBehindBall__.NID_sStart.in,stopGoToBehindBall__.NID_sStart.in|}]]
 						 [[sGoToBehindBall::interrupt <- x__ | x__ <- {|interrupt,internal__.NID_sGoToBehindBall,internal__.NID_sGoToBehindBall,internal__.NID_sGoToBehindBall,stopGoToBehindBall__.NID_sGoToBehindBall.in|}]]
 						 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 )
 						  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-						  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+						  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setL_allyIsBehindBall]]
 						 )
 						 [| union(union(union(flowevts,transSync),{terminate}),{|share__
 						 			,setL_allyIsCloseToBall
-						 			,setL_allyIsBehindBall
 						 			,setL_allyIsPushingBallWithHisBack
+						 			,setL_allyIsBehindBall
 						|}) |]
 						 ((sInitial::enter -> Transitions(id__))
-						  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyIsBehindBall,setL_allyIsPushingBallWithHisBack |} ]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack,setL_allyIsBehindBall |} ]]
 						 )
-						)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+						)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsBehindBall <- set_allyIsBehindBall]]
 						)
 					)
 					 \ hideSet)
@@ -550,7 +602,7 @@ exports
 		
 		Behaviour_VS_O(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sStart,sStart::entered,get_CLID_sGoToBehindBall,sGoToBehindBall::entered|}
+				stateClockSync = {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,get_CLID_sStart,sStart::entered|}
 			 within
 				(MachineBody_VS_O(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ diff(union(stateClockSync,enteredSS),enteredSS)
 			)
@@ -558,20 +610,20 @@ exports
 		
 		IteratedBehaviour_VS_O(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sStart,sStart::entered,get_CLID_sGoToBehindBall,sGoToBehindBall::entered|}
+				stateClockSync = {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,get_CLID_sStart,sStart::entered|}
 			 within
 				(dbisim(
 					sbisim(
 						dbisim(
 							sbisim(
 								MachineBody_VS_O(id__)
-								[| {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,terminate|} |]
-								dbisim(Clock_CLID_sGoToBehindBall(id__,0))
-							)\{|get_CLID_sGoToBehindBall|}
+								[| {|get_CLID_sStart,sStart::entered,terminate|} |]
+								dbisim(Clock_CLID_sStart(id__,0))
+							)\{|get_CLID_sStart|}
 						)
-						[| {|get_CLID_sStart,sStart::entered,terminate|} |]
-						dbisim(Clock_CLID_sStart(id__,0))
-					)\{|get_CLID_sStart|}
+						[| {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,terminate|} |]
+						dbisim(Clock_CLID_sGoToBehindBall(id__,0))
+					)\{|get_CLID_sGoToBehindBall|}
 				)
 				) \ diff(union(stateClockSync,enteredSS),enteredSS)
 			)
@@ -663,13 +715,6 @@ exports
 		
 		clockSync = {||}
 		
-		Clock_CLID_sStart(id__,x__) = 
-			TimeOut_1(
-				sStart::entered -> Clock_CLID_sStart(id__,0)
-				[]
-				get_CLID_sStart!x__ -> Clock_CLID_sStart(id__,x__)
-				[]
-				terminate -> SKIP,Clock_CLID_sStart(id__,clock_type_plus(x__,1,CLID_sStart_clock_type(id__))))
 		Clock_CLID_sGoToBehindBall(id__,x__) = 
 			TimeOut_1(
 				sGoToBehindBall::entered -> Clock_CLID_sGoToBehindBall(id__,0)
@@ -677,13 +722,20 @@ exports
 				get_CLID_sGoToBehindBall!x__ -> Clock_CLID_sGoToBehindBall(id__,x__)
 				[]
 				terminate -> SKIP,Clock_CLID_sGoToBehindBall(id__,clock_type_plus(x__,1,CLID_sGoToBehindBall_clock_type(id__))))
+		Clock_CLID_sStart(id__,x__) = 
+			TimeOut_1(
+				sStart::entered -> Clock_CLID_sStart(id__,0)
+				[]
+				get_CLID_sStart!x__ -> Clock_CLID_sStart(id__,x__)
+				[]
+				terminate -> SKIP,Clock_CLID_sStart(id__,clock_type_plus(x__,1,CLID_sStart_clock_type(id__))))
 		
-		StateClocks(id__) = dbisim(Clock_CLID_sStart(id__,0))
+		StateClocks(id__) = dbisim(Clock_CLID_sGoToBehindBall(id__,0))
 		[| { terminate } |] (
-		dbisim(Clock_CLID_sGoToBehindBall(id__,0))
+		dbisim(Clock_CLID_sStart(id__,0))
 		)
 		
-		stateClockSync = {|get_CLID_sStart,sStart::entered,get_CLID_sGoToBehindBall,sGoToBehindBall::entered|}
+		stateClockSync = {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,get_CLID_sStart,sStart::entered|}
 		
 		-- Shared memory
 		-- Shared memory variables

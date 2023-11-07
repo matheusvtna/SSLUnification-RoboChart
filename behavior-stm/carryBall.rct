@@ -24,6 +24,7 @@ stm CarryBallSTM {
 	
 	// States.
 	initial sInitial
+	final sFinal
 	
 	state sStart { }
 	
@@ -64,10 +65,19 @@ stm CarryBallSTM {
 		action nodeStatus = NODE_STATUS::FAILED
 	}
 	
-	transition abort {		
+	transition abortFromCarryBall {		
 		from sCarryBall
-		to sStart
+		to sFinal
 		trigger stopCarryBall
 		action nodeStatus = NODE_STATUS::ABORTED
 	}
+	
+	
+	transition aborFromtStart {		
+		from sStart
+		to sFinal
+		trigger stopCarryBall
+		action nodeStatus = NODE_STATUS::ABORTED
+	}
+	
 }

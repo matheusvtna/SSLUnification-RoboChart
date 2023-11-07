@@ -28,6 +28,8 @@ stm GoToBehindBallSTM {
 
 	// States.
 	initial sInitial
+	final sFinal
+	
 	state sStart {}
 	state sGoToBehindBall {
 		entry nodeStatus = NODE_STATUS::RUNNING			
@@ -67,11 +69,21 @@ stm GoToBehindBallSTM {
 		action nodeStatus = NODE_STATUS::FAILED
 	}
 	
-	transition abort {		
+	transition abortFromRunning {		
 		from sGoToBehindBall
-		to sStart
+		to sFinal
 		trigger stopGoToBehindBall
 		action nodeStatus = NODE_STATUS::ABORTED
 	}
+	
+	transition abortFromStart {		
+		from sStart
+		to sFinal
+		trigger stopGoToBehindBall
+		action nodeStatus = NODE_STATUS::ABORTED
+	}
+	
+	
+	
 }	
 

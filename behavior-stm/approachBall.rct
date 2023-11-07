@@ -26,6 +26,8 @@ stm ApproachBallSTM {
 	
 	// States.
 	initial sInitial
+	final sFinal
+	
 	state sStart {}
 	state sApproach {
 		entry nodeStatus = NODE_STATUS::RUNNING
@@ -64,10 +66,18 @@ stm ApproachBallSTM {
 		action nodeStatus = NODE_STATUS::FAILED
 	}
 	
-	transition abort {		
+	transition abortFromRunning {		
 		from sApproach
-		to sStart
+		to sFinal
 		trigger stopApproachBall
 		action nodeStatus = NODE_STATUS::ABORTED
 	}
-}	
+
+	transition abortFromStart {
+		from sStart
+		to sFinal
+		trigger stopApproachBall
+		action nodeStatus = NODE_STATUS :: ABORTED
+	}
+}
+

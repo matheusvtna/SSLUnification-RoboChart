@@ -29,6 +29,7 @@ stm MoveAwayFromPositionSTM {
 		
 	// States.
 	initial sInitial
+	final sFinal
 	
 	state sStart {}
 	
@@ -71,9 +72,16 @@ stm MoveAwayFromPositionSTM {
 		action nodeStatus = NODE_STATUS::FAILED
 	}
 	
-	transition abort {		
+	transition abortFromRunning {		
 		from sMoveAway
-		to sStart
+		to sFinal
+		trigger stopMoveAwayFromPosition
+		action nodeStatus = NODE_STATUS::ABORTED
+	}
+	
+	transition abortFromStart {
+		from sStart
+		to sFinal
 		trigger stopMoveAwayFromPosition
 		action nodeStatus = NODE_STATUS::ABORTED
 	}
