@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202306261132
--- Automatically generated on 06-11-2023 22:20:13
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 07-11-2023 20:19:55
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -84,12 +84,12 @@ exports
 	localClockResets = {||}
 	
 	
-	channel get_CLID_sFinal : core_clock_type 
-	channel get_CLID_sRun : core_clock_type 
 	channel get_CLID_sWaitStart : core_clock_type 
+	channel get_CLID_sRun : core_clock_type 
+	channel get_CLID_sFinal : core_clock_type 
 	--channel increment__
 	
-	CLID_sFinal_clock_type(id__) = 
+	CLID_sWaitStart_clock_type(id__) = 
 		let
 			max = (clock_type_max(Union({
 	{}
@@ -107,7 +107,7 @@ exports
 	within
 		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
-	CLID_sWaitStart_clock_type(id__) = 
+	CLID_sFinal_clock_type(id__) = 
 		let
 			max = (clock_type_max(Union({
 	{}
@@ -486,17 +486,17 @@ exports
 						 				 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 				 )
 						 				  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-						 				  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+						 				  [[set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall]]
 						 				 )
 						 				 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+						 				 			,setL_allyIsPushingBallWithHisBack
 						 				 			,setL_allyIsBehindBall
 						 				 			,setL_allyIsCloseToBall
-						 				 			,setL_allyIsPushingBallWithHisBack
 						 				|}) |]
 						 				 ((sInitial::enter -> Transitions(id__))
-						 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack |} ]]
+						 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsPushingBallWithHisBack,setL_allyIsBehindBall,setL_allyIsCloseToBall |} ]]
 						 				 )
-						 				)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+						 				)[[setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall]]
 						 				)
 						 			)
 						 			 \ hideSet)
@@ -511,25 +511,25 @@ exports
 						 	)\{|get_CLID_sGoToBehindBall|}
 						 )
 						 ))
-						  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_nodeStatus,setR_allyIsPushingBallWithHisBack |} ]] 
-						  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsPushingBallWithHisBack,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_nodeStatus |} ]] 
+						  [[set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+						 			,setL_allyIsPushingBallWithHisBack
 						 			,setL_allyIsBehindBall
 						 			,setL_allyIsCloseToBall
 						 			,setL_nodeStatus
-						 			,setL_allyIsPushingBallWithHisBack
-						 			,setR_allyIsBehindBall
+						 			,setR_allyIsPushingBallWithHisBack
+						 			 			,setR_allyIsBehindBall
 						 			 			,setR_allyIsCloseToBall
 						 			 			,setR_nodeStatus
-						 			 			,setR_allyIsPushingBallWithHisBack
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_nodeStatus,setL_allyIsPushingBallWithHisBack |} ]]
-						  [[set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus,set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsPushingBallWithHisBack,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_nodeStatus |} ]]
+						  [[set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus]]
 						 )
-						)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
-						 [[setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus,setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+						)[[setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus]]
+						 [[setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus]]
 						)\union(enteredSS,{terminate}) 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -585,17 +585,17 @@ exports
 						 				 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 				 )
 						 				  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-						 				  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+						 				  [[set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall]]
 						 				 )
 						 				 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+						 				 			,setL_allyIsPushingBallWithHisBack
 						 				 			,setL_allyIsBehindBall
 						 				 			,setL_allyIsCloseToBall
-						 				 			,setL_allyIsPushingBallWithHisBack
 						 				|}) |]
 						 				 ((sInitial::enter -> Transitions(id__))
-						 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack |} ]]
+						 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsPushingBallWithHisBack,setL_allyIsBehindBall,setL_allyIsCloseToBall |} ]]
 						 				 )
-						 				)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+						 				)[[setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall]]
 						 				)
 						 			)
 						 			 \ hideSet)
@@ -610,25 +610,25 @@ exports
 						 	)\{|get_CLID_sGoToBehindBall|}
 						 )
 						 ))
-						  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_nodeStatus,setR_allyIsPushingBallWithHisBack |} ]] 
-						  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsPushingBallWithHisBack,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_nodeStatus |} ]] 
+						  [[set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+						 			,setL_allyIsPushingBallWithHisBack
 						 			,setL_allyIsBehindBall
 						 			,setL_allyIsCloseToBall
 						 			,setL_nodeStatus
-						 			,setL_allyIsPushingBallWithHisBack
-						 			,setR_allyIsBehindBall
+						 			,setR_allyIsPushingBallWithHisBack
+						 			 			,setR_allyIsBehindBall
 						 			 			,setR_allyIsCloseToBall
 						 			 			,setR_nodeStatus
-						 			 			,setR_allyIsPushingBallWithHisBack
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_nodeStatus,setL_allyIsPushingBallWithHisBack |} ]]
-						  [[set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus,set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsPushingBallWithHisBack,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_nodeStatus |} ]]
+						  [[set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus]]
 						 )
-						)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
-						 [[setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus,setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+						)[[setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus]]
+						 [[setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus]]
 						)\{terminate} 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -637,7 +637,7 @@ exports
 					Inactive [| {terminate} |> SKIP)
 				
 				Transitions(id__) = ((let
-					Trans = share__choice(get_allyIsBehindBall?allyIsBehindBall -> get_allyIsCloseToBall?allyIsCloseToBall -> get_allyIsPushingBallWithHisBack?allyIsPushingBallWithHisBack -> TimeOut_1(
+					Trans = share__choice(get_allyIsPushingBallWithHisBack?allyIsPushingBallWithHisBack -> get_allyIsBehindBall?allyIsBehindBall -> get_allyIsCloseToBall?allyIsCloseToBall -> TimeOut_1(
 						 (share__ -> SKIP
 						 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sGoToBehindBall::enter -> SKIP))))
 						 [] dbisim((((allyIsBehindBall and allyIsCloseToBall)))&(internal__!NID_sGoToBehindBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
@@ -812,7 +812,7 @@ exports
 		
 		Behaviour(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+				stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 			 within
 				(MachineBody(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ union(stateClockSync,enteredSS)
 			)
@@ -820,20 +820,20 @@ exports
 		
 		IteratedBehaviour(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+				stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 			 within
 				(dbisim(
 					sbisim(
 						dbisim(
 							sbisim(
 								MachineBody(id__)
-								[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-								dbisim(Clock_CLID_sWaitStart(id__,0))
-							)\{|get_CLID_sWaitStart|}
+								[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+								dbisim(Clock_CLID_sRun(id__,0))
+							)\{|get_CLID_sRun|}
 						)
-						[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-						dbisim(Clock_CLID_sRun(id__,0))
-					)\{|get_CLID_sRun|}
+						[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+						dbisim(Clock_CLID_sWaitStart(id__,0))
+					)\{|get_CLID_sWaitStart|}
 				)
 				) \ union(stateClockSync,enteredSS)
 			)
@@ -946,7 +946,7 @@ exports
 		
 		Behaviour_VS_O(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+				stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 			 within
 				(MachineBody_VS_O(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ diff(union(stateClockSync,enteredSS),enteredSS)
 			)
@@ -954,20 +954,20 @@ exports
 		
 		IteratedBehaviour_VS_O(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+				stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 			 within
 				(dbisim(
 					sbisim(
 						dbisim(
 							sbisim(
 								MachineBody_VS_O(id__)
-								[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-								dbisim(Clock_CLID_sWaitStart(id__,0))
-							)\{|get_CLID_sWaitStart|}
+								[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+								dbisim(Clock_CLID_sRun(id__,0))
+							)\{|get_CLID_sRun|}
 						)
-						[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-						dbisim(Clock_CLID_sRun(id__,0))
-					)\{|get_CLID_sRun|}
+						[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+						dbisim(Clock_CLID_sWaitStart(id__,0))
+					)\{|get_CLID_sWaitStart|}
 				)
 				) \ diff(union(stateClockSync,enteredSS),enteredSS)
 			)
@@ -1059,13 +1059,6 @@ exports
 		
 		clockSync = {||}
 		
-		Clock_CLID_sRun(id__,x__) = 
-			TimeOut_1(
-				sRun::entered -> Clock_CLID_sRun(id__,0)
-				[]
-				get_CLID_sRun!x__ -> Clock_CLID_sRun(id__,x__)
-				[]
-				terminate -> SKIP,Clock_CLID_sRun(id__,clock_type_plus(x__,1,CLID_sRun_clock_type(id__))))
 		Clock_CLID_sWaitStart(id__,x__) = 
 			TimeOut_1(
 				sWaitStart::entered -> Clock_CLID_sWaitStart(id__,0)
@@ -1073,13 +1066,20 @@ exports
 				get_CLID_sWaitStart!x__ -> Clock_CLID_sWaitStart(id__,x__)
 				[]
 				terminate -> SKIP,Clock_CLID_sWaitStart(id__,clock_type_plus(x__,1,CLID_sWaitStart_clock_type(id__))))
+		Clock_CLID_sRun(id__,x__) = 
+			TimeOut_1(
+				sRun::entered -> Clock_CLID_sRun(id__,0)
+				[]
+				get_CLID_sRun!x__ -> Clock_CLID_sRun(id__,x__)
+				[]
+				terminate -> SKIP,Clock_CLID_sRun(id__,clock_type_plus(x__,1,CLID_sRun_clock_type(id__))))
 		
-		StateClocks(id__) = dbisim(Clock_CLID_sRun(id__,0))
+		StateClocks(id__) = dbisim(Clock_CLID_sWaitStart(id__,0))
 		[| { terminate } |] (
-		dbisim(Clock_CLID_sWaitStart(id__,0))
+		dbisim(Clock_CLID_sRun(id__,0))
 		)
 		
-		stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+		stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 		
 		-- Shared memory
 		-- Shared memory variables

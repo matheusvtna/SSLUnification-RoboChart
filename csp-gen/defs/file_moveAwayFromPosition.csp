@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202306261132
--- Automatically generated on 06-11-2023 22:23:25
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 07-11-2023 20:19:55
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -439,21 +439,21 @@ exports
 				 	]]
 				 )
 				 )
-				  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotIsFarEnoughFromPosition |} ]] 
-				  [[set_nodeStatus <- setL_nodeStatus,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
+				  [[ share__ <- x__ | x__ <- {| share__,setR_robotIsFarEnoughFromPosition,setR_nodeStatus |} ]] 
+				  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition,set_nodeStatus <- setL_nodeStatus]]
 				 )
 				 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-				 			,setL_nodeStatus
 				 			,setL_robotIsFarEnoughFromPosition
-				 			,setR_nodeStatus
-				 			 			,setR_robotIsFarEnoughFromPosition
+				 			,setL_nodeStatus
+				 			,setR_robotIsFarEnoughFromPosition
+				 			 			,setR_nodeStatus
 				 			|}) |]
 				 ((During)
-				  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotIsFarEnoughFromPosition |} ]]
-				  [[set_nodeStatus <- setR_nodeStatus,set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition]]
+				  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition,setL_nodeStatus |} ]]
+				  [[set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition,set_nodeStatus <- setR_nodeStatus]]
 				 )
-				)[[setL_nodeStatus <- set_nodeStatus,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
-				 [[setR_nodeStatus <- set_nodeStatus,setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+				)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setL_nodeStatus <- set_nodeStatus]]
+				 [[setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setR_nodeStatus <- set_nodeStatus]]
 				)\union(enteredSS,{terminate}) 
 			)
 			During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -531,21 +531,21 @@ exports
 				 	]]
 				 )
 				 )
-				  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotIsFarEnoughFromPosition |} ]] 
-				  [[set_nodeStatus <- setL_nodeStatus,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
+				  [[ share__ <- x__ | x__ <- {| share__,setR_robotIsFarEnoughFromPosition,setR_nodeStatus |} ]] 
+				  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition,set_nodeStatus <- setL_nodeStatus]]
 				 )
 				 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-				 			,setL_nodeStatus
 				 			,setL_robotIsFarEnoughFromPosition
-				 			,setR_nodeStatus
-				 			 			,setR_robotIsFarEnoughFromPosition
+				 			,setL_nodeStatus
+				 			,setR_robotIsFarEnoughFromPosition
+				 			 			,setR_nodeStatus
 				 			|}) |]
 				 ((During)
-				  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotIsFarEnoughFromPosition |} ]]
-				  [[set_nodeStatus <- setR_nodeStatus,set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition]]
+				  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition,setL_nodeStatus |} ]]
+				  [[set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition,set_nodeStatus <- setR_nodeStatus]]
 				 )
-				)[[setL_nodeStatus <- set_nodeStatus,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
-				 [[setR_nodeStatus <- set_nodeStatus,setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+				)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setL_nodeStatus <- set_nodeStatus]]
+				 [[setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setR_nodeStatus <- set_nodeStatus]]
 				)\{terminate} 
 			)
 			During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
