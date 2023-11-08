@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 07-11-2023 21:32:17
+-- Automatically generated on 07-11-2023 21:59:06
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -47,14 +47,16 @@ exports
 	channel receiveField: InOut.core_string
 	channel receiveTactic__: NIDS.InOut.Tactic
 	channel receiveTactic: InOut.Tactic
-	channel startCarryBallOnBallPlacementBehavior__: NIDS.InOut
-	channel startCarryBallOnBallPlacementBehavior: InOut
-	channel stopCarryBallOnBallPlacementBehavior__: NIDS.InOut
-	channel stopCarryBallOnBallPlacementBehavior: InOut
-	channel startHaltBehavior__: NIDS.InOut
-	channel startHaltBehavior: InOut
-	channel stopHaltBehavior__: NIDS.InOut
-	channel stopHaltBehavior: InOut
+	channel sendAction__: NIDS.InOut.core_string
+	channel sendAction: InOut.core_string
+	channel startCarryBallOnBallPlacement__: NIDS.InOut
+	channel startCarryBallOnBallPlacement: InOut
+	channel stopCarryBallOnBallPlacement__: NIDS.InOut
+	channel stopCarryBallOnBallPlacement: InOut
+	channel startHalt__: NIDS.InOut
+	channel startHalt: InOut
+	channel stopHalt__: NIDS.InOut
+	channel stopHalt: InOut
 	
 	-- Declaring call and ret events for undefined operations
 	
@@ -81,10 +83,11 @@ exports
 	,	receiveFrame,
 		receiveField,
 		receiveTactic,
-		startCarryBallOnBallPlacementBehavior,
-		stopCarryBallOnBallPlacementBehavior,
-		startHaltBehavior,
-		stopHaltBehavior
+		sendAction,
+		startCarryBallOnBallPlacement,
+		stopCarryBallOnBallPlacement,
+		startHalt,
+		stopHalt
 		|}
 
 	-- Nodes --
@@ -289,10 +292,10 @@ exports
 			 	 [] dbisim((true)&(receiveTactic__!NID_sWaitTactic.in?currentTactic:{currentTactic|currentTactic <- Tactic, true} -> share__choice(set_currentTactic!currentTactic -> SKIP) ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; jCheckCurrentTactic::enter -> SKIP)))
 			 	 [] dbisim(((currentTactic==lastTactic))&(internal__!NID_jCheckCurrentTactic -> SKIP ;  ((SKIP ; sWaitTactic::enter -> SKIP))))
 			 	 [] dbisim(((currentTactic!=lastTactic))&(internal__!NID_jCheckCurrentTactic -> SKIP ;  ((SKIP ; jStopLastTactic::enter -> SKIP))))
-			 	 [] dbisim(((lastTactic==Tactic_PLACE_BALL_IN_POSITION))&(internal__!NID_jStopLastTactic -> SKIP ;  ((true&(share__choice(stopCarryBallOnBallPlacementBehavior.out -> SKIP)) ; jStartCurrentTactic::enter -> SKIP))))
-			 	 [] dbisim(((lastTactic==Tactic_HALT))&(internal__!NID_jStopLastTactic -> SKIP ;  ((true&(share__choice(stopHaltBehavior.out -> SKIP)) ; jStartCurrentTactic::enter -> SKIP))))
-			 	 [] dbisim(((currentTactic==Tactic_PLACE_BALL_IN_POSITION))&(internal__!NID_jStartCurrentTactic -> SKIP ;  ((true&(share__choice(startCarryBallOnBallPlacementBehavior.out -> SKIP)) ; sWaitTactic::enter -> SKIP))))
-			 	 [] dbisim(((currentTactic==Tactic_HALT))&(internal__!NID_jStartCurrentTactic -> SKIP ;  ((true&(share__choice(startHaltBehavior.out -> SKIP)) ; sWaitTactic::enter -> SKIP))))
+			 	 [] dbisim(((lastTactic==Tactic_PLACE_BALL_IN_POSITION))&(internal__!NID_jStopLastTactic -> SKIP ;  ((true&(share__choice(stopCarryBallOnBallPlacement.out -> SKIP)) ; jStartCurrentTactic::enter -> SKIP))))
+			 	 [] dbisim(((lastTactic==Tactic_HALT))&(internal__!NID_jStopLastTactic -> SKIP ;  ((true&(share__choice(stopHalt.out -> SKIP)) ; jStartCurrentTactic::enter -> SKIP))))
+			 	 [] dbisim(((currentTactic==Tactic_PLACE_BALL_IN_POSITION))&(internal__!NID_jStartCurrentTactic -> SKIP ;  ((true&(share__choice(startCarryBallOnBallPlacement.out -> SKIP)) ; sWaitTactic::enter -> SKIP))))
+			 	 [] dbisim(((currentTactic==Tactic_HALT))&(internal__!NID_jStartCurrentTactic -> SKIP ;  ((true&(share__choice(startHalt.out -> SKIP)) ; sWaitTactic::enter -> SKIP))))
 			 ) ; Trans)
 			 []
 			 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
@@ -376,10 +379,11 @@ exports
 					receiveFrame__.x____ <- receiveFrame,
 					receiveField__.x____ <- receiveField,
 					receiveTactic__.x____ <- receiveTactic,
-					startCarryBallOnBallPlacementBehavior__.x____ <- startCarryBallOnBallPlacementBehavior,
-					stopCarryBallOnBallPlacementBehavior__.x____ <- stopCarryBallOnBallPlacementBehavior,
-					startHaltBehavior__.x____ <- startHaltBehavior,
-					stopHaltBehavior__.x____ <- stopHaltBehavior
+					sendAction__.x____ <- sendAction,
+					startCarryBallOnBallPlacement__.x____ <- startCarryBallOnBallPlacement,
+					stopCarryBallOnBallPlacement__.x____ <- stopCarryBallOnBallPlacement,
+					startHalt__.x____ <- startHalt,
+					stopHalt__.x____ <- stopHalt
 					| x____ <- NIDS
 				]]
 			)
@@ -492,10 +496,11 @@ exports
 					receiveFrame__.x____ <- receiveFrame,
 					receiveField__.x____ <- receiveField,
 					receiveTactic__.x____ <- receiveTactic,
-					startCarryBallOnBallPlacementBehavior__.x____ <- startCarryBallOnBallPlacementBehavior,
-					stopCarryBallOnBallPlacementBehavior__.x____ <- stopCarryBallOnBallPlacementBehavior,
-					startHaltBehavior__.x____ <- startHaltBehavior,
-					stopHaltBehavior__.x____ <- stopHaltBehavior
+					sendAction__.x____ <- sendAction,
+					startCarryBallOnBallPlacement__.x____ <- startCarryBallOnBallPlacement,
+					stopCarryBallOnBallPlacement__.x____ <- stopCarryBallOnBallPlacement,
+					startHalt__.x____ <- startHalt,
+					stopHalt__.x____ <- stopHalt
 					| x____ <- NIDS
 				]]
 			)

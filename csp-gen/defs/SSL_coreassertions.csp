@@ -1,7 +1,7 @@
 
 --
--- RoboChart generator version 3.0.0.202306261132
--- Automatically generated on 31-10-2023 15:05:03
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 07-11-2023 21:59:19
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -20,10 +20,12 @@ P_SSL = let
 	
 	
 	
+	const_carryBallOnBallPlacement_BehaviorController_stm_move_away_ref_TIME_LIMIT_TO_BEHAVE = 30
 		
 	
 within
-	SSL::O__(id__)
+	SSL::O__(id__,
+			    const_carryBallOnBallPlacement_BehaviorController_stm_move_away_ref_TIME_LIMIT_TO_BEHAVE)
 assert P_SSL :[deadlock-free]	
 assert P_SSL;RUN({r__}) :[deadlock-free]
 assert P_SSL :[deterministic]
@@ -88,4 +90,21 @@ assert P_SSL_navigationControllerRef :[deadlock-free]
 assert P_SSL_navigationControllerRef;RUN({r__}) :[deadlock-free]
 assert P_SSL_navigationControllerRef :[deterministic]
 assert P_SSL_navigationControllerRef :[divergence-free]
+
+-- generate SSL_ctrl_ref0
+P_SSL_ctrl_ref0 = let
+	id__ = 0
+	
+	
+	
+	const_carryBallOnBallPlacement_BehaviorController_stm_move_away_ref_TIME_LIMIT_TO_BEHAVE = 30
+		
+within
+	SSL::ctrl_ref0::O__(id__,
+			    const_carryBallOnBallPlacement_BehaviorController_stm_move_away_ref_TIME_LIMIT_TO_BEHAVE)
+
+assert P_SSL_ctrl_ref0 :[deadlock-free]	
+assert P_SSL_ctrl_ref0;RUN({r__}) :[deadlock-free]
+assert P_SSL_ctrl_ref0 :[deterministic]
+assert P_SSL_ctrl_ref0 :[divergence-free]
 

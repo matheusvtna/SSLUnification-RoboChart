@@ -11,15 +11,7 @@ interface IBehavior {
 	event receiveField: string
 	event receiveTactic: Tactic
 	
-	// Carry Ball On Ball Placement.
-	event startCarryBallOnBallPlacementBehavior
-	event stopCarryBallOnBallPlacementBehavior
-	
-	// Halt.
-	event startHaltBehavior
-	event stopHaltBehavior
-	
-	// TODO: Create other behavior events...
+	event sendAction: string
 }
 
 interface CarryBallOnBallPlacementI {
@@ -27,10 +19,12 @@ interface CarryBallOnBallPlacementI {
 	event stopCarryBallOnBallPlacement	
 }
 
-// This state machine makes the robot execute the
-// Ball Placement procedure by carrying the ball.
-//
-// TODO: Add a FSM output -> makes robot move...
+interface HaltI {
+	event startHalt
+	event stopHalt
+}
+
+// TODO: Move to specific file...
 controller BehaviorController {
 	uses IBehavior
 	uses NodeStatusI
@@ -41,10 +35,10 @@ controller BehaviorController {
 	connection BehaviorController on receiveTactic to stm_behavior_ref on receiveTactic
 
 	sref stm_carry_ball_on_ball_placement_ref = CarryBallOnBallPlacementSTM
-	connection stm_behavior_ref on startCarryBallOnBallPlacementBehavior to stm_carry_ball_on_ball_placement_ref on startCarryBallOnBallPlacement
-	connection stm_behavior_ref on stopCarryBallOnBallPlacementBehavior to stm_carry_ball_on_ball_placement_ref on stopCarryBallOnBallPlacement
+	connection stm_behavior_ref on startCarryBallOnBallPlacement to stm_carry_ball_on_ball_placement_ref on startCarryBallOnBallPlacement
+	connection stm_behavior_ref on stopCarryBallOnBallPlacement to stm_carry_ball_on_ball_placement_ref on stopCarryBallOnBallPlacement
 
-	// SUb-FSMs.
+	// Sub-FSMs.
 	sref stm_go_to_behind_ball_ref = GoToBehindBallSTM
 	sref stm_approach_ball_ref = ApproachBallSTM
 	sref stm_carry_ball_ref = CarryBallSTM
@@ -244,6 +238,10 @@ stm BehaviorSTM {
 	// Behavior Tree Control Interfaces.
 	uses NodeStatusI
 	
+	// Controls the start/stop for this BehaviorSTM --> Input events.
+	uses CarryBallOnBallPlacementI
+	uses HaltI
+	
 	// Current Tactic.
 	//
 	// Receives value from `receiveTactic` event.
@@ -299,7 +297,7 @@ stm BehaviorSTM {
 		from jStopLastTactic
 		to jStartCurrentTactic
 		condition lastTactic == Tactic::PLACE_BALL_IN_POSITION
-		action stopCarryBallOnBallPlacementBehavior
+		action stopCarryBallOnBallPlacement
 	}
 	
 	// Triggers a `stopHalt` event to stop the HaltSTM if the last 
@@ -308,7 +306,7 @@ stm BehaviorSTM {
 		from jStopLastTactic
 		to jStartCurrentTactic
 		condition lastTactic == Tactic :: HALT
-		action stopHaltBehavior
+		action stopHalt
 	}
 
 	// Triggers a `startCarryBallOnBallPlacementBehavior` event to 
@@ -318,7 +316,7 @@ stm BehaviorSTM {
 		from jStartCurrentTactic
 		to sWaitTactic
 		condition currentTactic == Tactic :: PLACE_BALL_IN_POSITION
-		action startCarryBallOnBallPlacementBehavior
+		action startCarryBallOnBallPlacement
 	}
 	
 	// Trigger a `startHalt` event to start the HaltSTM if the current 
@@ -327,7 +325,7 @@ stm BehaviorSTM {
 		from jStartCurrentTactic
 		to sWaitTactic
 		condition currentTactic == Tactic :: HALT
-		action startHaltBehavior
+		action startHalt
 	}
 }
 

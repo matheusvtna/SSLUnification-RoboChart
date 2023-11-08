@@ -24,7 +24,7 @@ nametype core_string = LSeq(Char,2)
 
 -- generate real
 nametype core_real = union({ -2..2},{calc_type_min(Union(
-			{{30},{0..2}}))..calc_type_max(Union({{30},{0..2}}))}) 
+			{{ -2..2},{ -2..2},{30},{0..2}}))..calc_type_max(Union({{ -2..2},{ -2..2},{30},{0..2}}))}) 
 
 -- VECTOR TYPES AND OPERATIONS
 
