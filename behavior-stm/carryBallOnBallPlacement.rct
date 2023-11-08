@@ -12,6 +12,7 @@ interface IBehavior {
 	event receiveTactic: Tactic
 	
 	event sendAction: string
+	event sendSkill: Skill
 }
 
 interface CarryBallOnBallPlacementI {
@@ -229,9 +230,8 @@ stm CarryBallOnBallPlacementSTM {
 // END TODO
 
 // --------------------------------------------
-//         CARRY BALL ON BALL PLACEMENT
+//               BEHAVIOR STM
 // --------------------------------------------
-
 stm BehaviorSTM {
 	// Input and Output events.
 	uses IBehavior
@@ -328,5 +328,138 @@ stm BehaviorSTM {
 		condition currentTactic == Tactic :: HALT
 		action startHalt
 	}
+}
+
+// --------------------------------------------
+//               SKILL STM
+// --------------------------------------------
+enumeration Skill {
+	GO_TO_BEHIND_BALL
+	APPROACH_BALL
+	CARRY_BALL
+	MOVE_AWAY_FROM_POSITION
+}
+
+interface SkillI {
+	event receiveSkill: Skill
+	event sendAction: string
+}
+
+stm SkillSTM {
+	// Interface to define SkillSTM requirements.
+	uses SkillI
+	
+	// Current Skill.
+	//
+	// Receives value from `receiveSkill` event.
+	var currentSkill: Skill
+	
+	// Last Skill.
+	var lastSkill:Skill
+	
+	// States.
+	initial sInitial
+	state sWaitSkill {}
+	junction jCheckCurrentSkill
+	junction jStopLastSkill
+	junction jStartCurrentSkill
+	
+	// Sub-FSMs --> Output events.
+	uses GoToBehindBallI
+	uses ApproachBallI
+	uses CarryBallI
+	uses MoveAwayFromPositionI	
+	
+	// Transitions.
+	//
+	// Start transition. Just wait for a Skill.
+	transition start {
+		from sInitial
+		to sWaitSkill
+	}
+	
+	// A Skill has been received.
+	transition receiveSkill {
+		from sWaitSkill
+		to jCheckCurrentSkill
+		trigger receiveSkill?currentSkill
+	}
+	
+	// The received Skill is equals to the last one.
+	// In this case, we just keep the same skill STM
+	// running and don't trigger any event.
+	transition sameSkill {
+		from jCheckCurrentSkill
+		to sWaitSkill
+		condition currentSkill == lastSkill
+	}
+	
+	// The received Skill is different from the last one.
+	// In this case, we have to stop the current skill STM
+	// that it is running to be able to start a new one later.
+	transition differentSkill {
+		from jCheckCurrentSkill
+		to jStopLastSkill
+		condition currentSkill != lastSkill
+	}	
+
+	// Triggers a `stopGoToBehindBall` event to 
+	// stop the GoToBehindBallSTM if the last Skill was
+	// Skill::GO_TO_BEHIND_BALL and the new one it is not.
+	transition stopGoToBehindBall {
+		from jStopLastSkill
+		to jStartCurrentSkill
+		condition lastSkill == Skill::GO_TO_BEHIND_BALL
+		action stopGoToBehindBall
+	}
+	
+	// Triggers a `stopApproachBall` event to 
+	// stop the ApproachBallSTM if the last Skill was
+	// Skill::APPROACH_BALL and the new one it is not.
+	transition stopApproachBall {
+		from jStopLastSkill
+		to jStartCurrentSkill
+		condition lastSkill == Skill::APPROACH_BALL
+		action stopApproachBall
+	}
+	
+	// Triggers a `stopCarryBall` event to 
+	// stop the CarryBallSTM if the last Skill was
+	// Skill::CARRY_BALL and the new one it is not.
+	transition stopCarryBall {
+		from jStopLastSkill
+		to jStartCurrentSkill
+		condition lastSkill == Skill::CARRY_BALL
+		action stopCarryBall
+	}
+	
+	// Triggers a `stopMoveAwayFromPosition` event to 
+	// stop the MoveAwayFromPositionSTM if the last Skill was
+	// Skill::MOVE_AWAY_FROM_POSITION and the new one it is not.
+	transition stopMoveAwayFromPosition {
+		from jStopLastSkill
+		to jStartCurrentSkill
+		condition lastSkill == Skill::MOVE_AWAY_FROM_POSITION
+		action stopMoveAwayFromPosition
+	}
+
+	// Triggers a `startGoToBehindBall` event to 
+	// start the GoToBehindBallSTM if the current skill
+	// is Skill::GO_TO_BEHIND_BALL.
+	transition startGoToBehindBall {
+		from jStartCurrentSkill
+		to sWaitSkill
+		condition currentSkill == Skill::GO_TO_BEHIND_BALL
+		action startGoToBehindBall
+	}
+	
+//	// Trigger a `startHalt` event to start the HaltSTM if the current 
+//	// tactic is Tactic::HALT.
+//	transition startHalt {
+//		from jStartCurrentTactic
+//		to sWaitTactic
+//		condition currentTactic == Tactic :: HALT
+//		action startHalt
+//	}
 }
 

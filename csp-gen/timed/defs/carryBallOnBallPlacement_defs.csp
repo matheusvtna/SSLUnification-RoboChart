@@ -1,12 +1,22 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 08-11-2023 11:33:36
+-- Automatically generated on 08-11-2023 12:25:46
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
 -- data definitions used by platform:/resource/SSLUnification/behavior-stm/carryBallOnBallPlacement.rct
+datatype carryBallOnBallPlacement_Skill = carryBallOnBallPlacement_Skill_GO_TO_BEHIND_BALL | carryBallOnBallPlacement_Skill_APPROACH_BALL | carryBallOnBallPlacement_Skill_CARRY_BALL | carryBallOnBallPlacement_Skill_MOVE_AWAY_FROM_POSITION
+carryBallOnBallPlacement_Skill_is(carryBallOnBallPlacement_Skill_GO_TO_BEHIND_BALL,carryBallOnBallPlacement_Skill_GO_TO_BEHIND_BALL) = true
+carryBallOnBallPlacement_Skill_is(_,carryBallOnBallPlacement_Skill_GO_TO_BEHIND_BALL) = false
+carryBallOnBallPlacement_Skill_is(carryBallOnBallPlacement_Skill_APPROACH_BALL,carryBallOnBallPlacement_Skill_APPROACH_BALL) = true
+carryBallOnBallPlacement_Skill_is(_,carryBallOnBallPlacement_Skill_APPROACH_BALL) = false
+carryBallOnBallPlacement_Skill_is(carryBallOnBallPlacement_Skill_CARRY_BALL,carryBallOnBallPlacement_Skill_CARRY_BALL) = true
+carryBallOnBallPlacement_Skill_is(_,carryBallOnBallPlacement_Skill_CARRY_BALL) = false
+carryBallOnBallPlacement_Skill_is(carryBallOnBallPlacement_Skill_MOVE_AWAY_FROM_POSITION,carryBallOnBallPlacement_Skill_MOVE_AWAY_FROM_POSITION) = true
+carryBallOnBallPlacement_Skill_is(_,carryBallOnBallPlacement_Skill_MOVE_AWAY_FROM_POSITION) = false
+
 
 	

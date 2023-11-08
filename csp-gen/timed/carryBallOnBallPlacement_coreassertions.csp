@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 08-11-2023 11:33:36
+-- Automatically generated on 08-11-2023 12:25:46
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -47,6 +47,25 @@ assert prioritise(P_carryBallOnBallPlacement_BehaviorSTM[[tock<-tock,tock<-tock'
 
 -- timelock free
 assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_carryBallOnBallPlacement_BehaviorSTM
+-- generate carryBallOnBallPlacement_SkillSTM
+P_carryBallOnBallPlacement_SkillSTM = let
+	id__ = 0
+	
+	
+	
+within
+	carryBallOnBallPlacement::SkillSTM::O__(
+		id__
+	)
+assert P_carryBallOnBallPlacement_SkillSTM :[deadlock-free]	
+assert P_carryBallOnBallPlacement_SkillSTM;RUN({r__}) :[deadlock-free]
+assert P_carryBallOnBallPlacement_SkillSTM :[deterministic]
+assert P_carryBallOnBallPlacement_SkillSTM :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_carryBallOnBallPlacement_SkillSTM[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_carryBallOnBallPlacement_SkillSTM
 
 
 -- generate carryBallOnBallPlacement_BehaviorController

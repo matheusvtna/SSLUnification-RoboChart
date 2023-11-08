@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 07-11-2023 21:59:19
+-- Automatically generated on 08-11-2023 12:25:46
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -1891,8 +1891,8 @@ module SSL
 			
 			
 			-- declaring call and ret events for undefined operations
-			channel stopCall
 			channel moveCall: core_real.core_real
+			channel stopCall
 			
 			-- declaring controller termination channel
 			channel terminate
@@ -1903,8 +1903,8 @@ module SSL
 			,	receiveFrame,
 				receiveField,
 				receiveCommand
-			,	stopCall,
-				moveCall
+			,	moveCall,
+				stopCall
 			|}
 			
 			-- set of visible memory events
@@ -2309,10 +2309,10 @@ module SSL
 			
 			Timed(OneStep) {
 					-- undefined operations
-					CALL__stop(id__) 	= stopCall -> SKIP
 					CALL__move(id__,
 							    param_linearVelocity,
 							    param_angularVelocity) 	= moveCall.param_linearVelocity.param_angularVelocity -> SKIP
+					CALL__stop(id__) 	= stopCall -> SKIP
 					
 					-- declaring controller memory
 					Memory(id__) = SKIP
@@ -2435,6 +2435,7 @@ module SSL
 			channel receiveField: InOut.core_string
 			channel receiveTactic: InOut.Tactic
 			channel sendAction: InOut.core_string
+			channel sendSkill: InOut.carryBallOnBallPlacement_Skill
 			
 			channel set_nodeStatus: NODE_STATUS
 			channel get_nodeStatus: NODE_STATUS
@@ -2451,7 +2452,8 @@ module SSL
 			,	receiveFrame,
 				receiveField,
 				receiveTactic,
-				sendAction
+				sendAction,
+				sendSkill
 			|}
 			
 			-- set of visible memory events
@@ -2502,6 +2504,8 @@ module SSL
 				channel receiveTactic: InOut.Tactic
 				channel sendAction__: NIDS.InOut.core_string
 				channel sendAction: InOut.core_string
+				channel sendSkill__: NIDS.InOut.carryBallOnBallPlacement_Skill
+				channel sendSkill: InOut.carryBallOnBallPlacement_Skill
 				channel startCarryBallOnBallPlacement__: NIDS.InOut
 				channel startCarryBallOnBallPlacement: InOut
 				channel stopCarryBallOnBallPlacement__: NIDS.InOut
@@ -2537,6 +2541,7 @@ module SSL
 					receiveField,
 					receiveTactic,
 					sendAction,
+					sendSkill,
 					startCarryBallOnBallPlacement,
 					stopCarryBallOnBallPlacement,
 					startHalt,
@@ -2874,6 +2879,7 @@ module SSL
 									receiveField__.x____ <- receiveField,
 									receiveTactic__.x____ <- receiveTactic,
 									sendAction__.x____ <- sendAction,
+									sendSkill__.x____ <- sendSkill,
 									startCarryBallOnBallPlacement__.x____ <- startCarryBallOnBallPlacement,
 									stopCarryBallOnBallPlacement__.x____ <- stopCarryBallOnBallPlacement,
 									startHalt__.x____ <- startHalt,
@@ -3017,6 +3023,7 @@ module SSL
 									receiveField__.x____ <- receiveField,
 									receiveTactic__.x____ <- receiveTactic,
 									sendAction__.x____ <- sendAction,
+									sendSkill__.x____ <- sendSkill,
 									startCarryBallOnBallPlacement__.x____ <- startCarryBallOnBallPlacement,
 									stopCarryBallOnBallPlacement__.x____ <- stopCarryBallOnBallPlacement,
 									startHalt__.x____ <- startHalt,
@@ -3479,23 +3486,14 @@ module SSL
 						channel startMoveAwayFromPosition__: NIDS.InOut
 						channel stopMoveAwayFromPosition__: NIDS.InOut
 						
-						channel get_CLID_sMoveAwayFromBall : core_clock_type 
-						channel get_CLID_sGoToBehindBall : core_clock_type 
+						channel get_CLID_sApproachBall : core_clock_type 
 						channel get_CLID_sGiveSpaceToGetBall : core_clock_type 
 						channel get_CLID_sPlaceBall : core_clock_type 
-						channel get_CLID_sApproachBall : core_clock_type 
+						channel get_CLID_sGoToBehindBall : core_clock_type 
+						channel get_CLID_sMoveAwayFromBall : core_clock_type 
 						--channel increment__
 						
-						CLID_sMoveAwayFromBall_clock_type(id__) = 
-							let
-								max = (clock_type_max(Union({
-						{}
-						}))+1)
-							ctype = {0..max}
-						within
-							if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
-						
-						CLID_sGoToBehindBall_clock_type(id__) = 
+						CLID_sApproachBall_clock_type(id__) = 
 							let
 								max = (clock_type_max(Union({
 						{}
@@ -3522,7 +3520,16 @@ module SSL
 						within
 							if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 						
-						CLID_sApproachBall_clock_type(id__) = 
+						CLID_sGoToBehindBall_clock_type(id__) = 
+							let
+								max = (clock_type_max(Union({
+						{}
+						}))+1)
+							ctype = {0..max}
+						within
+							if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
+						
+						CLID_sMoveAwayFromBall_clock_type(id__) = 
 							let
 								max = (clock_type_max(Union({
 						{}
@@ -4086,44 +4093,44 @@ module SSL
 									 												| x____ <- NIDS
 									 											]]
 									 										)
-									 										[| {|get_CLID_sApproachBall,sApproachBall::entered,terminate|} |]
-									 										dbisim(Clock_CLID_sApproachBall(id__,0))
-									 									)\{|get_CLID_sApproachBall|}
+									 										[| {|get_CLID_sMoveAwayFromBall,sMoveAwayFromBall::entered,terminate|} |]
+									 										dbisim(Clock_CLID_sMoveAwayFromBall(id__,0))
+									 									)\{|get_CLID_sMoveAwayFromBall|}
 									 								)
-									 								[| {|get_CLID_sPlaceBall,sPlaceBall::entered,terminate|} |]
-									 								dbisim(Clock_CLID_sPlaceBall(id__,0))
-									 							)\{|get_CLID_sPlaceBall|}
+									 								[| {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,terminate|} |]
+									 								dbisim(Clock_CLID_sGoToBehindBall(id__,0))
+									 							)\{|get_CLID_sGoToBehindBall|}
 									 						)
-									 						[| {|get_CLID_sGiveSpaceToGetBall,sGiveSpaceToGetBall::entered,terminate|} |]
-									 						dbisim(Clock_CLID_sGiveSpaceToGetBall(id__,0))
-									 					)\{|get_CLID_sGiveSpaceToGetBall|}
+									 						[| {|get_CLID_sPlaceBall,sPlaceBall::entered,terminate|} |]
+									 						dbisim(Clock_CLID_sPlaceBall(id__,0))
+									 					)\{|get_CLID_sPlaceBall|}
 									 				)
-									 				[| {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,terminate|} |]
-									 				dbisim(Clock_CLID_sGoToBehindBall(id__,0))
-									 			)\{|get_CLID_sGoToBehindBall|}
+									 				[| {|get_CLID_sGiveSpaceToGetBall,sGiveSpaceToGetBall::entered,terminate|} |]
+									 				dbisim(Clock_CLID_sGiveSpaceToGetBall(id__,0))
+									 			)\{|get_CLID_sGiveSpaceToGetBall|}
 									 		)
-									 		[| {|get_CLID_sMoveAwayFromBall,sMoveAwayFromBall::entered,terminate|} |]
-									 		dbisim(Clock_CLID_sMoveAwayFromBall(id__,0))
-									 	)\{|get_CLID_sMoveAwayFromBall|}
+									 		[| {|get_CLID_sApproachBall,sApproachBall::entered,terminate|} |]
+									 		dbisim(Clock_CLID_sApproachBall(id__,0))
+									 	)\{|get_CLID_sApproachBall|}
 									 )
 									 ))
-									  [[ share__ <- x__ | x__ <- {| share__,setR_runningStm,setR_nodeStatus,setR_robotHasMovedAwayFromBall |} ]] 
-									  [[set_runningStm <- setL_runningStm,set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall]]
+									  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotHasMovedAwayFromBall,setR_runningStm |} ]] 
+									  [[set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_runningStm <- setL_runningStm]]
 									 )
 									 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-									 			,setL_runningStm
 									 			,setL_nodeStatus
 									 			,setL_robotHasMovedAwayFromBall
-									 			,setR_runningStm
-									 			 			,setR_nodeStatus
+									 			,setL_runningStm
+									 			,setR_nodeStatus
 									 			 			,setR_robotHasMovedAwayFromBall
+									 			 			,setR_runningStm
 									 			|}) |]
 									 ((During)
-									  [[ share__ <- x__ | x__ <- {| share__,setL_runningStm,setL_nodeStatus,setL_robotHasMovedAwayFromBall |} ]]
-									  [[set_runningStm <- setR_runningStm,set_nodeStatus <- setR_nodeStatus,set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall]]
+									  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotHasMovedAwayFromBall,setL_runningStm |} ]]
+									  [[set_nodeStatus <- setR_nodeStatus,set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_runningStm <- setR_runningStm]]
 									 )
-									)[[setL_runningStm <- set_runningStm,setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall]]
-									 [[setR_runningStm <- set_runningStm,setR_nodeStatus <- set_nodeStatus,setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall]]
+									)[[setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_runningStm <- set_runningStm]]
+									 [[setR_nodeStatus <- set_nodeStatus,setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_runningStm <- set_runningStm]]
 									)\union(enteredSS,{terminate}) 
 								)
 								During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -4234,44 +4241,44 @@ module SSL
 									 												| x____ <- NIDS
 									 											]]
 									 										)
-									 										[| {|get_CLID_sApproachBall,sApproachBall::entered,terminate|} |]
-									 										dbisim(Clock_CLID_sApproachBall(id__,0))
-									 									)\{|get_CLID_sApproachBall|}
+									 										[| {|get_CLID_sMoveAwayFromBall,sMoveAwayFromBall::entered,terminate|} |]
+									 										dbisim(Clock_CLID_sMoveAwayFromBall(id__,0))
+									 									)\{|get_CLID_sMoveAwayFromBall|}
 									 								)
-									 								[| {|get_CLID_sPlaceBall,sPlaceBall::entered,terminate|} |]
-									 								dbisim(Clock_CLID_sPlaceBall(id__,0))
-									 							)\{|get_CLID_sPlaceBall|}
+									 								[| {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,terminate|} |]
+									 								dbisim(Clock_CLID_sGoToBehindBall(id__,0))
+									 							)\{|get_CLID_sGoToBehindBall|}
 									 						)
-									 						[| {|get_CLID_sGiveSpaceToGetBall,sGiveSpaceToGetBall::entered,terminate|} |]
-									 						dbisim(Clock_CLID_sGiveSpaceToGetBall(id__,0))
-									 					)\{|get_CLID_sGiveSpaceToGetBall|}
+									 						[| {|get_CLID_sPlaceBall,sPlaceBall::entered,terminate|} |]
+									 						dbisim(Clock_CLID_sPlaceBall(id__,0))
+									 					)\{|get_CLID_sPlaceBall|}
 									 				)
-									 				[| {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,terminate|} |]
-									 				dbisim(Clock_CLID_sGoToBehindBall(id__,0))
-									 			)\{|get_CLID_sGoToBehindBall|}
+									 				[| {|get_CLID_sGiveSpaceToGetBall,sGiveSpaceToGetBall::entered,terminate|} |]
+									 				dbisim(Clock_CLID_sGiveSpaceToGetBall(id__,0))
+									 			)\{|get_CLID_sGiveSpaceToGetBall|}
 									 		)
-									 		[| {|get_CLID_sMoveAwayFromBall,sMoveAwayFromBall::entered,terminate|} |]
-									 		dbisim(Clock_CLID_sMoveAwayFromBall(id__,0))
-									 	)\{|get_CLID_sMoveAwayFromBall|}
+									 		[| {|get_CLID_sApproachBall,sApproachBall::entered,terminate|} |]
+									 		dbisim(Clock_CLID_sApproachBall(id__,0))
+									 	)\{|get_CLID_sApproachBall|}
 									 )
 									 ))
-									  [[ share__ <- x__ | x__ <- {| share__,setR_runningStm,setR_nodeStatus,setR_robotHasMovedAwayFromBall |} ]] 
-									  [[set_runningStm <- setL_runningStm,set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall]]
+									  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotHasMovedAwayFromBall,setR_runningStm |} ]] 
+									  [[set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_runningStm <- setL_runningStm]]
 									 )
 									 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-									 			,setL_runningStm
 									 			,setL_nodeStatus
 									 			,setL_robotHasMovedAwayFromBall
-									 			,setR_runningStm
-									 			 			,setR_nodeStatus
+									 			,setL_runningStm
+									 			,setR_nodeStatus
 									 			 			,setR_robotHasMovedAwayFromBall
+									 			 			,setR_runningStm
 									 			|}) |]
 									 ((During)
-									  [[ share__ <- x__ | x__ <- {| share__,setL_runningStm,setL_nodeStatus,setL_robotHasMovedAwayFromBall |} ]]
-									  [[set_runningStm <- setR_runningStm,set_nodeStatus <- setR_nodeStatus,set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall]]
+									  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotHasMovedAwayFromBall,setL_runningStm |} ]]
+									  [[set_nodeStatus <- setR_nodeStatus,set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_runningStm <- setR_runningStm]]
 									 )
-									)[[setL_runningStm <- set_runningStm,setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall]]
-									 [[setR_runningStm <- set_runningStm,setR_nodeStatus <- set_nodeStatus,setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall]]
+									)[[setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_runningStm <- set_runningStm]]
+									 [[setR_nodeStatus <- set_nodeStatus,setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_runningStm <- set_runningStm]]
 									)\{terminate} 
 								)
 								During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -4313,20 +4320,13 @@ module SSL
 							
 							
 							-- Clocks
-							Clock_CLID_sMoveAwayFromBall(id__,x__) = 
+							Clock_CLID_sApproachBall(id__,x__) = 
 								TimeOut_1(
-									sMoveAwayFromBall::entered -> Clock_CLID_sMoveAwayFromBall(id__,0)
+									sApproachBall::entered -> Clock_CLID_sApproachBall(id__,0)
 									[]
-									get_CLID_sMoveAwayFromBall!x__ -> Clock_CLID_sMoveAwayFromBall(id__,x__)
+									get_CLID_sApproachBall!x__ -> Clock_CLID_sApproachBall(id__,x__)
 									[]
-									terminate -> SKIP,Clock_CLID_sMoveAwayFromBall(id__,clock_type_plus(x__,1,CLID_sMoveAwayFromBall_clock_type(id__))))
-							Clock_CLID_sGoToBehindBall(id__,x__) = 
-								TimeOut_1(
-									sGoToBehindBall::entered -> Clock_CLID_sGoToBehindBall(id__,0)
-									[]
-									get_CLID_sGoToBehindBall!x__ -> Clock_CLID_sGoToBehindBall(id__,x__)
-									[]
-									terminate -> SKIP,Clock_CLID_sGoToBehindBall(id__,clock_type_plus(x__,1,CLID_sGoToBehindBall_clock_type(id__))))
+									terminate -> SKIP,Clock_CLID_sApproachBall(id__,clock_type_plus(x__,1,CLID_sApproachBall_clock_type(id__))))
 							Clock_CLID_sGiveSpaceToGetBall(id__,x__) = 
 								TimeOut_1(
 									sGiveSpaceToGetBall::entered -> Clock_CLID_sGiveSpaceToGetBall(id__,0)
@@ -4341,29 +4341,36 @@ module SSL
 									get_CLID_sPlaceBall!x__ -> Clock_CLID_sPlaceBall(id__,x__)
 									[]
 									terminate -> SKIP,Clock_CLID_sPlaceBall(id__,clock_type_plus(x__,1,CLID_sPlaceBall_clock_type(id__))))
-							Clock_CLID_sApproachBall(id__,x__) = 
+							Clock_CLID_sGoToBehindBall(id__,x__) = 
 								TimeOut_1(
-									sApproachBall::entered -> Clock_CLID_sApproachBall(id__,0)
+									sGoToBehindBall::entered -> Clock_CLID_sGoToBehindBall(id__,0)
 									[]
-									get_CLID_sApproachBall!x__ -> Clock_CLID_sApproachBall(id__,x__)
+									get_CLID_sGoToBehindBall!x__ -> Clock_CLID_sGoToBehindBall(id__,x__)
 									[]
-									terminate -> SKIP,Clock_CLID_sApproachBall(id__,clock_type_plus(x__,1,CLID_sApproachBall_clock_type(id__))))
+									terminate -> SKIP,Clock_CLID_sGoToBehindBall(id__,clock_type_plus(x__,1,CLID_sGoToBehindBall_clock_type(id__))))
+							Clock_CLID_sMoveAwayFromBall(id__,x__) = 
+								TimeOut_1(
+									sMoveAwayFromBall::entered -> Clock_CLID_sMoveAwayFromBall(id__,0)
+									[]
+									get_CLID_sMoveAwayFromBall!x__ -> Clock_CLID_sMoveAwayFromBall(id__,x__)
+									[]
+									terminate -> SKIP,Clock_CLID_sMoveAwayFromBall(id__,clock_type_plus(x__,1,CLID_sMoveAwayFromBall_clock_type(id__))))
 							
-							StateClocks(id__) = dbisim(Clock_CLID_sMoveAwayFromBall(id__,0))
-							[| { terminate } |] (
-							dbisim(Clock_CLID_sGoToBehindBall(id__,0))
+							StateClocks(id__) = dbisim(Clock_CLID_sApproachBall(id__,0))
 							[| { terminate } |] (
 							dbisim(Clock_CLID_sGiveSpaceToGetBall(id__,0))
 							[| { terminate } |] (
 							dbisim(Clock_CLID_sPlaceBall(id__,0))
 							[| { terminate } |] (
-							dbisim(Clock_CLID_sApproachBall(id__,0))
+							dbisim(Clock_CLID_sGoToBehindBall(id__,0))
+							[| { terminate } |] (
+							dbisim(Clock_CLID_sMoveAwayFromBall(id__,0))
 							)
 							)
 							)
 							)
 							
-							stateClockSync = {|get_CLID_sMoveAwayFromBall,sMoveAwayFromBall::entered,get_CLID_sGoToBehindBall,sGoToBehindBall::entered,get_CLID_sGiveSpaceToGetBall,sGiveSpaceToGetBall::entered,get_CLID_sPlaceBall,sPlaceBall::entered,get_CLID_sApproachBall,sApproachBall::entered|}
+							stateClockSync = {|get_CLID_sApproachBall,sApproachBall::entered,get_CLID_sGiveSpaceToGetBall,sGiveSpaceToGetBall::entered,get_CLID_sPlaceBall,sPlaceBall::entered,get_CLID_sGoToBehindBall,sGoToBehindBall::entered,get_CLID_sMoveAwayFromBall,sMoveAwayFromBall::entered|}
 						}
 					
 					endmodule
@@ -4855,19 +4862,10 @@ module SSL
 				localClockResets = {||}
 				
 				
-				channel get_CLID_sRun : core_clock_type 
 				channel get_CLID_sFinal : core_clock_type 
 				channel get_CLID_sWaitStart : core_clock_type 
+				channel get_CLID_sRun : core_clock_type 
 				--channel increment__
-				
-				CLID_sRun_clock_type(id__) = 
-					let
-						max = (clock_type_max(Union({
-				{}
-				}))+1)
-					ctype = {0..max}
-				within
-					if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 				
 				CLID_sFinal_clock_type(id__) = 
 					let
@@ -4879,6 +4877,15 @@ module SSL
 					if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 				
 				CLID_sWaitStart_clock_type(id__) = 
+					let
+						max = (clock_type_max(Union({
+				{}
+				}))+1)
+					ctype = {0..max}
+				within
+					if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
+				
+				CLID_sRun_clock_type(id__) = 
 					let
 						max = (clock_type_max(Union({
 				{}
@@ -5257,17 +5264,17 @@ module SSL
 									 				 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 									 				 )
 									 				  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-									 				  [[set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+									 				  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
 									 				 )
 									 				 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-									 				 			,setL_allyIsPushingBallWithHisBack
-									 				 			,setL_allyIsCloseToBall
 									 				 			,setL_allyIsBehindBall
+									 				 			,setL_allyIsCloseToBall
+									 				 			,setL_allyIsPushingBallWithHisBack
 									 				|}) |]
 									 				 ((sInitial::enter -> Transitions(id__))
-									 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall,setL_allyIsBehindBall |} ]]
+									 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack |} ]]
 									 				 )
-									 				)[[setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+									 				)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
 									 				)
 									 			)
 									 			 \ hideSet)
@@ -5282,25 +5289,25 @@ module SSL
 									 	)\{|get_CLID_sGoToBehindBall|}
 									 )
 									 ))
-									  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsPushingBallWithHisBack,setR_allyIsCloseToBall,setR_allyIsBehindBall,setR_nodeStatus |} ]] 
-									  [[set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall,set_nodeStatus <- setL_nodeStatus]]
+									  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack |} ]] 
+									  [[set_nodeStatus <- setL_nodeStatus,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
 									 )
 									 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-									 			,setL_allyIsPushingBallWithHisBack
-									 			,setL_allyIsCloseToBall
-									 			,setL_allyIsBehindBall
 									 			,setL_nodeStatus
-									 			,setR_allyIsPushingBallWithHisBack
-									 			 			,setR_allyIsCloseToBall
+									 			,setL_allyIsBehindBall
+									 			,setL_allyIsCloseToBall
+									 			,setL_allyIsPushingBallWithHisBack
+									 			,setR_nodeStatus
 									 			 			,setR_allyIsBehindBall
-									 			 			,setR_nodeStatus
+									 			 			,setR_allyIsCloseToBall
+									 			 			,setR_allyIsPushingBallWithHisBack
 									 			|}) |]
 									 ((During)
-									  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall,setL_allyIsBehindBall,setL_nodeStatus |} ]]
-									  [[set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsBehindBall <- setR_allyIsBehindBall,set_nodeStatus <- setR_nodeStatus]]
+									  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack |} ]]
+									  [[set_nodeStatus <- setR_nodeStatus,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack]]
 									 )
-									)[[setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_nodeStatus <- set_nodeStatus]]
-									 [[setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_nodeStatus <- set_nodeStatus]]
+									)[[setL_nodeStatus <- set_nodeStatus,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+									 [[setR_nodeStatus <- set_nodeStatus,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
 									)\union(enteredSS,{terminate}) 
 								)
 								During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -5356,17 +5363,17 @@ module SSL
 									 				 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 									 				 )
 									 				  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-									 				  [[set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+									 				  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
 									 				 )
 									 				 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-									 				 			,setL_allyIsPushingBallWithHisBack
-									 				 			,setL_allyIsCloseToBall
 									 				 			,setL_allyIsBehindBall
+									 				 			,setL_allyIsCloseToBall
+									 				 			,setL_allyIsPushingBallWithHisBack
 									 				|}) |]
 									 				 ((sInitial::enter -> Transitions(id__))
-									 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall,setL_allyIsBehindBall |} ]]
+									 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack |} ]]
 									 				 )
-									 				)[[setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+									 				)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
 									 				)
 									 			)
 									 			 \ hideSet)
@@ -5381,25 +5388,25 @@ module SSL
 									 	)\{|get_CLID_sGoToBehindBall|}
 									 )
 									 ))
-									  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsPushingBallWithHisBack,setR_allyIsCloseToBall,setR_allyIsBehindBall,setR_nodeStatus |} ]] 
-									  [[set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall,set_nodeStatus <- setL_nodeStatus]]
+									  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack |} ]] 
+									  [[set_nodeStatus <- setL_nodeStatus,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
 									 )
 									 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-									 			,setL_allyIsPushingBallWithHisBack
-									 			,setL_allyIsCloseToBall
-									 			,setL_allyIsBehindBall
 									 			,setL_nodeStatus
-									 			,setR_allyIsPushingBallWithHisBack
-									 			 			,setR_allyIsCloseToBall
+									 			,setL_allyIsBehindBall
+									 			,setL_allyIsCloseToBall
+									 			,setL_allyIsPushingBallWithHisBack
+									 			,setR_nodeStatus
 									 			 			,setR_allyIsBehindBall
-									 			 			,setR_nodeStatus
+									 			 			,setR_allyIsCloseToBall
+									 			 			,setR_allyIsPushingBallWithHisBack
 									 			|}) |]
 									 ((During)
-									  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall,setL_allyIsBehindBall,setL_nodeStatus |} ]]
-									  [[set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsBehindBall <- setR_allyIsBehindBall,set_nodeStatus <- setR_nodeStatus]]
+									  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack |} ]]
+									  [[set_nodeStatus <- setR_nodeStatus,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack]]
 									 )
-									)[[setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_nodeStatus <- set_nodeStatus]]
-									 [[setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_nodeStatus <- set_nodeStatus]]
+									)[[setL_nodeStatus <- set_nodeStatus,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+									 [[setR_nodeStatus <- set_nodeStatus,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
 									)\{terminate} 
 								)
 								During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -5408,7 +5415,7 @@ module SSL
 								Inactive [| {terminate} |> SKIP)
 							
 							Transitions(id__) = ((let
-								Trans = share__choice(get_allyIsPushingBallWithHisBack?allyIsPushingBallWithHisBack -> get_allyIsCloseToBall?allyIsCloseToBall -> get_allyIsBehindBall?allyIsBehindBall -> TimeOut_1(
+								Trans = share__choice(get_allyIsBehindBall?allyIsBehindBall -> get_allyIsCloseToBall?allyIsCloseToBall -> get_allyIsPushingBallWithHisBack?allyIsPushingBallWithHisBack -> TimeOut_1(
 									 (share__ -> SKIP
 									 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sGoToBehindBall::enter -> SKIP))))
 									 [] dbisim((((allyIsBehindBall and allyIsCloseToBall)))&(internal__!NID_sGoToBehindBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
@@ -5583,7 +5590,7 @@ module SSL
 					
 					Behaviour(id__) = 
 						dbisim((let
-							stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+							stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 						 within
 							(MachineBody(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ union(stateClockSync,enteredSS)
 						)
@@ -5591,20 +5598,20 @@ module SSL
 					
 					IteratedBehaviour(id__) = 
 						dbisim((let
-							stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+							stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 						 within
 							(dbisim(
 								sbisim(
 									dbisim(
 										sbisim(
 											MachineBody(id__)
-											[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-											dbisim(Clock_CLID_sWaitStart(id__,0))
-										)\{|get_CLID_sWaitStart|}
+											[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+											dbisim(Clock_CLID_sRun(id__,0))
+										)\{|get_CLID_sRun|}
 									)
-									[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-									dbisim(Clock_CLID_sRun(id__,0))
-								)\{|get_CLID_sRun|}
+									[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+									dbisim(Clock_CLID_sWaitStart(id__,0))
+								)\{|get_CLID_sWaitStart|}
 							)
 							) \ union(stateClockSync,enteredSS)
 						)
@@ -5717,7 +5724,7 @@ module SSL
 					
 					Behaviour_VS_O(id__) = 
 						dbisim((let
-							stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+							stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 						 within
 							(MachineBody_VS_O(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ diff(union(stateClockSync,enteredSS),enteredSS)
 						)
@@ -5725,20 +5732,20 @@ module SSL
 					
 					IteratedBehaviour_VS_O(id__) = 
 						dbisim((let
-							stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+							stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 						 within
 							(dbisim(
 								sbisim(
 									dbisim(
 										sbisim(
 											MachineBody_VS_O(id__)
-											[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-											dbisim(Clock_CLID_sWaitStart(id__,0))
-										)\{|get_CLID_sWaitStart|}
+											[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+											dbisim(Clock_CLID_sRun(id__,0))
+										)\{|get_CLID_sRun|}
 									)
-									[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-									dbisim(Clock_CLID_sRun(id__,0))
-								)\{|get_CLID_sRun|}
+									[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+									dbisim(Clock_CLID_sWaitStart(id__,0))
+								)\{|get_CLID_sWaitStart|}
 							)
 							) \ diff(union(stateClockSync,enteredSS),enteredSS)
 						)
@@ -5830,13 +5837,6 @@ module SSL
 					
 					clockSync = {||}
 					
-					Clock_CLID_sRun(id__,x__) = 
-						TimeOut_1(
-							sRun::entered -> Clock_CLID_sRun(id__,0)
-							[]
-							get_CLID_sRun!x__ -> Clock_CLID_sRun(id__,x__)
-							[]
-							terminate -> SKIP,Clock_CLID_sRun(id__,clock_type_plus(x__,1,CLID_sRun_clock_type(id__))))
 					Clock_CLID_sWaitStart(id__,x__) = 
 						TimeOut_1(
 							sWaitStart::entered -> Clock_CLID_sWaitStart(id__,0)
@@ -5844,13 +5844,20 @@ module SSL
 							get_CLID_sWaitStart!x__ -> Clock_CLID_sWaitStart(id__,x__)
 							[]
 							terminate -> SKIP,Clock_CLID_sWaitStart(id__,clock_type_plus(x__,1,CLID_sWaitStart_clock_type(id__))))
+					Clock_CLID_sRun(id__,x__) = 
+						TimeOut_1(
+							sRun::entered -> Clock_CLID_sRun(id__,0)
+							[]
+							get_CLID_sRun!x__ -> Clock_CLID_sRun(id__,x__)
+							[]
+							terminate -> SKIP,Clock_CLID_sRun(id__,clock_type_plus(x__,1,CLID_sRun_clock_type(id__))))
 					
-					StateClocks(id__) = dbisim(Clock_CLID_sRun(id__,0))
+					StateClocks(id__) = dbisim(Clock_CLID_sWaitStart(id__,0))
 					[| { terminate } |] (
-					dbisim(Clock_CLID_sWaitStart(id__,0))
+					dbisim(Clock_CLID_sRun(id__,0))
 					)
 					
-					stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+					stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 					
 					-- Shared memory
 					-- Shared memory variables
@@ -5945,19 +5952,10 @@ module SSL
 				localClockResets = {||}
 				
 				
-				channel get_CLID_sFinal : core_clock_type 
 				channel get_CLID_sRun : core_clock_type 
 				channel get_CLID_sWaitStart : core_clock_type 
+				channel get_CLID_sFinal : core_clock_type 
 				--channel increment__
-				
-				CLID_sFinal_clock_type(id__) = 
-					let
-						max = (clock_type_max(Union({
-				{}
-				}))+1)
-					ctype = {0..max}
-				within
-					if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 				
 				CLID_sRun_clock_type(id__) = 
 					let
@@ -5969,6 +5967,15 @@ module SSL
 					if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 				
 				CLID_sWaitStart_clock_type(id__) = 
+					let
+						max = (clock_type_max(Union({
+				{}
+				}))+1)
+					ctype = {0..max}
+				within
+					if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
+				
+				CLID_sFinal_clock_type(id__) = 
 					let
 						max = (clock_type_max(Union({
 				{}
@@ -6347,17 +6354,17 @@ module SSL
 									 				 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 									 				 )
 									 				  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-									 				  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyHasBall <- setL_allyHasBall]]
+									 				  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
 									 				 )
 									 				 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-									 				 			,setL_allyIsBehindBall
 									 				 			,setL_allyIsCloseToBall
 									 				 			,setL_allyHasBall
+									 				 			,setL_allyIsBehindBall
 									 				|}) |]
 									 				 ((sInitial::enter -> Transitions(id__))
-									 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyHasBall |} ]]
+									 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyHasBall,setL_allyIsBehindBall |} ]]
 									 				 )
-									 				)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyHasBall <- set_allyHasBall]]
+									 				)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
 									 				)
 									 			)
 									 			 \ hideSet)
@@ -6372,25 +6379,25 @@ module SSL
 									 	)\{|get_CLID_sApproach|}
 									 )
 									 ))
-									  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_nodeStatus,setR_allyHasBall |} ]] 
-									  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall]]
+									  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsCloseToBall,setR_nodeStatus,setR_allyHasBall,setR_allyIsBehindBall |} ]] 
+									  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
 									 )
 									 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-									 			,setL_allyIsBehindBall
 									 			,setL_allyIsCloseToBall
 									 			,setL_nodeStatus
 									 			,setL_allyHasBall
-									 			,setR_allyIsBehindBall
-									 			 			,setR_allyIsCloseToBall
+									 			,setL_allyIsBehindBall
+									 			,setR_allyIsCloseToBall
 									 			 			,setR_nodeStatus
 									 			 			,setR_allyHasBall
+									 			 			,setR_allyIsBehindBall
 									 			|}) |]
 									 ((During)
-									  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_nodeStatus,setL_allyHasBall |} ]]
-									  [[set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall]]
+									  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_nodeStatus,setL_allyHasBall,setL_allyIsBehindBall |} ]]
+									  [[set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall,set_allyIsBehindBall <- setR_allyIsBehindBall]]
 									 )
-									)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall]]
-									 [[setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall]]
+									)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+									 [[setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall,setR_allyIsBehindBall <- set_allyIsBehindBall]]
 									)\union(enteredSS,{terminate}) 
 								)
 								During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -6446,17 +6453,17 @@ module SSL
 									 				 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 									 				 )
 									 				  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-									 				  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyHasBall <- setL_allyHasBall]]
+									 				  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
 									 				 )
 									 				 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-									 				 			,setL_allyIsBehindBall
 									 				 			,setL_allyIsCloseToBall
 									 				 			,setL_allyHasBall
+									 				 			,setL_allyIsBehindBall
 									 				|}) |]
 									 				 ((sInitial::enter -> Transitions(id__))
-									 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyHasBall |} ]]
+									 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyHasBall,setL_allyIsBehindBall |} ]]
 									 				 )
-									 				)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyHasBall <- set_allyHasBall]]
+									 				)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
 									 				)
 									 			)
 									 			 \ hideSet)
@@ -6471,25 +6478,25 @@ module SSL
 									 	)\{|get_CLID_sApproach|}
 									 )
 									 ))
-									  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_nodeStatus,setR_allyHasBall |} ]] 
-									  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall]]
+									  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsCloseToBall,setR_nodeStatus,setR_allyHasBall,setR_allyIsBehindBall |} ]] 
+									  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
 									 )
 									 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-									 			,setL_allyIsBehindBall
 									 			,setL_allyIsCloseToBall
 									 			,setL_nodeStatus
 									 			,setL_allyHasBall
-									 			,setR_allyIsBehindBall
-									 			 			,setR_allyIsCloseToBall
+									 			,setL_allyIsBehindBall
+									 			,setR_allyIsCloseToBall
 									 			 			,setR_nodeStatus
 									 			 			,setR_allyHasBall
+									 			 			,setR_allyIsBehindBall
 									 			|}) |]
 									 ((During)
-									  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_nodeStatus,setL_allyHasBall |} ]]
-									  [[set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall]]
+									  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_nodeStatus,setL_allyHasBall,setL_allyIsBehindBall |} ]]
+									  [[set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall,set_allyIsBehindBall <- setR_allyIsBehindBall]]
 									 )
-									)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall]]
-									 [[setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall]]
+									)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+									 [[setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall,setR_allyIsBehindBall <- set_allyIsBehindBall]]
 									)\{terminate} 
 								)
 								During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -6498,7 +6505,7 @@ module SSL
 								Inactive [| {terminate} |> SKIP)
 							
 							Transitions(id__) = ((let
-								Trans = share__choice(get_allyIsBehindBall?allyIsBehindBall -> get_allyIsCloseToBall?allyIsCloseToBall -> get_allyHasBall?allyHasBall -> TimeOut_1(
+								Trans = share__choice(get_allyIsCloseToBall?allyIsCloseToBall -> get_allyHasBall?allyHasBall -> get_allyIsBehindBall?allyIsBehindBall -> TimeOut_1(
 									 (share__ -> SKIP
 									 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sApproach::enter -> SKIP))))
 									 [] dbisim((allyHasBall)&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
@@ -7034,19 +7041,10 @@ module SSL
 				localClockResets = {||}
 				
 				
-				channel get_CLID_sWaitStart : core_clock_type 
 				channel get_CLID_sFinal : core_clock_type 
 				channel get_CLID_sRun : core_clock_type 
+				channel get_CLID_sWaitStart : core_clock_type 
 				--channel increment__
-				
-				CLID_sWaitStart_clock_type(id__) = 
-					let
-						max = (clock_type_max(Union({
-				{}
-				}))+1)
-					ctype = {0..max}
-				within
-					if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 				
 				CLID_sFinal_clock_type(id__) = 
 					let
@@ -7058,6 +7056,15 @@ module SSL
 					if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 				
 				CLID_sRun_clock_type(id__) = 
+					let
+						max = (clock_type_max(Union({
+				{}
+				}))+1)
+					ctype = {0..max}
+				within
+					if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
+				
+				CLID_sWaitStart_clock_type(id__) = 
 					let
 						max = (clock_type_max(Union({
 				{}
@@ -7460,23 +7467,23 @@ module SSL
 									 	)\{|get_CLID_sCarryBall|}
 									 )
 									 ))
-									  [[ share__ <- x__ | x__ <- {| share__,setR_ballIsPositioned,setR_allyHasBall,setR_nodeStatus |} ]] 
-									  [[set_ballIsPositioned <- setL_ballIsPositioned,set_allyHasBall <- setL_allyHasBall,set_nodeStatus <- setL_nodeStatus]]
+									  [[ share__ <- x__ | x__ <- {| share__,setR_ballIsPositioned,setR_nodeStatus,setR_allyHasBall |} ]] 
+									  [[set_ballIsPositioned <- setL_ballIsPositioned,set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall]]
 									 )
 									 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
 									 			,setL_ballIsPositioned
-									 			,setL_allyHasBall
 									 			,setL_nodeStatus
+									 			,setL_allyHasBall
 									 			,setR_ballIsPositioned
-									 			 			,setR_allyHasBall
 									 			 			,setR_nodeStatus
+									 			 			,setR_allyHasBall
 									 			|}) |]
 									 ((During)
-									  [[ share__ <- x__ | x__ <- {| share__,setL_ballIsPositioned,setL_allyHasBall,setL_nodeStatus |} ]]
-									  [[set_ballIsPositioned <- setR_ballIsPositioned,set_allyHasBall <- setR_allyHasBall,set_nodeStatus <- setR_nodeStatus]]
+									  [[ share__ <- x__ | x__ <- {| share__,setL_ballIsPositioned,setL_nodeStatus,setL_allyHasBall |} ]]
+									  [[set_ballIsPositioned <- setR_ballIsPositioned,set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall]]
 									 )
-									)[[setL_ballIsPositioned <- set_ballIsPositioned,setL_allyHasBall <- set_allyHasBall,setL_nodeStatus <- set_nodeStatus]]
-									 [[setR_ballIsPositioned <- set_ballIsPositioned,setR_allyHasBall <- set_allyHasBall,setR_nodeStatus <- set_nodeStatus]]
+									)[[setL_ballIsPositioned <- set_ballIsPositioned,setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall]]
+									 [[setR_ballIsPositioned <- set_ballIsPositioned,setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall]]
 									)\union(enteredSS,{terminate}) 
 								)
 								During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -7556,23 +7563,23 @@ module SSL
 									 	)\{|get_CLID_sCarryBall|}
 									 )
 									 ))
-									  [[ share__ <- x__ | x__ <- {| share__,setR_ballIsPositioned,setR_allyHasBall,setR_nodeStatus |} ]] 
-									  [[set_ballIsPositioned <- setL_ballIsPositioned,set_allyHasBall <- setL_allyHasBall,set_nodeStatus <- setL_nodeStatus]]
+									  [[ share__ <- x__ | x__ <- {| share__,setR_ballIsPositioned,setR_nodeStatus,setR_allyHasBall |} ]] 
+									  [[set_ballIsPositioned <- setL_ballIsPositioned,set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall]]
 									 )
 									 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
 									 			,setL_ballIsPositioned
-									 			,setL_allyHasBall
 									 			,setL_nodeStatus
+									 			,setL_allyHasBall
 									 			,setR_ballIsPositioned
-									 			 			,setR_allyHasBall
 									 			 			,setR_nodeStatus
+									 			 			,setR_allyHasBall
 									 			|}) |]
 									 ((During)
-									  [[ share__ <- x__ | x__ <- {| share__,setL_ballIsPositioned,setL_allyHasBall,setL_nodeStatus |} ]]
-									  [[set_ballIsPositioned <- setR_ballIsPositioned,set_allyHasBall <- setR_allyHasBall,set_nodeStatus <- setR_nodeStatus]]
+									  [[ share__ <- x__ | x__ <- {| share__,setL_ballIsPositioned,setL_nodeStatus,setL_allyHasBall |} ]]
+									  [[set_ballIsPositioned <- setR_ballIsPositioned,set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall]]
 									 )
-									)[[setL_ballIsPositioned <- set_ballIsPositioned,setL_allyHasBall <- set_allyHasBall,setL_nodeStatus <- set_nodeStatus]]
-									 [[setR_ballIsPositioned <- set_ballIsPositioned,setR_allyHasBall <- set_allyHasBall,setR_nodeStatus <- set_nodeStatus]]
+									)[[setL_ballIsPositioned <- set_ballIsPositioned,setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall]]
+									 [[setR_ballIsPositioned <- set_ballIsPositioned,setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall]]
 									)\{terminate} 
 								)
 								During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -7756,7 +7763,7 @@ module SSL
 					
 					Behaviour(id__) = 
 						dbisim((let
-							stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+							stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
 						 within
 							(MachineBody(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ union(stateClockSync,enteredSS)
 						)
@@ -7764,20 +7771,20 @@ module SSL
 					
 					IteratedBehaviour(id__) = 
 						dbisim((let
-							stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+							stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
 						 within
 							(dbisim(
 								sbisim(
 									dbisim(
 										sbisim(
 											MachineBody(id__)
-											[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-											dbisim(Clock_CLID_sRun(id__,0))
-										)\{|get_CLID_sRun|}
+											[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+											dbisim(Clock_CLID_sWaitStart(id__,0))
+										)\{|get_CLID_sWaitStart|}
 									)
-									[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-									dbisim(Clock_CLID_sWaitStart(id__,0))
-								)\{|get_CLID_sWaitStart|}
+									[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+									dbisim(Clock_CLID_sRun(id__,0))
+								)\{|get_CLID_sRun|}
 							)
 							) \ union(stateClockSync,enteredSS)
 						)
@@ -7883,7 +7890,7 @@ module SSL
 					
 					Behaviour_VS_O(id__) = 
 						dbisim((let
-							stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+							stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
 						 within
 							(MachineBody_VS_O(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ diff(union(stateClockSync,enteredSS),enteredSS)
 						)
@@ -7891,20 +7898,20 @@ module SSL
 					
 					IteratedBehaviour_VS_O(id__) = 
 						dbisim((let
-							stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+							stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
 						 within
 							(dbisim(
 								sbisim(
 									dbisim(
 										sbisim(
 											MachineBody_VS_O(id__)
-											[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-											dbisim(Clock_CLID_sRun(id__,0))
-										)\{|get_CLID_sRun|}
+											[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+											dbisim(Clock_CLID_sWaitStart(id__,0))
+										)\{|get_CLID_sWaitStart|}
 									)
-									[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-									dbisim(Clock_CLID_sWaitStart(id__,0))
-								)\{|get_CLID_sWaitStart|}
+									[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+									dbisim(Clock_CLID_sRun(id__,0))
+								)\{|get_CLID_sRun|}
 							)
 							) \ diff(union(stateClockSync,enteredSS),enteredSS)
 						)
@@ -7980,13 +7987,6 @@ module SSL
 					
 					clockSync = {||}
 					
-					Clock_CLID_sWaitStart(id__,x__) = 
-						TimeOut_1(
-							sWaitStart::entered -> Clock_CLID_sWaitStart(id__,0)
-							[]
-							get_CLID_sWaitStart!x__ -> Clock_CLID_sWaitStart(id__,x__)
-							[]
-							terminate -> SKIP,Clock_CLID_sWaitStart(id__,clock_type_plus(x__,1,CLID_sWaitStart_clock_type(id__))))
 					Clock_CLID_sRun(id__,x__) = 
 						TimeOut_1(
 							sRun::entered -> Clock_CLID_sRun(id__,0)
@@ -7994,13 +7994,20 @@ module SSL
 							get_CLID_sRun!x__ -> Clock_CLID_sRun(id__,x__)
 							[]
 							terminate -> SKIP,Clock_CLID_sRun(id__,clock_type_plus(x__,1,CLID_sRun_clock_type(id__))))
+					Clock_CLID_sWaitStart(id__,x__) = 
+						TimeOut_1(
+							sWaitStart::entered -> Clock_CLID_sWaitStart(id__,0)
+							[]
+							get_CLID_sWaitStart!x__ -> Clock_CLID_sWaitStart(id__,x__)
+							[]
+							terminate -> SKIP,Clock_CLID_sWaitStart(id__,clock_type_plus(x__,1,CLID_sWaitStart_clock_type(id__))))
 					
-					StateClocks(id__) = dbisim(Clock_CLID_sWaitStart(id__,0))
+					StateClocks(id__) = dbisim(Clock_CLID_sRun(id__,0))
 					[| { terminate } |] (
-					dbisim(Clock_CLID_sRun(id__,0))
+					dbisim(Clock_CLID_sWaitStart(id__,0))
 					)
 					
-					stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+					stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
 					
 					-- Shared memory
 					-- Shared memory variables
@@ -8093,10 +8100,20 @@ module SSL
 				localClockResets = {||}
 				
 				
+				channel get_CLID_sWaitStart : core_clock_type 
 				channel get_CLID_sFinal : core_clock_type 
 				channel get_CLID_sRun : core_clock_type 
-				channel get_CLID_sWaitStart : core_clock_type 
 				--channel increment__
+				
+				CLID_sWaitStart_clock_type(id__,
+						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
+					let
+						max = (clock_type_max(Union({
+				{}
+				}))+1)
+					ctype = {0..max}
+				within
+					if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 				
 				CLID_sFinal_clock_type(id__,
 						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
@@ -8109,16 +8126,6 @@ module SSL
 					if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 				
 				CLID_sRun_clock_type(id__,
-						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
-					let
-						max = (clock_type_max(Union({
-				{}
-				}))+1)
-					ctype = {0..max}
-				within
-					if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
-				
-				CLID_sWaitStart_clock_type(id__,
 						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 					let
 						max = (clock_type_max(Union({
@@ -8549,21 +8556,21 @@ module SSL
 									 	)\{|get_CLID_sMoveAway|}
 									 )
 									 ))
-									  [[ share__ <- x__ | x__ <- {| share__,setR_robotIsFarEnoughFromPosition,setR_nodeStatus |} ]] 
-									  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition,set_nodeStatus <- setL_nodeStatus]]
+									  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotIsFarEnoughFromPosition |} ]] 
+									  [[set_nodeStatus <- setL_nodeStatus,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
 									 )
 									 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-									 			,setL_robotIsFarEnoughFromPosition
 									 			,setL_nodeStatus
-									 			,setR_robotIsFarEnoughFromPosition
-									 			 			,setR_nodeStatus
+									 			,setL_robotIsFarEnoughFromPosition
+									 			,setR_nodeStatus
+									 			 			,setR_robotIsFarEnoughFromPosition
 									 			|}) |]
 									 ((During)
-									  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition,setL_nodeStatus |} ]]
-									  [[set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition,set_nodeStatus <- setR_nodeStatus]]
+									  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotIsFarEnoughFromPosition |} ]]
+									  [[set_nodeStatus <- setR_nodeStatus,set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition]]
 									 )
-									)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setL_nodeStatus <- set_nodeStatus]]
-									 [[setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setR_nodeStatus <- set_nodeStatus]]
+									)[[setL_nodeStatus <- set_nodeStatus,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+									 [[setR_nodeStatus <- set_nodeStatus,setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
 									)\union(enteredSS,{terminate}) 
 								)
 								During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -8649,21 +8656,21 @@ module SSL
 									 	)\{|get_CLID_sMoveAway|}
 									 )
 									 ))
-									  [[ share__ <- x__ | x__ <- {| share__,setR_robotIsFarEnoughFromPosition,setR_nodeStatus |} ]] 
-									  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition,set_nodeStatus <- setL_nodeStatus]]
+									  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotIsFarEnoughFromPosition |} ]] 
+									  [[set_nodeStatus <- setL_nodeStatus,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
 									 )
 									 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-									 			,setL_robotIsFarEnoughFromPosition
 									 			,setL_nodeStatus
-									 			,setR_robotIsFarEnoughFromPosition
-									 			 			,setR_nodeStatus
+									 			,setL_robotIsFarEnoughFromPosition
+									 			,setR_nodeStatus
+									 			 			,setR_robotIsFarEnoughFromPosition
 									 			|}) |]
 									 ((During)
-									  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition,setL_nodeStatus |} ]]
-									  [[set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition,set_nodeStatus <- setR_nodeStatus]]
+									  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotIsFarEnoughFromPosition |} ]]
+									  [[set_nodeStatus <- setR_nodeStatus,set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition]]
 									 )
-									)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setL_nodeStatus <- set_nodeStatus]]
-									 [[setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setR_nodeStatus <- set_nodeStatus]]
+									)[[setL_nodeStatus <- set_nodeStatus,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+									 [[setR_nodeStatus <- set_nodeStatus,setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
 									)\{terminate} 
 								)
 								During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -8870,7 +8877,7 @@ module SSL
 					Behaviour(id__,
 							    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 						dbisim((let
-							stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+							stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 						 within
 							(MachineBody(id__,
 									    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) [| union(stateClockSync,{terminate}) |] StateClocks(id__,
@@ -8881,7 +8888,7 @@ module SSL
 					IteratedBehaviour(id__,
 							    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 						dbisim((let
-							stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+							stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 						 within
 							(dbisim(
 								sbisim(
@@ -8889,15 +8896,15 @@ module SSL
 										sbisim(
 											MachineBody(id__,
 													    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
-											[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-											dbisim(Clock_CLID_sWaitStart(id__,0,
+											[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+											dbisim(Clock_CLID_sRun(id__,0,
 													          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-										)\{|get_CLID_sWaitStart|}
+										)\{|get_CLID_sRun|}
 									)
-									[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-									dbisim(Clock_CLID_sRun(id__,0,
+									[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+									dbisim(Clock_CLID_sWaitStart(id__,0,
 											          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-								)\{|get_CLID_sRun|}
+								)\{|get_CLID_sWaitStart|}
 							)
 							) \ union(stateClockSync,enteredSS)
 						)
@@ -9010,7 +9017,7 @@ module SSL
 					Behaviour_VS_O(id__,
 							    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 						dbisim((let
-							stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+							stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 						 within
 							(MachineBody_VS_O(id__,
 									    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) [| union(stateClockSync,{terminate}) |] StateClocks(id__,
@@ -9021,7 +9028,7 @@ module SSL
 					IteratedBehaviour_VS_O(id__,
 							    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 						dbisim((let
-							stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+							stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 						 within
 							(dbisim(
 								sbisim(
@@ -9029,15 +9036,15 @@ module SSL
 										sbisim(
 											MachineBody_VS_O(id__,
 													    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
-											[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-											dbisim(Clock_CLID_sWaitStart(id__,0,
+											[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+											dbisim(Clock_CLID_sRun(id__,0,
 													          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-										)\{|get_CLID_sWaitStart|}
+										)\{|get_CLID_sRun|}
 									)
-									[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-									dbisim(Clock_CLID_sRun(id__,0,
+									[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+									dbisim(Clock_CLID_sWaitStart(id__,0,
 											          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-								)\{|get_CLID_sRun|}
+								)\{|get_CLID_sWaitStart|}
 							)
 							) \ diff(union(stateClockSync,enteredSS),enteredSS)
 						)
@@ -9121,18 +9128,6 @@ module SSL
 					
 					clockSync = {||}
 					
-					Clock_CLID_sRun(id__,x__,
-							          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
-						TimeOut_1(
-							sRun::entered -> Clock_CLID_sRun(id__,0,
-									          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
-							[]
-							get_CLID_sRun!x__ -> Clock_CLID_sRun(id__,x__,
-									          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
-							[]
-							terminate -> SKIP,Clock_CLID_sRun(id__,clock_type_plus(x__,1,CLID_sRun_clock_type(id__,
-									          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)),
-									          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 					Clock_CLID_sWaitStart(id__,x__,
 							          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 						TimeOut_1(
@@ -9145,16 +9140,28 @@ module SSL
 							terminate -> SKIP,Clock_CLID_sWaitStart(id__,clock_type_plus(x__,1,CLID_sWaitStart_clock_type(id__,
 									          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)),
 									          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
+					Clock_CLID_sRun(id__,x__,
+							          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
+						TimeOut_1(
+							sRun::entered -> Clock_CLID_sRun(id__,0,
+									          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
+							[]
+							get_CLID_sRun!x__ -> Clock_CLID_sRun(id__,x__,
+									          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
+							[]
+							terminate -> SKIP,Clock_CLID_sRun(id__,clock_type_plus(x__,1,CLID_sRun_clock_type(id__,
+									          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)),
+									          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 					
 					StateClocks(id__,
-							          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = dbisim(Clock_CLID_sRun(id__,0,
+							          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = dbisim(Clock_CLID_sWaitStart(id__,0,
 							          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 					[| { terminate } |] (
-					dbisim(Clock_CLID_sWaitStart(id__,0,
+					dbisim(Clock_CLID_sRun(id__,0,
 							          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 					)
 					
-					stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+					stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 					
 					-- Shared memory
 					-- Shared memory variables
@@ -9193,10 +9200,11 @@ module SSL
 									stm_behavior_ref::terminate <- terminate,
 									stm_behavior_ref::receiveField <- receiveField,
 									stm_behavior_ref::receiveFrame <- receiveFrame,
-									stm_behavior_ref::receiveTactic <- receiveTactic
+									stm_behavior_ref::receiveTactic <- receiveTactic,
+									stm_behavior_ref::sendAction <- sendAction
 								]]
 								\ {|
-									stm_behavior_ref::sendAction,
+									stm_behavior_ref::sendSkill,
 									stm_behavior_ref::startHalt,
 									stm_behavior_ref::stopHalt
 								|}
@@ -9333,10 +9341,11 @@ module SSL
 									stm_behavior_ref::terminate <- terminate,
 									stm_behavior_ref::receiveField <- receiveField,
 									stm_behavior_ref::receiveFrame <- receiveFrame,
-									stm_behavior_ref::receiveTactic <- receiveTactic
+									stm_behavior_ref::receiveTactic <- receiveTactic,
+									stm_behavior_ref::sendAction <- sendAction
 								]]
 								\ {|
-									stm_behavior_ref::sendAction,
+									stm_behavior_ref::sendSkill,
 									stm_behavior_ref::startHalt,
 									stm_behavior_ref::stopHalt
 								|}
@@ -9473,10 +9482,11 @@ module SSL
 									stm_behavior_ref::terminate <- terminate,
 									stm_behavior_ref::receiveField <- receiveField,
 									stm_behavior_ref::receiveFrame <- receiveFrame,
-									stm_behavior_ref::receiveTactic <- receiveTactic
+									stm_behavior_ref::receiveTactic <- receiveTactic,
+									stm_behavior_ref::sendAction <- sendAction
 								]]
 								\ {|
-									stm_behavior_ref::sendAction,
+									stm_behavior_ref::sendSkill,
 									stm_behavior_ref::startHalt,
 									stm_behavior_ref::stopHalt
 								|}
@@ -9613,10 +9623,11 @@ module SSL
 									stm_behavior_ref::terminate <- terminate,
 									stm_behavior_ref::receiveField <- receiveField,
 									stm_behavior_ref::receiveFrame <- receiveFrame,
-									stm_behavior_ref::receiveTactic <- receiveTactic
+									stm_behavior_ref::receiveTactic <- receiveTactic,
+									stm_behavior_ref::sendAction <- sendAction
 								]]
 								\ {|
-									stm_behavior_ref::sendAction,
+									stm_behavior_ref::sendSkill,
 									stm_behavior_ref::startHalt,
 									stm_behavior_ref::stopHalt
 								|}
@@ -9839,8 +9850,8 @@ module SSL
 										(
 											navigationControllerRef::D__(id__)[[
 												navigationControllerRef::terminate <- terminate,
-												navigationControllerRef::stopCall <- stopCall,
-												navigationControllerRef::moveCall <- moveCall
+												navigationControllerRef::moveCall <- moveCall,
+												navigationControllerRef::stopCall <- stopCall
 											]]
 										)
 											[|{|terminate|}|]
@@ -9855,6 +9866,9 @@ module SSL
 												ctrl_ref0::receiveTactic.in <- decisionControllerRef::sendTactic.out,
 												ctrl_ref0::receiveTactic.out <- decisionControllerRef::sendTactic.in
 											]]
+											\ {|
+												ctrl_ref0::sendSkill
+											|}
 										)
 									)
 									\
@@ -10001,8 +10015,8 @@ module SSL
 										(
 											navigationControllerRef::VS__(id__)[[
 												navigationControllerRef::terminate <- terminate,
-												navigationControllerRef::stopCall <- stopCall,
-												navigationControllerRef::moveCall <- moveCall
+												navigationControllerRef::moveCall <- moveCall,
+												navigationControllerRef::stopCall <- stopCall
 											]]
 										)
 											[|{|terminate|}|]
@@ -10017,6 +10031,9 @@ module SSL
 												ctrl_ref0::receiveTactic.in <- decisionControllerRef::sendTactic.out,
 												ctrl_ref0::receiveTactic.out <- decisionControllerRef::sendTactic.in
 											]]
+											\ {|
+												ctrl_ref0::sendSkill
+											|}
 										)
 									)
 									\
@@ -10163,8 +10180,8 @@ module SSL
 										(
 											navigationControllerRef::O__(id__)[[
 												navigationControllerRef::terminate <- terminate,
-												navigationControllerRef::stopCall <- stopCall,
-												navigationControllerRef::moveCall <- moveCall
+												navigationControllerRef::moveCall <- moveCall,
+												navigationControllerRef::stopCall <- stopCall
 											]]
 										)
 											[|{|terminate|}|]
@@ -10179,6 +10196,9 @@ module SSL
 												ctrl_ref0::receiveTactic.in <- decisionControllerRef::sendTactic.out,
 												ctrl_ref0::receiveTactic.out <- decisionControllerRef::sendTactic.in
 											]]
+											\ {|
+												ctrl_ref0::sendSkill
+											|}
 										)
 									)
 									\
@@ -10325,8 +10345,8 @@ module SSL
 										(
 											navigationControllerRef::VS_O__(id__)[[
 												navigationControllerRef::terminate <- terminate,
-												navigationControllerRef::stopCall <- stopCall,
-												navigationControllerRef::moveCall <- moveCall
+												navigationControllerRef::moveCall <- moveCall,
+												navigationControllerRef::stopCall <- stopCall
 											]]
 										)
 											[|{|terminate|}|]
@@ -10341,6 +10361,9 @@ module SSL
 												ctrl_ref0::receiveTactic.in <- decisionControllerRef::sendTactic.out,
 												ctrl_ref0::receiveTactic.out <- decisionControllerRef::sendTactic.in
 											]]
+											\ {|
+												ctrl_ref0::sendSkill
+											|}
 										)
 									)
 									\
@@ -10487,8 +10510,8 @@ module SSL
 										(
 											navigationControllerRef::O__(id__)[[
 												navigationControllerRef::terminate <- terminate,
-												navigationControllerRef::stopCall <- stopCall,
-												navigationControllerRef::moveCall <- moveCall
+												navigationControllerRef::moveCall <- moveCall,
+												navigationControllerRef::stopCall <- stopCall
 											]]
 										)
 											[|{|terminate|}|]
@@ -10503,6 +10526,9 @@ module SSL
 												ctrl_ref0::receiveTactic.in <- decisionControllerRef::sendTactic.out,
 												ctrl_ref0::receiveTactic.out <- decisionControllerRef::sendTactic.in
 											]]
+											\ {|
+												ctrl_ref0::sendSkill
+											|}
 										)
 									)
 									\
