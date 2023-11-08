@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 08-11-2023 12:25:46
+-- Automatically generated on 08-11-2023 14:21:25
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -117,3 +117,17 @@ assert P_carryBallOnBallPlacement_BehaviorController_stm_move_away_ref :[deadloc
 assert P_carryBallOnBallPlacement_BehaviorController_stm_move_away_ref;RUN({r__}) :[deadlock-free]
 assert P_carryBallOnBallPlacement_BehaviorController_stm_move_away_ref :[deterministic]
 assert P_carryBallOnBallPlacement_BehaviorController_stm_move_away_ref :[divergence-free]
+-- generate carryBallOnBallPlacement_BehaviorController_stm_skill_ref
+P_carryBallOnBallPlacement_BehaviorController_stm_skill_ref = let
+	id__ = 0
+	
+	
+	
+within
+	carryBallOnBallPlacement_BehaviorController::stm_skill_ref::O__(
+		id__
+	)
+assert P_carryBallOnBallPlacement_BehaviorController_stm_skill_ref :[deadlock-free]	
+assert P_carryBallOnBallPlacement_BehaviorController_stm_skill_ref;RUN({r__}) :[deadlock-free]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_skill_ref :[deterministic]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_skill_ref :[divergence-free]

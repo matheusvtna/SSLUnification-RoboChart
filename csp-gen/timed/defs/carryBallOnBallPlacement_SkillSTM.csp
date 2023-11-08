@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 08-11-2023 12:25:46
+-- Automatically generated on 08-11-2023 14:21:25
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -42,8 +42,6 @@ exports
 	-- Declaring state machine events
 	channel receiveSkill__: NIDS.InOut.carryBallOnBallPlacement_Skill
 	channel receiveSkill: InOut.carryBallOnBallPlacement_Skill
-	channel sendAction__: NIDS.InOut.core_string
-	channel sendAction: InOut.core_string
 	channel startGoToBehindBall__: NIDS.InOut
 	channel startGoToBehindBall: InOut
 	channel stopGoToBehindBall__: NIDS.InOut
@@ -84,7 +82,6 @@ exports
 	sem__events = {|
 		terminate
 	,	receiveSkill,
-		sendAction,
 		startGoToBehindBall,
 		stopGoToBehindBall,
 		startApproachBall,
@@ -343,6 +340,9 @@ exports
 				 [] dbisim(((lastSkill==carryBallOnBallPlacement_Skill_CARRY_BALL))&(internal__!NID_jStopLastSkill -> SKIP ;  ((true&(share__choice(stopCarryBall.out -> SKIP)) ; jStartCurrentSkill::enter -> SKIP))))
 				 [] dbisim(((lastSkill==carryBallOnBallPlacement_Skill_MOVE_AWAY_FROM_POSITION))&(internal__!NID_jStopLastSkill -> SKIP ;  ((true&(share__choice(stopMoveAwayFromPosition.out -> SKIP)) ; jStartCurrentSkill::enter -> SKIP))))
 				 [] dbisim(((currentSkill==carryBallOnBallPlacement_Skill_GO_TO_BEHIND_BALL))&(internal__!NID_jStartCurrentSkill -> SKIP ;  ((true&(share__choice(startGoToBehindBall.out -> SKIP)) ; sWaitSkill::enter -> SKIP))))
+				 [] dbisim(((currentSkill==carryBallOnBallPlacement_Skill_APPROACH_BALL))&(internal__!NID_jStartCurrentSkill -> SKIP ;  ((true&(share__choice(startApproachBall.out -> SKIP)) ; sWaitSkill::enter -> SKIP))))
+				 [] dbisim(((currentSkill==carryBallOnBallPlacement_Skill_CARRY_BALL))&(internal__!NID_jStartCurrentSkill -> SKIP ;  ((true&(share__choice(startCarryBall.out -> SKIP)) ; sWaitSkill::enter -> SKIP))))
+				 [] dbisim(((currentSkill==carryBallOnBallPlacement_Skill_MOVE_AWAY_FROM_POSITION))&(internal__!NID_jStartCurrentSkill -> SKIP ;  ((true&(share__choice(startMoveAwayFromPosition.out -> SKIP)) ; sWaitSkill::enter -> SKIP))))
 				 []
 				 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
 				 []
@@ -381,7 +381,7 @@ exports
 						-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 						-- because CSPM modules are used for the semantics of Node.
 						flowevts = union(enterSS,{|exit,exited,interrupt|})
-						transSync = {|internal__.NID_sInitial,receiveSkill__.NID_sWaitSkill.in,internal__.NID_jCheckCurrentSkill,internal__.NID_jCheckCurrentSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStartCurrentSkill|}
+						transSync = {|internal__.NID_sInitial,receiveSkill__.NID_sWaitSkill.in,internal__.NID_jCheckCurrentSkill,internal__.NID_jCheckCurrentSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill|}
 					within
 						((
 						 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
@@ -403,7 +403,7 @@ exports
 						 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 [[jCheckCurrentSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckCurrentSkill,internal__.NID_jCheckCurrentSkill|}]]
 						 [[jStopLastSkill::interrupt <- x__ | x__ <- {|internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill|}]]
-						 [[jStartCurrentSkill::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentSkill|}]]
+						 [[jStartCurrentSkill::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill|}]]
 						 )
 						  [[ share__ <- x__ | x__ <- {| share__,setR_currentSkill |} ]] 
 						  [[set_currentSkill <- setL_currentSkill,set_lastSkill <- setL_lastSkill]]
@@ -424,7 +424,6 @@ exports
 					 \ hideSet)
 					[[
 						receiveSkill__.x____ <- receiveSkill,
-						sendAction__.x____ <- sendAction,
 						startGoToBehindBall__.x____ <- startGoToBehindBall,
 						stopGoToBehindBall__.x____ <- stopGoToBehindBall,
 						startApproachBall__.x____ <- startApproachBall,
@@ -487,11 +486,11 @@ exports
 						sbisim(
 							IteratedBehaviour(id__)
 							[| {|get_lastSkill,set_lastSkill,terminate|} |]
-							Memory_lastSkill(carryBallOnBallPlacement_Skill_GO_TO_BEHIND_BALL)
+							Memory_lastSkill(carryBallOnBallPlacement_Skill_NONE)
 						)\{|get_lastSkill,set_lastSkill|}
 					)
 					[| {|get_currentSkill,set_currentSkill,terminate|} |]
-					Memory_currentSkill(carryBallOnBallPlacement_Skill_GO_TO_BEHIND_BALL)
+					Memory_currentSkill(carryBallOnBallPlacement_Skill_NONE)
 				)\{|get_currentSkill,set_currentSkill|}
 			)
 			)
@@ -519,7 +518,7 @@ exports
 						-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 						-- because CSPM modules are used for the semantics of Node.
 						flowevts = union(enterSS,{|exit,exited,interrupt|})
-						transSync = {|internal__.NID_sInitial,receiveSkill__.NID_sWaitSkill.in,internal__.NID_jCheckCurrentSkill,internal__.NID_jCheckCurrentSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStartCurrentSkill|}
+						transSync = {|internal__.NID_sInitial,receiveSkill__.NID_sWaitSkill.in,internal__.NID_jCheckCurrentSkill,internal__.NID_jCheckCurrentSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill|}
 					within
 						((
 						 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
@@ -541,7 +540,7 @@ exports
 						 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 [[jCheckCurrentSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckCurrentSkill,internal__.NID_jCheckCurrentSkill|}]]
 						 [[jStopLastSkill::interrupt <- x__ | x__ <- {|internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill|}]]
-						 [[jStartCurrentSkill::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentSkill|}]]
+						 [[jStartCurrentSkill::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill|}]]
 						 )
 						  [[ share__ <- x__ | x__ <- {| share__,setR_currentSkill |} ]] 
 						  [[set_currentSkill <- setL_currentSkill,set_lastSkill <- setL_lastSkill]]
@@ -562,7 +561,6 @@ exports
 					 \ hideSet)
 					[[
 						receiveSkill__.x____ <- receiveSkill,
-						sendAction__.x____ <- sendAction,
 						startGoToBehindBall__.x____ <- startGoToBehindBall,
 						stopGoToBehindBall__.x____ <- stopGoToBehindBall,
 						startApproachBall__.x____ <- startApproachBall,
@@ -625,11 +623,11 @@ exports
 						sbisim(
 							IteratedBehaviour_VS_O(id__)
 							[| {|get_lastSkill,set_lastSkill,terminate|} |]
-							Memory_lastSkill(carryBallOnBallPlacement_Skill_GO_TO_BEHIND_BALL)
+							Memory_lastSkill(carryBallOnBallPlacement_Skill_NONE)
 						)\{|get_lastSkill,set_lastSkill|}
 					)
 					[| {|get_currentSkill,set_currentSkill,terminate|} |]
-					Memory_currentSkill(carryBallOnBallPlacement_Skill_GO_TO_BEHIND_BALL)
+					Memory_currentSkill(carryBallOnBallPlacement_Skill_NONE)
 				)\{|get_currentSkill,set_currentSkill|}
 			)
 			)
@@ -652,9 +650,9 @@ exports
 			terminate -> SKIP
 		
 		-- varMemory process
-		varMemory(id__) = Memory_currentSkill(carryBallOnBallPlacement_Skill_GO_TO_BEHIND_BALL)
+		varMemory(id__) = Memory_currentSkill(carryBallOnBallPlacement_Skill_NONE)
 		[| { terminate } |] (
-		Memory_lastSkill(carryBallOnBallPlacement_Skill_GO_TO_BEHIND_BALL)
+		Memory_lastSkill(carryBallOnBallPlacement_Skill_NONE)
 		)
 		
 		getsetLocalChannels = {|get_currentSkill,set_currentSkill,get_lastSkill,set_lastSkill|}

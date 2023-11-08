@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 07-11-2023 20:19:55
+-- Automatically generated on 08-11-2023 13:36:06
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -82,10 +82,20 @@ exports
 	localClockResets = {||}
 	
 	
+	channel get_CLID_sFinal : core_clock_type 
 	channel get_CLID_sWaitStart : core_clock_type 
 	channel get_CLID_sRun : core_clock_type 
-	channel get_CLID_sFinal : core_clock_type 
 	--channel increment__
+	
+	CLID_sFinal_clock_type(id__,
+			          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
+		let
+			max = (clock_type_max(Union({
+	{}
+	}))+1)
+		ctype = {0..max}
+	within
+		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
 	CLID_sWaitStart_clock_type(id__,
 			          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
@@ -98,16 +108,6 @@ exports
 		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
 	CLID_sRun_clock_type(id__,
-			          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
-		let
-			max = (clock_type_max(Union({
-	{}
-	}))+1)
-		ctype = {0..max}
-	within
-		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
-	
-	CLID_sFinal_clock_type(id__,
 			          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 		let
 			max = (clock_type_max(Union({
@@ -538,21 +538,21 @@ exports
 						 	)\{|get_CLID_sMoveAway|}
 						 )
 						 ))
-						  [[ share__ <- x__ | x__ <- {| share__,setR_robotIsFarEnoughFromPosition,setR_nodeStatus |} ]] 
-						  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition,set_nodeStatus <- setL_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotIsFarEnoughFromPosition |} ]] 
+						  [[set_nodeStatus <- setL_nodeStatus,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-						 			,setL_robotIsFarEnoughFromPosition
 						 			,setL_nodeStatus
-						 			,setR_robotIsFarEnoughFromPosition
-						 			 			,setR_nodeStatus
+						 			,setL_robotIsFarEnoughFromPosition
+						 			,setR_nodeStatus
+						 			 			,setR_robotIsFarEnoughFromPosition
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition,setL_nodeStatus |} ]]
-						  [[set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition,set_nodeStatus <- setR_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotIsFarEnoughFromPosition |} ]]
+						  [[set_nodeStatus <- setR_nodeStatus,set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition]]
 						 )
-						)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setL_nodeStatus <- set_nodeStatus]]
-						 [[setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setR_nodeStatus <- set_nodeStatus]]
+						)[[setL_nodeStatus <- set_nodeStatus,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+						 [[setR_nodeStatus <- set_nodeStatus,setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
 						)\union(enteredSS,{terminate}) 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -638,21 +638,21 @@ exports
 						 	)\{|get_CLID_sMoveAway|}
 						 )
 						 ))
-						  [[ share__ <- x__ | x__ <- {| share__,setR_robotIsFarEnoughFromPosition,setR_nodeStatus |} ]] 
-						  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition,set_nodeStatus <- setL_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotIsFarEnoughFromPosition |} ]] 
+						  [[set_nodeStatus <- setL_nodeStatus,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-						 			,setL_robotIsFarEnoughFromPosition
 						 			,setL_nodeStatus
-						 			,setR_robotIsFarEnoughFromPosition
-						 			 			,setR_nodeStatus
+						 			,setL_robotIsFarEnoughFromPosition
+						 			,setR_nodeStatus
+						 			 			,setR_robotIsFarEnoughFromPosition
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition,setL_nodeStatus |} ]]
-						  [[set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition,set_nodeStatus <- setR_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotIsFarEnoughFromPosition |} ]]
+						  [[set_nodeStatus <- setR_nodeStatus,set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition]]
 						 )
-						)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setL_nodeStatus <- set_nodeStatus]]
-						 [[setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setR_nodeStatus <- set_nodeStatus]]
+						)[[setL_nodeStatus <- set_nodeStatus,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+						 [[setR_nodeStatus <- set_nodeStatus,setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
 						)\{terminate} 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
