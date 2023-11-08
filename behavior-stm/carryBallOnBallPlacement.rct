@@ -33,7 +33,30 @@ interface CarryBallOnBallPlacementI {
 // TODO: Add a FSM output -> makes robot move...
 controller BehaviorController {
 	uses IBehavior
-	sref stm_ref0 = BehaviorSTM
+	uses NodeStatusI
+	sref stm_behavior_ref = BehaviorSTM
+
+	connection BehaviorController on receiveField to stm_behavior_ref on receiveField
+	connection BehaviorController on receiveFrame to stm_behavior_ref on receiveFrame
+	connection BehaviorController on receiveTactic to stm_behavior_ref on receiveTactic
+
+	sref stm_carry_ball_on_ball_placement_ref = CarryBallOnBallPlacementSTM
+	connection stm_behavior_ref on startCarryBallOnBallPlacementBehavior to stm_carry_ball_on_ball_placement_ref on startCarryBallOnBallPlacement
+	connection stm_behavior_ref on stopCarryBallOnBallPlacementBehavior to stm_carry_ball_on_ball_placement_ref on stopCarryBallOnBallPlacement
+
+	// SUb-FSMs.
+	sref stm_go_to_behind_ball_ref = GoToBehindBallSTM
+	sref stm_approach_ball_ref = ApproachBallSTM
+	sref stm_carry_ball_ref = CarryBallSTM
+	sref stm_move_away_ref = MoveAwayFromPositionSTM
+	connection stm_carry_ball_on_ball_placement_ref on startGoToBehindBall to stm_go_to_behind_ball_ref on startGoToBehindBall
+	connection stm_carry_ball_on_ball_placement_ref on stopGoToBehindBall to stm_go_to_behind_ball_ref on stopGoToBehindBall
+	connection stm_carry_ball_on_ball_placement_ref on startApproachBall to stm_approach_ball_ref on startApproachBall
+	connection stm_carry_ball_on_ball_placement_ref on stopApproachBall to stm_approach_ball_ref on stopApproachBall
+	connection stm_carry_ball_on_ball_placement_ref on stopCarryBall to stm_carry_ball_ref on startCarryBall
+	connection stm_carry_ball_on_ball_placement_ref on startCarryBall to stm_carry_ball_ref on stopCarryBall
+	connection stm_carry_ball_on_ball_placement_ref on startMoveAwayFromPosition to stm_move_away_ref on startMoveAwayFromPosition
+	connection stm_carry_ball_on_ball_placement_ref on stopMoveAwayFromPosition to stm_move_away_ref on stopMoveAwayFromPosition
 }
 // END TODO
 
@@ -42,10 +65,10 @@ controller BehaviorController {
 // --------------------------------------------
 
 stm CarryBallOnBallPlacementSTM {
-	// Controls the start/stop for this BehaviorSTM.
+	// Controls the start/stop for this BehaviorSTM --> Input events.
 	uses CarryBallOnBallPlacementI
 	
-	// Sub-FSMs
+	// Sub-FSMs --> Output events.
 	uses GoToBehindBallI
 	uses ApproachBallI
 	uses CarryBallI

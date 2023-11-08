@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 07-11-2023 20:19:55
+-- Automatically generated on 07-11-2023 21:32:17
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -45,27 +45,101 @@ P_carryBallOnBallPlacement_BehaviorController = let
 	
 	
 	
+	const_carryBallOnBallPlacement_BehaviorController_stm_move_away_ref_TIME_LIMIT_TO_BEHAVE = 30
 		
 within
-	carryBallOnBallPlacement::BehaviorController::O__(id__)
+	carryBallOnBallPlacement::BehaviorController::O__(id__,
+			    const_carryBallOnBallPlacement_BehaviorController_stm_move_away_ref_TIME_LIMIT_TO_BEHAVE)
 
 assert P_carryBallOnBallPlacement_BehaviorController :[deadlock-free]	
 assert P_carryBallOnBallPlacement_BehaviorController;RUN({r__}) :[deadlock-free]
 assert P_carryBallOnBallPlacement_BehaviorController :[deterministic]
 assert P_carryBallOnBallPlacement_BehaviorController :[divergence-free]
 
--- generate carryBallOnBallPlacement_BehaviorController_stm_ref0
-P_carryBallOnBallPlacement_BehaviorController_stm_ref0 = let
+-- generate carryBallOnBallPlacement_BehaviorController_stm_behavior_ref
+P_carryBallOnBallPlacement_BehaviorController_stm_behavior_ref = let
 	id__ = 0
 	
 	
 	
 within
-	carryBallOnBallPlacement::BehaviorController::stm_ref0::O__(
+	carryBallOnBallPlacement::BehaviorController::stm_behavior_ref::O__(
 		id__
 	)
-assert P_carryBallOnBallPlacement_BehaviorController_stm_ref0 :[deadlock-free]	
-assert P_carryBallOnBallPlacement_BehaviorController_stm_ref0;RUN({r__}) :[deadlock-free]
-assert P_carryBallOnBallPlacement_BehaviorController_stm_ref0 :[deterministic]
-assert P_carryBallOnBallPlacement_BehaviorController_stm_ref0 :[divergence-free]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_behavior_ref :[deadlock-free]	
+assert P_carryBallOnBallPlacement_BehaviorController_stm_behavior_ref;RUN({r__}) :[deadlock-free]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_behavior_ref :[deterministic]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_behavior_ref :[divergence-free]
+-- generate carryBallOnBallPlacement_BehaviorController_stm_carry_ball_on_ball_placement_ref
+P_carryBallOnBallPlacement_BehaviorController_stm_carry_ball_on_ball_placement_ref = let
+	id__ = 0
+	
+	
+	
+within
+	carryBallOnBallPlacement::BehaviorController::stm_carry_ball_on_ball_placement_ref::O__(
+		id__
+	)
+assert P_carryBallOnBallPlacement_BehaviorController_stm_carry_ball_on_ball_placement_ref :[deadlock-free]	
+assert P_carryBallOnBallPlacement_BehaviorController_stm_carry_ball_on_ball_placement_ref;RUN({r__}) :[deadlock-free]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_carry_ball_on_ball_placement_ref :[deterministic]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_carry_ball_on_ball_placement_ref :[divergence-free]
+-- generate carryBallOnBallPlacement_BehaviorController_stm_go_to_behind_ball_ref
+P_carryBallOnBallPlacement_BehaviorController_stm_go_to_behind_ball_ref = let
+	id__ = 0
+	
+	
+	
+within
+	carryBallOnBallPlacement::BehaviorController::stm_go_to_behind_ball_ref::O__(
+		id__
+	)
+assert P_carryBallOnBallPlacement_BehaviorController_stm_go_to_behind_ball_ref :[deadlock-free]	
+assert P_carryBallOnBallPlacement_BehaviorController_stm_go_to_behind_ball_ref;RUN({r__}) :[deadlock-free]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_go_to_behind_ball_ref :[deterministic]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_go_to_behind_ball_ref :[divergence-free]
+-- generate carryBallOnBallPlacement_BehaviorController_stm_approach_ball_ref
+P_carryBallOnBallPlacement_BehaviorController_stm_approach_ball_ref = let
+	id__ = 0
+	
+	
+	
+within
+	carryBallOnBallPlacement::BehaviorController::stm_approach_ball_ref::O__(
+		id__
+	)
+assert P_carryBallOnBallPlacement_BehaviorController_stm_approach_ball_ref :[deadlock-free]	
+assert P_carryBallOnBallPlacement_BehaviorController_stm_approach_ball_ref;RUN({r__}) :[deadlock-free]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_approach_ball_ref :[deterministic]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_approach_ball_ref :[divergence-free]
+-- generate carryBallOnBallPlacement_BehaviorController_stm_carry_ball_ref
+P_carryBallOnBallPlacement_BehaviorController_stm_carry_ball_ref = let
+	id__ = 0
+	
+	
+	
+within
+	carryBallOnBallPlacement::BehaviorController::stm_carry_ball_ref::O__(
+		id__
+	)
+assert P_carryBallOnBallPlacement_BehaviorController_stm_carry_ball_ref :[deadlock-free]	
+assert P_carryBallOnBallPlacement_BehaviorController_stm_carry_ball_ref;RUN({r__}) :[deadlock-free]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_carry_ball_ref :[deterministic]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_carry_ball_ref :[divergence-free]
+-- generate carryBallOnBallPlacement_BehaviorController_stm_move_away_ref
+P_carryBallOnBallPlacement_BehaviorController_stm_move_away_ref = let
+	id__ = 0
+	
+	
+	const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE = 30
+	
+within
+	carryBallOnBallPlacement::BehaviorController::stm_move_away_ref::O__(
+		id__,
+		const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE
+	)
+assert P_carryBallOnBallPlacement_BehaviorController_stm_move_away_ref :[deadlock-free]	
+assert P_carryBallOnBallPlacement_BehaviorController_stm_move_away_ref;RUN({r__}) :[deadlock-free]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_move_away_ref :[deterministic]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_move_away_ref :[divergence-free]
 
