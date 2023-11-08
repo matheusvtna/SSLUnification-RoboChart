@@ -51,6 +51,7 @@ controller BehaviorController {
 	connection stm_carry_ball_on_ball_placement_ref on startCarryBall to stm_carry_ball_ref on stopCarryBall
 	connection stm_carry_ball_on_ball_placement_ref on startMoveAwayFromPosition to stm_move_away_ref on startMoveAwayFromPosition
 	connection stm_carry_ball_on_ball_placement_ref on stopMoveAwayFromPosition to stm_move_away_ref on stopMoveAwayFromPosition
+	connection stm_behavior_ref on sendAction to BehaviorController on sendAction
 }
 // END TODO
 
