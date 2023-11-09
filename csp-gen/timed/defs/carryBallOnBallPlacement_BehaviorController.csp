@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 08-11-2023 14:21:25
+-- Automatically generated on 08-11-2023 16:01:34
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -65,7 +65,8 @@
 			              NID_sWaitTactic|
 			              NID_jCheckCurrentTactic|
 			              NID_jStopLastTactic|
-			              NID_jStartCurrentTactic
+			              NID_jStartCurrentTactic|
+			              NID_jCheckSkillForTactic
 			
 			channel internal__ : NIDS
 			
@@ -79,6 +80,7 @@
 			channel get_currentTactic, set_currentTactic, setL_currentTactic, setR_currentTactic: Tactic
 			channel get_lastTactic, set_lastTactic, setL_lastTactic, setR_lastTactic: Tactic
 			channel get_nodeStatus, set_nodeStatus, setL_nodeStatus, setR_nodeStatus: NODE_STATUS
+			channel get_skill, set_skill, setL_skill, setR_skill: carryBallOnBallPlacement_Skill
 			
 			-- Shared variable channels
 			
@@ -113,7 +115,8 @@
 			sWaitTactic::enter,
 			jCheckCurrentTactic::enter,
 			jStopLastTactic::enter,
-			jStartCurrentTactic::enter
+			jStartCurrentTactic::enter,
+			jCheckSkillForTactic::enter
 			|}
 			
 			enteredSS = 	{|
@@ -332,6 +335,29 @@
 				endmodule
 				----------------------------------------------------------------------
 				
+				
+				----------------------------------------------------------------------
+				-- Junction: jCheckSkillForTactic
+				module jCheckSkillForTactic
+				exports
+				
+					channel enter, interrupt
+					
+					Timed(OneStep) {
+						D__(id__) = 
+							dbisim(let
+								Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+								
+								Active 		= share__choice(interrupt -> SKIP) ; Inactive
+							within
+								Inactive [| {terminate} |> SKIP)
+							
+						VS_O__(id__) = D__(id__)
+					}
+				
+				endmodule
+				----------------------------------------------------------------------
+				
 				-- END of Nodes --
 				
 				Timed(OneStep) {
@@ -377,7 +403,7 @@
 				
 				-- Transitions
 				Transitions(id__) = ((let
-					Trans = share__choice(get_lastTactic?lastTactic -> get_currentTactic?currentTactic -> TimeOut_1(
+					Trans = share__choice(get_currentTactic?currentTactic -> get_lastTactic?lastTactic -> TimeOut_1(
 						 (share__ -> SKIP
 						 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sWaitTactic::enter -> SKIP))))
 						 [] dbisim((true)&(receiveTactic__!NID_sWaitTactic.in?currentTactic:{currentTactic|currentTactic <- Tactic, true} -> share__choice(set_currentTactic!currentTactic -> SKIP) ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; jCheckCurrentTactic::enter -> SKIP)))
@@ -387,6 +413,8 @@
 						 [] dbisim(((lastTactic==Tactic_HALT))&(internal__!NID_jStopLastTactic -> SKIP ;  ((true&(share__choice(stopHalt.out -> SKIP)) ; jStartCurrentTactic::enter -> SKIP))))
 						 [] dbisim(((currentTactic==Tactic_PLACE_BALL_IN_POSITION))&(internal__!NID_jStartCurrentTactic -> SKIP ;  ((true&(share__choice(startCarryBallOnBallPlacement.out -> SKIP)) ; sWaitTactic::enter -> SKIP))))
 						 [] dbisim(((currentTactic==Tactic_HALT))&(internal__!NID_jStartCurrentTactic -> SKIP ;  ((true&(share__choice(startHalt.out -> SKIP)) ; sWaitTactic::enter -> SKIP))))
+						 [] dbisim((true)&(carryBallOnBallPlacementSkill__!NID_sWaitTactic.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; jCheckSkillForTactic::enter -> SKIP)))
+						 [] dbisim(((currentTactic==Tactic_PLACE_BALL_IN_POSITION))&(internal__!NID_jCheckSkillForTactic -> SKIP ;  ((SKIP ; sWaitTactic::enter -> SKIP))))
 						 []
 						 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
 						 []
@@ -417,7 +445,8 @@
 							sWaitTactic::enter,
 							jCheckCurrentTactic::enter,
 							jStopLastTactic::enter,
-							jStartCurrentTactic::enter
+							jStartCurrentTactic::enter,
+							jCheckSkillForTactic::enter
 							|}
 							hideSet = union(enterSS,{|exit,exited,internal__|})
 						within 
@@ -425,7 +454,7 @@
 								-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 								-- because CSPM modules are used for the semantics of Node.
 								flowevts = union(enterSS,{|exit,exited,interrupt|})
-								transSync = {|internal__.NID_sInitial,receiveTactic__.NID_sWaitTactic.in,internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic,internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic,internal__.NID_jStartCurrentTactic,internal__.NID_jStartCurrentTactic|}
+								transSync = {|internal__.NID_sInitial,receiveTactic__.NID_sWaitTactic.in,internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic,internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic,internal__.NID_jStartCurrentTactic,internal__.NID_jStartCurrentTactic,carryBallOnBallPlacementSkill__.NID_sWaitTactic.in,internal__.NID_jCheckSkillForTactic|}
 							within
 								((
 								 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
@@ -438,30 +467,34 @@
 								   jStopLastTactic::D__(id__)
 								   [| { share__, terminate } |] (
 								   jStartCurrentTactic::D__(id__)
+								   [| { share__, terminate } |] (
+								   jCheckSkillForTactic::D__(id__)
+								   )
 								   )
 								   )
 								   )
 								   )
 								 )
-								 [[sWaitTactic::interrupt <- x__ | x__ <- {|interrupt,receiveTactic__.NID_sWaitTactic.in|}]]
+								 [[sWaitTactic::interrupt <- x__ | x__ <- {|interrupt,receiveTactic__.NID_sWaitTactic.in,carryBallOnBallPlacementSkill__.NID_sWaitTactic.in|}]]
 								 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 								 [[jCheckCurrentTactic::interrupt <- x__ | x__ <- {|internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic|}]]
 								 [[jStopLastTactic::interrupt <- x__ | x__ <- {|internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic|}]]
 								 [[jStartCurrentTactic::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentTactic,internal__.NID_jStartCurrentTactic|}]]
+								 [[jCheckSkillForTactic::interrupt <- x__ | x__ <- {|internal__.NID_jCheckSkillForTactic|}]]
 								 )
 								  [[ share__ <- x__ | x__ <- {| share__,setR_currentTactic |} ]] 
-								  [[set_lastTactic <- setL_lastTactic,set_currentTactic <- setL_currentTactic]]
+								  [[set_currentTactic <- setL_currentTactic,set_lastTactic <- setL_lastTactic]]
 								 )
 								 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-								 			,setL_lastTactic
 								 			,setL_currentTactic
+								 			,setL_lastTactic
 								 			,setR_currentTactic
 								 			|}) |]
 								 ((sInitial::enter -> Transitions(id__))
-								  [[ share__ <- x__ | x__ <- {| share__,setL_lastTactic,setL_currentTactic |} ]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_currentTactic,setL_lastTactic |} ]]
 								  [[set_currentTactic <- setR_currentTactic]]
 								 )
-								)[[setL_lastTactic <- set_lastTactic,setL_currentTactic <- set_currentTactic]]
+								)[[setL_currentTactic <- set_currentTactic,setL_lastTactic <- set_lastTactic]]
 								 [[setR_currentTactic <- set_currentTactic]]
 								)
 							)
@@ -515,7 +548,8 @@
 					((let
 						getsetLocalChannels = {|get_currentTactic,set_currentTactic,
 						get_lastTactic,set_lastTactic,
-						get_nodeStatus,set_nodeStatus|}
+						get_nodeStatus,set_nodeStatus,
+						get_skill,set_skill|}
 						clockSync = {||}
 					within
 						(Behaviour(id__) 
@@ -532,7 +566,13 @@
 								sbisim(
 									dbisim(
 										sbisim(
-											IteratedBehaviour(id__)
+											dbisim(
+												sbisim(
+													IteratedBehaviour(id__)
+													[| {|get_skill,set_skill,terminate|} |]
+													Memory_skill(carryBallOnBallPlacement_Skill_NONE)
+												)\{|get_skill,set_skill|}
+											)
 											[| {|get_nodeStatus,set_nodeStatus,terminate|} |]
 											Memory_nodeStatus(NODE_STATUS_RUNNING)
 										)\{|get_nodeStatus,set_nodeStatus|}
@@ -562,7 +602,8 @@
 							sWaitTactic::enter,
 							jCheckCurrentTactic::enter,
 							jStopLastTactic::enter,
-							jStartCurrentTactic::enter
+							jStartCurrentTactic::enter,
+							jCheckSkillForTactic::enter
 							|}
 							hideSet = union(enterSS,{|exit,exited,internal__|})
 						within 
@@ -570,7 +611,7 @@
 								-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 								-- because CSPM modules are used for the semantics of Node.
 								flowevts = union(enterSS,{|exit,exited,interrupt|})
-								transSync = {|internal__.NID_sInitial,receiveTactic__.NID_sWaitTactic.in,internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic,internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic,internal__.NID_jStartCurrentTactic,internal__.NID_jStartCurrentTactic|}
+								transSync = {|internal__.NID_sInitial,receiveTactic__.NID_sWaitTactic.in,internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic,internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic,internal__.NID_jStartCurrentTactic,internal__.NID_jStartCurrentTactic,carryBallOnBallPlacementSkill__.NID_sWaitTactic.in,internal__.NID_jCheckSkillForTactic|}
 							within
 								((
 								 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
@@ -583,30 +624,34 @@
 								   jStopLastTactic::VS_O__(id__)
 								   [| { share__, terminate } |] (
 								   jStartCurrentTactic::VS_O__(id__)
+								   [| { share__, terminate } |] (
+								   jCheckSkillForTactic::VS_O__(id__)
+								   )
 								   )
 								   )
 								   )
 								   )
 								 )
-								 [[sWaitTactic::interrupt <- x__ | x__ <- {|interrupt,receiveTactic__.NID_sWaitTactic.in|}]]
+								 [[sWaitTactic::interrupt <- x__ | x__ <- {|interrupt,receiveTactic__.NID_sWaitTactic.in,carryBallOnBallPlacementSkill__.NID_sWaitTactic.in|}]]
 								 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 								 [[jCheckCurrentTactic::interrupt <- x__ | x__ <- {|internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic|}]]
 								 [[jStopLastTactic::interrupt <- x__ | x__ <- {|internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic|}]]
 								 [[jStartCurrentTactic::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentTactic,internal__.NID_jStartCurrentTactic|}]]
+								 [[jCheckSkillForTactic::interrupt <- x__ | x__ <- {|internal__.NID_jCheckSkillForTactic|}]]
 								 )
 								  [[ share__ <- x__ | x__ <- {| share__,setR_currentTactic |} ]] 
-								  [[set_lastTactic <- setL_lastTactic,set_currentTactic <- setL_currentTactic]]
+								  [[set_currentTactic <- setL_currentTactic,set_lastTactic <- setL_lastTactic]]
 								 )
 								 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-								 			,setL_lastTactic
 								 			,setL_currentTactic
+								 			,setL_lastTactic
 								 			,setR_currentTactic
 								 			|}) |]
 								 ((sInitial::enter -> Transitions(id__))
-								  [[ share__ <- x__ | x__ <- {| share__,setL_lastTactic,setL_currentTactic |} ]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_currentTactic,setL_lastTactic |} ]]
 								  [[set_currentTactic <- setR_currentTactic]]
 								 )
-								)[[setL_lastTactic <- set_lastTactic,setL_currentTactic <- set_currentTactic]]
+								)[[setL_currentTactic <- set_currentTactic,setL_lastTactic <- set_lastTactic]]
 								 [[setR_currentTactic <- set_currentTactic]]
 								)
 							)
@@ -660,7 +705,8 @@
 					dbisim((let
 						getsetLocalChannels = {|get_currentTactic,set_currentTactic,
 						get_lastTactic,set_lastTactic,
-						get_nodeStatus,set_nodeStatus|}
+						get_nodeStatus,set_nodeStatus,
+						get_skill,set_skill|}
 						clockSync = {||}
 					within
 						(Behaviour_VS_O(id__) 
@@ -677,7 +723,13 @@
 								sbisim(
 									dbisim(
 										sbisim(
-											IteratedBehaviour_VS_O(id__)
+											dbisim(
+												sbisim(
+													IteratedBehaviour_VS_O(id__)
+													[| {|get_skill,set_skill,terminate|} |]
+													Memory_skill(carryBallOnBallPlacement_Skill_NONE)
+												)\{|get_skill,set_skill|}
+											)
 											[| {|get_nodeStatus,set_nodeStatus,terminate|} |]
 											Memory_nodeStatus(NODE_STATUS_RUNNING)
 										)\{|get_nodeStatus,set_nodeStatus|}
@@ -714,6 +766,12 @@
 					set_nodeStatus?x__ -> Memory_nodeStatus(x__)
 					[]
 					terminate -> SKIP
+				Memory_skill(skill) =
+					get_skill!skill -> Memory_skill(skill)
+					[]
+					set_skill?x__ -> Memory_skill(x__)
+					[]
+					terminate -> SKIP
 				
 				-- varMemory process
 				varMemory(id__) = Memory_currentTactic(Tactic_HALT)
@@ -721,10 +779,13 @@
 				Memory_lastTactic(Tactic_HALT)
 				[| { terminate } |] (
 				Memory_nodeStatus(NODE_STATUS_RUNNING)
+				[| { terminate } |] (
+				Memory_skill(carryBallOnBallPlacement_Skill_NONE)
+				)
 				)
 				)
 				
-				getsetLocalChannels = {|get_currentTactic,set_currentTactic,get_lastTactic,set_lastTactic,get_nodeStatus,set_nodeStatus|}
+				getsetLocalChannels = {|get_currentTactic,set_currentTactic,get_lastTactic,set_lastTactic,get_nodeStatus,set_nodeStatus,get_skill,set_skill|}
 				
 				-- Definition of the behaviour of state machines (default, optimised, visible, visible and optimised)
 				FVS__(id__) = STM_VS_O(id__) \ localClockResets
@@ -842,10 +903,19 @@
 			localClockResets = {||}
 			
 			
+			channel get_CLID_sFinal : core_clock_type 
 			channel get_CLID_sRun : core_clock_type 
 			channel get_CLID_sWaitStart : core_clock_type 
-			channel get_CLID_sFinal : core_clock_type 
 			--channel increment__
+			
+			CLID_sFinal_clock_type(id__) = 
+				let
+					max = (clock_type_max(Union({
+			{}
+			}))+1)
+				ctype = {0..max}
+			within
+				if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 			
 			CLID_sRun_clock_type(id__) = 
 				let
@@ -857,15 +927,6 @@
 				if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 			
 			CLID_sWaitStart_clock_type(id__) = 
-				let
-					max = (clock_type_max(Union({
-			{}
-			}))+1)
-				ctype = {0..max}
-			within
-				if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
-			
-			CLID_sFinal_clock_type(id__) = 
 				let
 					max = (clock_type_max(Union({
 			{}
@@ -1053,14 +1114,14 @@
 					channel stopCarryBallOnBallPlacement__: NIDS.InOut
 					channel carryBallOnBallPlacementSkill__: NIDS.InOut
 					
-					channel get_CLID_sApproachBall : core_clock_type 
 					channel get_CLID_sGoToBehindBall : core_clock_type 
+					channel get_CLID_sApproachBall : core_clock_type 
 					channel get_CLID_sPlaceBall : core_clock_type 
-					channel get_CLID_sMoveAwayFromBall : core_clock_type 
 					channel get_CLID_sGiveSpaceToGetBall : core_clock_type 
+					channel get_CLID_sMoveAwayFromBall : core_clock_type 
 					--channel increment__
 					
-					CLID_sApproachBall_clock_type(id__) = 
+					CLID_sGoToBehindBall_clock_type(id__) = 
 						let
 							max = (clock_type_max(Union({
 					{}
@@ -1069,7 +1130,7 @@
 					within
 						if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 					
-					CLID_sGoToBehindBall_clock_type(id__) = 
+					CLID_sApproachBall_clock_type(id__) = 
 						let
 							max = (clock_type_max(Union({
 					{}
@@ -1087,7 +1148,7 @@
 					within
 						if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 					
-					CLID_sMoveAwayFromBall_clock_type(id__) = 
+					CLID_sGiveSpaceToGetBall_clock_type(id__) = 
 						let
 							max = (clock_type_max(Union({
 					{}
@@ -1096,7 +1157,7 @@
 					within
 						if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 					
-					CLID_sGiveSpaceToGetBall_clock_type(id__) = 
+					CLID_sMoveAwayFromBall_clock_type(id__) = 
 						let
 							max = (clock_type_max(Union({
 					{}
@@ -1633,16 +1694,16 @@
 								 												 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 								 												 )
 								 												  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-								 												  [[set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall]]
+								 												  [[set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_nodeStatus <- setL_nodeStatus]]
 								 												 )
 								 												 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-								 												 			,setL_nodeStatus
 								 												 			,setL_robotHasMovedAwayFromBall
+								 												 			,setL_nodeStatus
 								 												|}) |]
 								 												 ((sInitial::enter -> Transitions(id__))
-								 												  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotHasMovedAwayFromBall |} ]]
+								 												  [[ share__ <- x__ | x__ <- {| share__,setL_robotHasMovedAwayFromBall,setL_nodeStatus |} ]]
 								 												 )
-								 												)[[setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall]]
+								 												)[[setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_nodeStatus <- set_nodeStatus]]
 								 												)
 								 											)
 								 											 \ hideSet)
@@ -1653,46 +1714,46 @@
 								 												| x____ <- NIDS
 								 											]]
 								 										)
-								 										[| {|get_CLID_sGiveSpaceToGetBall,sGiveSpaceToGetBall::entered,terminate|} |]
-								 										dbisim(Clock_CLID_sGiveSpaceToGetBall(id__,0))
-								 									)\{|get_CLID_sGiveSpaceToGetBall|}
+								 										[| {|get_CLID_sMoveAwayFromBall,sMoveAwayFromBall::entered,terminate|} |]
+								 										dbisim(Clock_CLID_sMoveAwayFromBall(id__,0))
+								 									)\{|get_CLID_sMoveAwayFromBall|}
 								 								)
-								 								[| {|get_CLID_sMoveAwayFromBall,sMoveAwayFromBall::entered,terminate|} |]
-								 								dbisim(Clock_CLID_sMoveAwayFromBall(id__,0))
-								 							)\{|get_CLID_sMoveAwayFromBall|}
+								 								[| {|get_CLID_sGiveSpaceToGetBall,sGiveSpaceToGetBall::entered,terminate|} |]
+								 								dbisim(Clock_CLID_sGiveSpaceToGetBall(id__,0))
+								 							)\{|get_CLID_sGiveSpaceToGetBall|}
 								 						)
 								 						[| {|get_CLID_sPlaceBall,sPlaceBall::entered,terminate|} |]
 								 						dbisim(Clock_CLID_sPlaceBall(id__,0))
 								 					)\{|get_CLID_sPlaceBall|}
 								 				)
-								 				[| {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,terminate|} |]
-								 				dbisim(Clock_CLID_sGoToBehindBall(id__,0))
-								 			)\{|get_CLID_sGoToBehindBall|}
+								 				[| {|get_CLID_sApproachBall,sApproachBall::entered,terminate|} |]
+								 				dbisim(Clock_CLID_sApproachBall(id__,0))
+								 			)\{|get_CLID_sApproachBall|}
 								 		)
-								 		[| {|get_CLID_sApproachBall,sApproachBall::entered,terminate|} |]
-								 		dbisim(Clock_CLID_sApproachBall(id__,0))
-								 	)\{|get_CLID_sApproachBall|}
+								 		[| {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,terminate|} |]
+								 		dbisim(Clock_CLID_sGoToBehindBall(id__,0))
+								 	)\{|get_CLID_sGoToBehindBall|}
 								 )
 								 ))
-								  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotHasMovedAwayFromBall,setR_runningStm,setR_skill |} ]] 
-								  [[set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_runningStm <- setL_runningStm,set_skill <- setL_skill]]
+								  [[ share__ <- x__ | x__ <- {| share__,setR_robotHasMovedAwayFromBall,setR_runningStm,setR_skill,setR_nodeStatus |} ]] 
+								  [[set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_runningStm <- setL_runningStm,set_skill <- setL_skill,set_nodeStatus <- setL_nodeStatus]]
 								 )
 								 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-								 			,setL_nodeStatus
 								 			,setL_robotHasMovedAwayFromBall
 								 			,setL_runningStm
 								 			,setL_skill
-								 			,setR_nodeStatus
-								 			 			,setR_robotHasMovedAwayFromBall
+								 			,setL_nodeStatus
+								 			,setR_robotHasMovedAwayFromBall
 								 			 			,setR_runningStm
 								 			 			,setR_skill
+								 			 			,setR_nodeStatus
 								 			|}) |]
 								 ((During)
-								  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotHasMovedAwayFromBall,setL_runningStm,setL_skill |} ]]
-								  [[set_nodeStatus <- setR_nodeStatus,set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_runningStm <- setR_runningStm,set_skill <- setR_skill]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_robotHasMovedAwayFromBall,setL_runningStm,setL_skill,setL_nodeStatus |} ]]
+								  [[set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_runningStm <- setR_runningStm,set_skill <- setR_skill,set_nodeStatus <- setR_nodeStatus]]
 								 )
-								)[[setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_runningStm <- set_runningStm,setL_skill <- set_skill]]
-								 [[setR_nodeStatus <- set_nodeStatus,setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_runningStm <- set_runningStm,setR_skill <- set_skill]]
+								)[[setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_runningStm <- set_runningStm,setL_skill <- set_skill,setL_nodeStatus <- set_nodeStatus]]
+								 [[setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_runningStm <- set_runningStm,setR_skill <- set_skill,setR_nodeStatus <- set_nodeStatus]]
 								)\union(enteredSS,{terminate}) 
 							)
 							During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -1776,16 +1837,16 @@
 								 												 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 								 												 )
 								 												  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-								 												  [[set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall]]
+								 												  [[set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_nodeStatus <- setL_nodeStatus]]
 								 												 )
 								 												 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-								 												 			,setL_nodeStatus
 								 												 			,setL_robotHasMovedAwayFromBall
+								 												 			,setL_nodeStatus
 								 												|}) |]
 								 												 ((sInitial::enter -> Transitions(id__))
-								 												  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotHasMovedAwayFromBall |} ]]
+								 												  [[ share__ <- x__ | x__ <- {| share__,setL_robotHasMovedAwayFromBall,setL_nodeStatus |} ]]
 								 												 )
-								 												)[[setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall]]
+								 												)[[setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_nodeStatus <- set_nodeStatus]]
 								 												)
 								 											)
 								 											 \ hideSet)
@@ -1796,46 +1857,46 @@
 								 												| x____ <- NIDS
 								 											]]
 								 										)
-								 										[| {|get_CLID_sGiveSpaceToGetBall,sGiveSpaceToGetBall::entered,terminate|} |]
-								 										dbisim(Clock_CLID_sGiveSpaceToGetBall(id__,0))
-								 									)\{|get_CLID_sGiveSpaceToGetBall|}
+								 										[| {|get_CLID_sMoveAwayFromBall,sMoveAwayFromBall::entered,terminate|} |]
+								 										dbisim(Clock_CLID_sMoveAwayFromBall(id__,0))
+								 									)\{|get_CLID_sMoveAwayFromBall|}
 								 								)
-								 								[| {|get_CLID_sMoveAwayFromBall,sMoveAwayFromBall::entered,terminate|} |]
-								 								dbisim(Clock_CLID_sMoveAwayFromBall(id__,0))
-								 							)\{|get_CLID_sMoveAwayFromBall|}
+								 								[| {|get_CLID_sGiveSpaceToGetBall,sGiveSpaceToGetBall::entered,terminate|} |]
+								 								dbisim(Clock_CLID_sGiveSpaceToGetBall(id__,0))
+								 							)\{|get_CLID_sGiveSpaceToGetBall|}
 								 						)
 								 						[| {|get_CLID_sPlaceBall,sPlaceBall::entered,terminate|} |]
 								 						dbisim(Clock_CLID_sPlaceBall(id__,0))
 								 					)\{|get_CLID_sPlaceBall|}
 								 				)
-								 				[| {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,terminate|} |]
-								 				dbisim(Clock_CLID_sGoToBehindBall(id__,0))
-								 			)\{|get_CLID_sGoToBehindBall|}
+								 				[| {|get_CLID_sApproachBall,sApproachBall::entered,terminate|} |]
+								 				dbisim(Clock_CLID_sApproachBall(id__,0))
+								 			)\{|get_CLID_sApproachBall|}
 								 		)
-								 		[| {|get_CLID_sApproachBall,sApproachBall::entered,terminate|} |]
-								 		dbisim(Clock_CLID_sApproachBall(id__,0))
-								 	)\{|get_CLID_sApproachBall|}
+								 		[| {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,terminate|} |]
+								 		dbisim(Clock_CLID_sGoToBehindBall(id__,0))
+								 	)\{|get_CLID_sGoToBehindBall|}
 								 )
 								 ))
-								  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotHasMovedAwayFromBall,setR_runningStm,setR_skill |} ]] 
-								  [[set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_runningStm <- setL_runningStm,set_skill <- setL_skill]]
+								  [[ share__ <- x__ | x__ <- {| share__,setR_robotHasMovedAwayFromBall,setR_runningStm,setR_skill,setR_nodeStatus |} ]] 
+								  [[set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_runningStm <- setL_runningStm,set_skill <- setL_skill,set_nodeStatus <- setL_nodeStatus]]
 								 )
 								 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-								 			,setL_nodeStatus
 								 			,setL_robotHasMovedAwayFromBall
 								 			,setL_runningStm
 								 			,setL_skill
-								 			,setR_nodeStatus
-								 			 			,setR_robotHasMovedAwayFromBall
+								 			,setL_nodeStatus
+								 			,setR_robotHasMovedAwayFromBall
 								 			 			,setR_runningStm
 								 			 			,setR_skill
+								 			 			,setR_nodeStatus
 								 			|}) |]
 								 ((During)
-								  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotHasMovedAwayFromBall,setL_runningStm,setL_skill |} ]]
-								  [[set_nodeStatus <- setR_nodeStatus,set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_runningStm <- setR_runningStm,set_skill <- setR_skill]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_robotHasMovedAwayFromBall,setL_runningStm,setL_skill,setL_nodeStatus |} ]]
+								  [[set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_runningStm <- setR_runningStm,set_skill <- setR_skill,set_nodeStatus <- setR_nodeStatus]]
 								 )
-								)[[setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_runningStm <- set_runningStm,setL_skill <- set_skill]]
-								 [[setR_nodeStatus <- set_nodeStatus,setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_runningStm <- set_runningStm,setR_skill <- set_skill]]
+								)[[setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_runningStm <- set_runningStm,setL_skill <- set_skill,setL_nodeStatus <- set_nodeStatus]]
+								 [[setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_runningStm <- set_runningStm,setR_skill <- set_skill,setR_nodeStatus <- set_nodeStatus]]
 								)\{terminate} 
 							)
 							During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -1844,7 +1905,7 @@
 							Inactive [| {terminate} |> SKIP)
 						
 						Transitions(id__) = ((let
-							Trans = share__choice(get_nodeStatus?nodeStatus -> get_robotHasMovedAwayFromBall?robotHasMovedAwayFromBall -> TimeOut_1(
+							Trans = share__choice(get_robotHasMovedAwayFromBall?robotHasMovedAwayFromBall -> get_nodeStatus?nodeStatus -> TimeOut_1(
 								 (share__ -> SKIP
 								 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((share__choice(true & (share__choice(set_skill!carryBallOnBallPlacement_Skill_GO_TO_BEHIND_BALL -> SKIP))) ; sGoToBehindBall::enter -> SKIP))))
 								 [] dbisim(((nodeStatus==NODE_STATUS_DONE))&(internal__!NID_sGiveSpaceToGetBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_skill!carryBallOnBallPlacement_Skill_GO_TO_BEHIND_BALL -> SKIP))) ; sGoToBehindBall::enter -> SKIP)))
@@ -1877,13 +1938,6 @@
 						
 						
 						-- Clocks
-						Clock_CLID_sApproachBall(id__,x__) = 
-							TimeOut_1(
-								sApproachBall::entered -> Clock_CLID_sApproachBall(id__,0)
-								[]
-								get_CLID_sApproachBall!x__ -> Clock_CLID_sApproachBall(id__,x__)
-								[]
-								terminate -> SKIP,Clock_CLID_sApproachBall(id__,clock_type_plus(x__,1,CLID_sApproachBall_clock_type(id__))))
 						Clock_CLID_sGoToBehindBall(id__,x__) = 
 							TimeOut_1(
 								sGoToBehindBall::entered -> Clock_CLID_sGoToBehindBall(id__,0)
@@ -1891,6 +1945,13 @@
 								get_CLID_sGoToBehindBall!x__ -> Clock_CLID_sGoToBehindBall(id__,x__)
 								[]
 								terminate -> SKIP,Clock_CLID_sGoToBehindBall(id__,clock_type_plus(x__,1,CLID_sGoToBehindBall_clock_type(id__))))
+						Clock_CLID_sApproachBall(id__,x__) = 
+							TimeOut_1(
+								sApproachBall::entered -> Clock_CLID_sApproachBall(id__,0)
+								[]
+								get_CLID_sApproachBall!x__ -> Clock_CLID_sApproachBall(id__,x__)
+								[]
+								terminate -> SKIP,Clock_CLID_sApproachBall(id__,clock_type_plus(x__,1,CLID_sApproachBall_clock_type(id__))))
 						Clock_CLID_sPlaceBall(id__,x__) = 
 							TimeOut_1(
 								sPlaceBall::entered -> Clock_CLID_sPlaceBall(id__,0)
@@ -1898,13 +1959,6 @@
 								get_CLID_sPlaceBall!x__ -> Clock_CLID_sPlaceBall(id__,x__)
 								[]
 								terminate -> SKIP,Clock_CLID_sPlaceBall(id__,clock_type_plus(x__,1,CLID_sPlaceBall_clock_type(id__))))
-						Clock_CLID_sMoveAwayFromBall(id__,x__) = 
-							TimeOut_1(
-								sMoveAwayFromBall::entered -> Clock_CLID_sMoveAwayFromBall(id__,0)
-								[]
-								get_CLID_sMoveAwayFromBall!x__ -> Clock_CLID_sMoveAwayFromBall(id__,x__)
-								[]
-								terminate -> SKIP,Clock_CLID_sMoveAwayFromBall(id__,clock_type_plus(x__,1,CLID_sMoveAwayFromBall_clock_type(id__))))
 						Clock_CLID_sGiveSpaceToGetBall(id__,x__) = 
 							TimeOut_1(
 								sGiveSpaceToGetBall::entered -> Clock_CLID_sGiveSpaceToGetBall(id__,0)
@@ -1912,22 +1966,29 @@
 								get_CLID_sGiveSpaceToGetBall!x__ -> Clock_CLID_sGiveSpaceToGetBall(id__,x__)
 								[]
 								terminate -> SKIP,Clock_CLID_sGiveSpaceToGetBall(id__,clock_type_plus(x__,1,CLID_sGiveSpaceToGetBall_clock_type(id__))))
+						Clock_CLID_sMoveAwayFromBall(id__,x__) = 
+							TimeOut_1(
+								sMoveAwayFromBall::entered -> Clock_CLID_sMoveAwayFromBall(id__,0)
+								[]
+								get_CLID_sMoveAwayFromBall!x__ -> Clock_CLID_sMoveAwayFromBall(id__,x__)
+								[]
+								terminate -> SKIP,Clock_CLID_sMoveAwayFromBall(id__,clock_type_plus(x__,1,CLID_sMoveAwayFromBall_clock_type(id__))))
 						
-						StateClocks(id__) = dbisim(Clock_CLID_sApproachBall(id__,0))
+						StateClocks(id__) = dbisim(Clock_CLID_sGoToBehindBall(id__,0))
 						[| { terminate } |] (
-						dbisim(Clock_CLID_sGoToBehindBall(id__,0))
+						dbisim(Clock_CLID_sApproachBall(id__,0))
 						[| { terminate } |] (
 						dbisim(Clock_CLID_sPlaceBall(id__,0))
 						[| { terminate } |] (
-						dbisim(Clock_CLID_sMoveAwayFromBall(id__,0))
-						[| { terminate } |] (
 						dbisim(Clock_CLID_sGiveSpaceToGetBall(id__,0))
+						[| { terminate } |] (
+						dbisim(Clock_CLID_sMoveAwayFromBall(id__,0))
 						)
 						)
 						)
 						)
 						
-						stateClockSync = {|get_CLID_sApproachBall,sApproachBall::entered,get_CLID_sGoToBehindBall,sGoToBehindBall::entered,get_CLID_sPlaceBall,sPlaceBall::entered,get_CLID_sMoveAwayFromBall,sMoveAwayFromBall::entered,get_CLID_sGiveSpaceToGetBall,sGiveSpaceToGetBall::entered|}
+						stateClockSync = {|get_CLID_sGoToBehindBall,sGoToBehindBall::entered,get_CLID_sApproachBall,sApproachBall::entered,get_CLID_sPlaceBall,sPlaceBall::entered,get_CLID_sGiveSpaceToGetBall,sGiveSpaceToGetBall::entered,get_CLID_sMoveAwayFromBall,sMoveAwayFromBall::entered|}
 					}
 				
 				endmodule
@@ -2428,10 +2489,19 @@
 			localClockResets = {||}
 			
 			
+			channel get_CLID_sWaitStart : core_clock_type 
 			channel get_CLID_sFinal : core_clock_type 
 			channel get_CLID_sRun : core_clock_type 
-			channel get_CLID_sWaitStart : core_clock_type 
 			--channel increment__
+			
+			CLID_sWaitStart_clock_type(id__) = 
+				let
+					max = (clock_type_max(Union({
+			{}
+			}))+1)
+				ctype = {0..max}
+			within
+				if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 			
 			CLID_sFinal_clock_type(id__) = 
 				let
@@ -2443,15 +2513,6 @@
 				if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 			
 			CLID_sRun_clock_type(id__) = 
-				let
-					max = (clock_type_max(Union({
-			{}
-			}))+1)
-				ctype = {0..max}
-			within
-				if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
-			
-			CLID_sWaitStart_clock_type(id__) = 
 				let
 					max = (clock_type_max(Union({
 			{}
@@ -2830,17 +2891,17 @@
 								 				 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 								 				 )
 								 				  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-								 				  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+								 				  [[set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall]]
 								 				 )
 								 				 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+								 				 			,setL_allyIsPushingBallWithHisBack
 								 				 			,setL_allyIsBehindBall
 								 				 			,setL_allyIsCloseToBall
-								 				 			,setL_allyIsPushingBallWithHisBack
 								 				|}) |]
 								 				 ((sInitial::enter -> Transitions(id__))
-								 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack |} ]]
+								 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsPushingBallWithHisBack,setL_allyIsBehindBall,setL_allyIsCloseToBall |} ]]
 								 				 )
-								 				)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+								 				)[[setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall]]
 								 				)
 								 			)
 								 			 \ hideSet)
@@ -2855,25 +2916,25 @@
 								 	)\{|get_CLID_sGoToBehindBall|}
 								 )
 								 ))
-								  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack |} ]] 
-								  [[set_nodeStatus <- setL_nodeStatus,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+								  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsPushingBallWithHisBack,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_nodeStatus |} ]] 
+								  [[set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus]]
 								 )
 								 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-								 			,setL_nodeStatus
+								 			,setL_allyIsPushingBallWithHisBack
 								 			,setL_allyIsBehindBall
 								 			,setL_allyIsCloseToBall
-								 			,setL_allyIsPushingBallWithHisBack
-								 			,setR_nodeStatus
+								 			,setL_nodeStatus
+								 			,setR_allyIsPushingBallWithHisBack
 								 			 			,setR_allyIsBehindBall
 								 			 			,setR_allyIsCloseToBall
-								 			 			,setR_allyIsPushingBallWithHisBack
+								 			 			,setR_nodeStatus
 								 			|}) |]
 								 ((During)
-								  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack |} ]]
-								  [[set_nodeStatus <- setR_nodeStatus,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsPushingBallWithHisBack,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_nodeStatus |} ]]
+								  [[set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus]]
 								 )
-								)[[setL_nodeStatus <- set_nodeStatus,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
-								 [[setR_nodeStatus <- set_nodeStatus,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+								)[[setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus]]
+								 [[setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus]]
 								)\union(enteredSS,{terminate}) 
 							)
 							During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -2929,17 +2990,17 @@
 								 				 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 								 				 )
 								 				  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-								 				  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+								 				  [[set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall]]
 								 				 )
 								 				 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+								 				 			,setL_allyIsPushingBallWithHisBack
 								 				 			,setL_allyIsBehindBall
 								 				 			,setL_allyIsCloseToBall
-								 				 			,setL_allyIsPushingBallWithHisBack
 								 				|}) |]
 								 				 ((sInitial::enter -> Transitions(id__))
-								 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack |} ]]
+								 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsPushingBallWithHisBack,setL_allyIsBehindBall,setL_allyIsCloseToBall |} ]]
 								 				 )
-								 				)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+								 				)[[setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall]]
 								 				)
 								 			)
 								 			 \ hideSet)
@@ -2954,25 +3015,25 @@
 								 	)\{|get_CLID_sGoToBehindBall|}
 								 )
 								 ))
-								  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack |} ]] 
-								  [[set_nodeStatus <- setL_nodeStatus,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+								  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsPushingBallWithHisBack,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_nodeStatus |} ]] 
+								  [[set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus]]
 								 )
 								 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-								 			,setL_nodeStatus
+								 			,setL_allyIsPushingBallWithHisBack
 								 			,setL_allyIsBehindBall
 								 			,setL_allyIsCloseToBall
-								 			,setL_allyIsPushingBallWithHisBack
-								 			,setR_nodeStatus
+								 			,setL_nodeStatus
+								 			,setR_allyIsPushingBallWithHisBack
 								 			 			,setR_allyIsBehindBall
 								 			 			,setR_allyIsCloseToBall
-								 			 			,setR_allyIsPushingBallWithHisBack
+								 			 			,setR_nodeStatus
 								 			|}) |]
 								 ((During)
-								  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack |} ]]
-								  [[set_nodeStatus <- setR_nodeStatus,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsPushingBallWithHisBack,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_nodeStatus |} ]]
+								  [[set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus]]
 								 )
-								)[[setL_nodeStatus <- set_nodeStatus,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
-								 [[setR_nodeStatus <- set_nodeStatus,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+								)[[setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus]]
+								 [[setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus]]
 								)\{terminate} 
 							)
 							During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -2981,7 +3042,7 @@
 							Inactive [| {terminate} |> SKIP)
 						
 						Transitions(id__) = ((let
-							Trans = share__choice(get_allyIsBehindBall?allyIsBehindBall -> get_allyIsCloseToBall?allyIsCloseToBall -> get_allyIsPushingBallWithHisBack?allyIsPushingBallWithHisBack -> TimeOut_1(
+							Trans = share__choice(get_allyIsPushingBallWithHisBack?allyIsPushingBallWithHisBack -> get_allyIsBehindBall?allyIsBehindBall -> get_allyIsCloseToBall?allyIsCloseToBall -> TimeOut_1(
 								 (share__ -> SKIP
 								 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sGoToBehindBall::enter -> SKIP))))
 								 [] dbisim((((allyIsBehindBall and allyIsCloseToBall)))&(internal__!NID_sGoToBehindBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
@@ -3156,7 +3217,7 @@
 				
 				Behaviour(id__) = 
 					dbisim((let
-						stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+						stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 					 within
 						(MachineBody(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ union(stateClockSync,enteredSS)
 					)
@@ -3164,20 +3225,20 @@
 				
 				IteratedBehaviour(id__) = 
 					dbisim((let
-						stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+						stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 					 within
 						(dbisim(
 							sbisim(
 								dbisim(
 									sbisim(
 										MachineBody(id__)
-										[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-										dbisim(Clock_CLID_sWaitStart(id__,0))
-									)\{|get_CLID_sWaitStart|}
+										[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+										dbisim(Clock_CLID_sRun(id__,0))
+									)\{|get_CLID_sRun|}
 								)
-								[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-								dbisim(Clock_CLID_sRun(id__,0))
-							)\{|get_CLID_sRun|}
+								[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+								dbisim(Clock_CLID_sWaitStart(id__,0))
+							)\{|get_CLID_sWaitStart|}
 						)
 						) \ union(stateClockSync,enteredSS)
 					)
@@ -3290,7 +3351,7 @@
 				
 				Behaviour_VS_O(id__) = 
 					dbisim((let
-						stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+						stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 					 within
 						(MachineBody_VS_O(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ diff(union(stateClockSync,enteredSS),enteredSS)
 					)
@@ -3298,20 +3359,20 @@
 				
 				IteratedBehaviour_VS_O(id__) = 
 					dbisim((let
-						stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+						stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 					 within
 						(dbisim(
 							sbisim(
 								dbisim(
 									sbisim(
 										MachineBody_VS_O(id__)
-										[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-										dbisim(Clock_CLID_sWaitStart(id__,0))
-									)\{|get_CLID_sWaitStart|}
+										[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+										dbisim(Clock_CLID_sRun(id__,0))
+									)\{|get_CLID_sRun|}
 								)
-								[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-								dbisim(Clock_CLID_sRun(id__,0))
-							)\{|get_CLID_sRun|}
+								[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+								dbisim(Clock_CLID_sWaitStart(id__,0))
+							)\{|get_CLID_sWaitStart|}
 						)
 						) \ diff(union(stateClockSync,enteredSS),enteredSS)
 					)
@@ -3403,13 +3464,6 @@
 				
 				clockSync = {||}
 				
-				Clock_CLID_sRun(id__,x__) = 
-					TimeOut_1(
-						sRun::entered -> Clock_CLID_sRun(id__,0)
-						[]
-						get_CLID_sRun!x__ -> Clock_CLID_sRun(id__,x__)
-						[]
-						terminate -> SKIP,Clock_CLID_sRun(id__,clock_type_plus(x__,1,CLID_sRun_clock_type(id__))))
 				Clock_CLID_sWaitStart(id__,x__) = 
 					TimeOut_1(
 						sWaitStart::entered -> Clock_CLID_sWaitStart(id__,0)
@@ -3417,13 +3471,20 @@
 						get_CLID_sWaitStart!x__ -> Clock_CLID_sWaitStart(id__,x__)
 						[]
 						terminate -> SKIP,Clock_CLID_sWaitStart(id__,clock_type_plus(x__,1,CLID_sWaitStart_clock_type(id__))))
+				Clock_CLID_sRun(id__,x__) = 
+					TimeOut_1(
+						sRun::entered -> Clock_CLID_sRun(id__,0)
+						[]
+						get_CLID_sRun!x__ -> Clock_CLID_sRun(id__,x__)
+						[]
+						terminate -> SKIP,Clock_CLID_sRun(id__,clock_type_plus(x__,1,CLID_sRun_clock_type(id__))))
 				
-				StateClocks(id__) = dbisim(Clock_CLID_sRun(id__,0))
+				StateClocks(id__) = dbisim(Clock_CLID_sWaitStart(id__,0))
 				[| { terminate } |] (
-				dbisim(Clock_CLID_sWaitStart(id__,0))
+				dbisim(Clock_CLID_sRun(id__,0))
 				)
 				
-				stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+				stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 				
 				-- Shared memory
 				-- Shared memory variables
@@ -3519,8 +3580,8 @@
 			
 			
 			channel get_CLID_sWaitStart : core_clock_type 
-			channel get_CLID_sRun : core_clock_type 
 			channel get_CLID_sFinal : core_clock_type 
+			channel get_CLID_sRun : core_clock_type 
 			--channel increment__
 			
 			CLID_sWaitStart_clock_type(id__) = 
@@ -3532,7 +3593,7 @@
 			within
 				if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 			
-			CLID_sRun_clock_type(id__) = 
+			CLID_sFinal_clock_type(id__) = 
 				let
 					max = (clock_type_max(Union({
 			{}
@@ -3541,7 +3602,7 @@
 			within
 				if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 			
-			CLID_sFinal_clock_type(id__) = 
+			CLID_sRun_clock_type(id__) = 
 				let
 					max = (clock_type_max(Union({
 			{}
@@ -3920,17 +3981,17 @@
 								 				 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 								 				 )
 								 				  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-								 				  [[set_allyHasBall <- setL_allyHasBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+								 				  [[set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall]]
 								 				 )
 								 				 [| union(union(union(flowevts,transSync),{terminate}),{|share__
 								 				 			,setL_allyHasBall
-								 				 			,setL_allyIsCloseToBall
 								 				 			,setL_allyIsBehindBall
+								 				 			,setL_allyIsCloseToBall
 								 				|}) |]
 								 				 ((sInitial::enter -> Transitions(id__))
-								 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_allyIsCloseToBall,setL_allyIsBehindBall |} ]]
+								 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_allyIsBehindBall,setL_allyIsCloseToBall |} ]]
 								 				 )
-								 				)[[setL_allyHasBall <- set_allyHasBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+								 				)[[setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall]]
 								 				)
 								 			)
 								 			 \ hideSet)
@@ -3945,25 +4006,25 @@
 								 	)\{|get_CLID_sApproach|}
 								 )
 								 ))
-								  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyHasBall,setR_allyIsCloseToBall,setR_allyIsBehindBall |} ]] 
-								  [[set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+								  [[ share__ <- x__ | x__ <- {| share__,setR_allyHasBall,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_nodeStatus |} ]] 
+								  [[set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus]]
 								 )
 								 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-								 			,setL_nodeStatus
 								 			,setL_allyHasBall
-								 			,setL_allyIsCloseToBall
 								 			,setL_allyIsBehindBall
-								 			,setR_nodeStatus
-								 			 			,setR_allyHasBall
-								 			 			,setR_allyIsCloseToBall
+								 			,setL_allyIsCloseToBall
+								 			,setL_nodeStatus
+								 			,setR_allyHasBall
 								 			 			,setR_allyIsBehindBall
+								 			 			,setR_allyIsCloseToBall
+								 			 			,setR_nodeStatus
 								 			|}) |]
 								 ((During)
-								  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyHasBall,setL_allyIsCloseToBall,setL_allyIsBehindBall |} ]]
-								  [[set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsBehindBall <- setR_allyIsBehindBall]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_nodeStatus |} ]]
+								  [[set_allyHasBall <- setR_allyHasBall,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus]]
 								 )
-								)[[setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
-								 [[setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsBehindBall <- set_allyIsBehindBall]]
+								)[[setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus]]
+								 [[setR_allyHasBall <- set_allyHasBall,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus]]
 								)\union(enteredSS,{terminate}) 
 							)
 							During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -4019,17 +4080,17 @@
 								 				 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 								 				 )
 								 				  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-								 				  [[set_allyHasBall <- setL_allyHasBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+								 				  [[set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall]]
 								 				 )
 								 				 [| union(union(union(flowevts,transSync),{terminate}),{|share__
 								 				 			,setL_allyHasBall
-								 				 			,setL_allyIsCloseToBall
 								 				 			,setL_allyIsBehindBall
+								 				 			,setL_allyIsCloseToBall
 								 				|}) |]
 								 				 ((sInitial::enter -> Transitions(id__))
-								 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_allyIsCloseToBall,setL_allyIsBehindBall |} ]]
+								 				  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_allyIsBehindBall,setL_allyIsCloseToBall |} ]]
 								 				 )
-								 				)[[setL_allyHasBall <- set_allyHasBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+								 				)[[setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall]]
 								 				)
 								 			)
 								 			 \ hideSet)
@@ -4044,25 +4105,25 @@
 								 	)\{|get_CLID_sApproach|}
 								 )
 								 ))
-								  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyHasBall,setR_allyIsCloseToBall,setR_allyIsBehindBall |} ]] 
-								  [[set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+								  [[ share__ <- x__ | x__ <- {| share__,setR_allyHasBall,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_nodeStatus |} ]] 
+								  [[set_allyHasBall <- setL_allyHasBall,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus]]
 								 )
 								 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-								 			,setL_nodeStatus
 								 			,setL_allyHasBall
-								 			,setL_allyIsCloseToBall
 								 			,setL_allyIsBehindBall
-								 			,setR_nodeStatus
-								 			 			,setR_allyHasBall
-								 			 			,setR_allyIsCloseToBall
+								 			,setL_allyIsCloseToBall
+								 			,setL_nodeStatus
+								 			,setR_allyHasBall
 								 			 			,setR_allyIsBehindBall
+								 			 			,setR_allyIsCloseToBall
+								 			 			,setR_nodeStatus
 								 			|}) |]
 								 ((During)
-								  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyHasBall,setL_allyIsCloseToBall,setL_allyIsBehindBall |} ]]
-								  [[set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsBehindBall <- setR_allyIsBehindBall]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_nodeStatus |} ]]
+								  [[set_allyHasBall <- setR_allyHasBall,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus]]
 								 )
-								)[[setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
-								 [[setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsBehindBall <- set_allyIsBehindBall]]
+								)[[setL_allyHasBall <- set_allyHasBall,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus]]
+								 [[setR_allyHasBall <- set_allyHasBall,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus]]
 								)\{terminate} 
 							)
 							During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -4071,7 +4132,7 @@
 							Inactive [| {terminate} |> SKIP)
 						
 						Transitions(id__) = ((let
-							Trans = share__choice(get_allyHasBall?allyHasBall -> get_allyIsCloseToBall?allyIsCloseToBall -> get_allyIsBehindBall?allyIsBehindBall -> TimeOut_1(
+							Trans = share__choice(get_allyHasBall?allyHasBall -> get_allyIsBehindBall?allyIsBehindBall -> get_allyIsCloseToBall?allyIsCloseToBall -> TimeOut_1(
 								 (share__ -> SKIP
 								 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sApproach::enter -> SKIP))))
 								 [] dbisim((allyHasBall)&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
@@ -4607,12 +4668,12 @@
 			localClockResets = {||}
 			
 			
-			channel get_CLID_sRun : core_clock_type 
 			channel get_CLID_sFinal : core_clock_type 
+			channel get_CLID_sRun : core_clock_type 
 			channel get_CLID_sWaitStart : core_clock_type 
 			--channel increment__
 			
-			CLID_sRun_clock_type(id__) = 
+			CLID_sFinal_clock_type(id__) = 
 				let
 					max = (clock_type_max(Union({
 			{}
@@ -4621,7 +4682,7 @@
 			within
 				if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 			
-			CLID_sFinal_clock_type(id__) = 
+			CLID_sRun_clock_type(id__) = 
 				let
 					max = (clock_type_max(Union({
 			{}
@@ -5033,23 +5094,23 @@
 								 	)\{|get_CLID_sCarryBall|}
 								 )
 								 ))
-								  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyHasBall,setR_ballIsPositioned |} ]] 
-								  [[set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall,set_ballIsPositioned <- setL_ballIsPositioned]]
+								  [[ share__ <- x__ | x__ <- {| share__,setR_allyHasBall,setR_ballIsPositioned,setR_nodeStatus |} ]] 
+								  [[set_allyHasBall <- setL_allyHasBall,set_ballIsPositioned <- setL_ballIsPositioned,set_nodeStatus <- setL_nodeStatus]]
 								 )
 								 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-								 			,setL_nodeStatus
 								 			,setL_allyHasBall
 								 			,setL_ballIsPositioned
-								 			,setR_nodeStatus
-								 			 			,setR_allyHasBall
+								 			,setL_nodeStatus
+								 			,setR_allyHasBall
 								 			 			,setR_ballIsPositioned
+								 			 			,setR_nodeStatus
 								 			|}) |]
 								 ((During)
-								  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyHasBall,setL_ballIsPositioned |} ]]
-								  [[set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall,set_ballIsPositioned <- setR_ballIsPositioned]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_ballIsPositioned,setL_nodeStatus |} ]]
+								  [[set_allyHasBall <- setR_allyHasBall,set_ballIsPositioned <- setR_ballIsPositioned,set_nodeStatus <- setR_nodeStatus]]
 								 )
-								)[[setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall,setL_ballIsPositioned <- set_ballIsPositioned]]
-								 [[setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall,setR_ballIsPositioned <- set_ballIsPositioned]]
+								)[[setL_allyHasBall <- set_allyHasBall,setL_ballIsPositioned <- set_ballIsPositioned,setL_nodeStatus <- set_nodeStatus]]
+								 [[setR_allyHasBall <- set_allyHasBall,setR_ballIsPositioned <- set_ballIsPositioned,setR_nodeStatus <- set_nodeStatus]]
 								)\union(enteredSS,{terminate}) 
 							)
 							During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -5129,23 +5190,23 @@
 								 	)\{|get_CLID_sCarryBall|}
 								 )
 								 ))
-								  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyHasBall,setR_ballIsPositioned |} ]] 
-								  [[set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall,set_ballIsPositioned <- setL_ballIsPositioned]]
+								  [[ share__ <- x__ | x__ <- {| share__,setR_allyHasBall,setR_ballIsPositioned,setR_nodeStatus |} ]] 
+								  [[set_allyHasBall <- setL_allyHasBall,set_ballIsPositioned <- setL_ballIsPositioned,set_nodeStatus <- setL_nodeStatus]]
 								 )
 								 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-								 			,setL_nodeStatus
 								 			,setL_allyHasBall
 								 			,setL_ballIsPositioned
-								 			,setR_nodeStatus
-								 			 			,setR_allyHasBall
+								 			,setL_nodeStatus
+								 			,setR_allyHasBall
 								 			 			,setR_ballIsPositioned
+								 			 			,setR_nodeStatus
 								 			|}) |]
 								 ((During)
-								  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyHasBall,setL_ballIsPositioned |} ]]
-								  [[set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall,set_ballIsPositioned <- setR_ballIsPositioned]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_ballIsPositioned,setL_nodeStatus |} ]]
+								  [[set_allyHasBall <- setR_allyHasBall,set_ballIsPositioned <- setR_ballIsPositioned,set_nodeStatus <- setR_nodeStatus]]
 								 )
-								)[[setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall,setL_ballIsPositioned <- set_ballIsPositioned]]
-								 [[setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall,setR_ballIsPositioned <- set_ballIsPositioned]]
+								)[[setL_allyHasBall <- set_allyHasBall,setL_ballIsPositioned <- set_ballIsPositioned,setL_nodeStatus <- set_nodeStatus]]
+								 [[setR_allyHasBall <- set_allyHasBall,setR_ballIsPositioned <- set_ballIsPositioned,setR_nodeStatus <- set_nodeStatus]]
 								)\{terminate} 
 							)
 							During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -5666,10 +5727,20 @@
 			localClockResets = {||}
 			
 			
+			channel get_CLID_sWaitStart : core_clock_type 
 			channel get_CLID_sFinal : core_clock_type 
 			channel get_CLID_sRun : core_clock_type 
-			channel get_CLID_sWaitStart : core_clock_type 
 			--channel increment__
+			
+			CLID_sWaitStart_clock_type(id__,
+					          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
+				let
+					max = (clock_type_max(Union({
+			{}
+			}))+1)
+				ctype = {0..max}
+			within
+				if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 			
 			CLID_sFinal_clock_type(id__,
 					          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
@@ -5682,16 +5753,6 @@
 				if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 			
 			CLID_sRun_clock_type(id__,
-					          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
-				let
-					max = (clock_type_max(Union({
-			{}
-			}))+1)
-				ctype = {0..max}
-			within
-				if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
-			
-			CLID_sWaitStart_clock_type(id__,
 					          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 				let
 					max = (clock_type_max(Union({
@@ -6096,17 +6157,17 @@
 								 				 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 								 				 )
 								 				  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-								 				  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition,sMoveAway::entered <- sMoveAway::enteredL]]
+								 				  [[sMoveAway::entered <- sMoveAway::enteredL,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
 								 				 )
 								 				 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-								 				 			,setL_robotIsFarEnoughFromPosition
 								 				 			,sMoveAway::enteredL
+								 				 			,setL_robotIsFarEnoughFromPosition
 								 				|}) |]
 								 				 ((sInitial::enter -> Transitions(id__,
 								 				 		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-								 				  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition,sMoveAway::enteredL |} ]]
+								 				  [[ share__ <- x__ | x__ <- {| share__,sMoveAway::enteredL,setL_robotIsFarEnoughFromPosition |} ]]
 								 				 )
-								 				)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,sMoveAway::enteredL <- sMoveAway::entered]]
+								 				)[[sMoveAway::enteredL <- sMoveAway::entered,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
 								 				)
 								 			)
 								 			 \ hideSet)
@@ -6122,21 +6183,21 @@
 								 	)\{|get_CLID_sMoveAway|}
 								 )
 								 ))
-								  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotIsFarEnoughFromPosition |} ]] 
-								  [[set_nodeStatus <- setL_nodeStatus,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
+								  [[ share__ <- x__ | x__ <- {| share__,setR_robotIsFarEnoughFromPosition,setR_nodeStatus |} ]] 
+								  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition,set_nodeStatus <- setL_nodeStatus]]
 								 )
 								 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-								 			,setL_nodeStatus
 								 			,setL_robotIsFarEnoughFromPosition
-								 			,setR_nodeStatus
-								 			 			,setR_robotIsFarEnoughFromPosition
+								 			,setL_nodeStatus
+								 			,setR_robotIsFarEnoughFromPosition
+								 			 			,setR_nodeStatus
 								 			|}) |]
 								 ((During)
-								  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotIsFarEnoughFromPosition |} ]]
-								  [[set_nodeStatus <- setR_nodeStatus,set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition,setL_nodeStatus |} ]]
+								  [[set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition,set_nodeStatus <- setR_nodeStatus]]
 								 )
-								)[[setL_nodeStatus <- set_nodeStatus,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
-								 [[setR_nodeStatus <- set_nodeStatus,setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+								)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setL_nodeStatus <- set_nodeStatus]]
+								 [[setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setR_nodeStatus <- set_nodeStatus]]
 								)\union(enteredSS,{terminate}) 
 							)
 							During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -6196,17 +6257,17 @@
 								 				 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 								 				 )
 								 				  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-								 				  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition,sMoveAway::entered <- sMoveAway::enteredL]]
+								 				  [[sMoveAway::entered <- sMoveAway::enteredL,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
 								 				 )
 								 				 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-								 				 			,setL_robotIsFarEnoughFromPosition
 								 				 			,sMoveAway::enteredL
+								 				 			,setL_robotIsFarEnoughFromPosition
 								 				|}) |]
 								 				 ((sInitial::enter -> Transitions(id__,
 								 				 		    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-								 				  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition,sMoveAway::enteredL |} ]]
+								 				  [[ share__ <- x__ | x__ <- {| share__,sMoveAway::enteredL,setL_robotIsFarEnoughFromPosition |} ]]
 								 				 )
-								 				)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,sMoveAway::enteredL <- sMoveAway::entered]]
+								 				)[[sMoveAway::enteredL <- sMoveAway::entered,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
 								 				)
 								 			)
 								 			 \ hideSet)
@@ -6222,21 +6283,21 @@
 								 	)\{|get_CLID_sMoveAway|}
 								 )
 								 ))
-								  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotIsFarEnoughFromPosition |} ]] 
-								  [[set_nodeStatus <- setL_nodeStatus,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
+								  [[ share__ <- x__ | x__ <- {| share__,setR_robotIsFarEnoughFromPosition,setR_nodeStatus |} ]] 
+								  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition,set_nodeStatus <- setL_nodeStatus]]
 								 )
 								 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-								 			,setL_nodeStatus
 								 			,setL_robotIsFarEnoughFromPosition
-								 			,setR_nodeStatus
-								 			 			,setR_robotIsFarEnoughFromPosition
+								 			,setL_nodeStatus
+								 			,setR_robotIsFarEnoughFromPosition
+								 			 			,setR_nodeStatus
 								 			|}) |]
 								 ((During)
-								  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotIsFarEnoughFromPosition |} ]]
-								  [[set_nodeStatus <- setR_nodeStatus,set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition,setL_nodeStatus |} ]]
+								  [[set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition,set_nodeStatus <- setR_nodeStatus]]
 								 )
-								)[[setL_nodeStatus <- set_nodeStatus,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
-								 [[setR_nodeStatus <- set_nodeStatus,setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+								)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setL_nodeStatus <- set_nodeStatus]]
+								 [[setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setR_nodeStatus <- set_nodeStatus]]
 								)\{terminate} 
 							)
 							During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -6246,7 +6307,7 @@
 						
 						Transitions(id__,
 								    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = ((let
-							Trans = share__choice(get_robotIsFarEnoughFromPosition?robotIsFarEnoughFromPosition -> get_CLID_sMoveAway?sMoveAway -> TimeOut_1(
+							Trans = share__choice(get_CLID_sMoveAway?sMoveAway -> get_robotIsFarEnoughFromPosition?robotIsFarEnoughFromPosition -> TimeOut_1(
 								 (share__ -> SKIP
 								 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sMoveAway::enter -> SKIP))))
 								 [] dbisim((robotIsFarEnoughFromPosition)&(internal__!NID_sMoveAway -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
@@ -6443,7 +6504,7 @@
 				Behaviour(id__,
 						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 					dbisim((let
-						stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+						stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 					 within
 						(MachineBody(id__,
 								    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) [| union(stateClockSync,{terminate}) |] StateClocks(id__,
@@ -6454,7 +6515,7 @@
 				IteratedBehaviour(id__,
 						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 					dbisim((let
-						stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+						stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 					 within
 						(dbisim(
 							sbisim(
@@ -6462,15 +6523,15 @@
 									sbisim(
 										MachineBody(id__,
 												    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
-										[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-										dbisim(Clock_CLID_sWaitStart(id__,0,
+										[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+										dbisim(Clock_CLID_sRun(id__,0,
 												          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-									)\{|get_CLID_sWaitStart|}
+									)\{|get_CLID_sRun|}
 								)
-								[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-								dbisim(Clock_CLID_sRun(id__,0,
+								[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+								dbisim(Clock_CLID_sWaitStart(id__,0,
 										          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-							)\{|get_CLID_sRun|}
+							)\{|get_CLID_sWaitStart|}
 						)
 						) \ union(stateClockSync,enteredSS)
 					)
@@ -6583,7 +6644,7 @@
 				Behaviour_VS_O(id__,
 						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 					dbisim((let
-						stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+						stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 					 within
 						(MachineBody_VS_O(id__,
 								    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) [| union(stateClockSync,{terminate}) |] StateClocks(id__,
@@ -6594,7 +6655,7 @@
 				IteratedBehaviour_VS_O(id__,
 						    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 					dbisim((let
-						stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+						stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 					 within
 						(dbisim(
 							sbisim(
@@ -6602,15 +6663,15 @@
 									sbisim(
 										MachineBody_VS_O(id__,
 												    const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
-										[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-										dbisim(Clock_CLID_sWaitStart(id__,0,
+										[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+										dbisim(Clock_CLID_sRun(id__,0,
 												          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-									)\{|get_CLID_sWaitStart|}
+									)\{|get_CLID_sRun|}
 								)
-								[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-								dbisim(Clock_CLID_sRun(id__,0,
+								[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+								dbisim(Clock_CLID_sWaitStart(id__,0,
 										          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-							)\{|get_CLID_sRun|}
+							)\{|get_CLID_sWaitStart|}
 						)
 						) \ diff(union(stateClockSync,enteredSS),enteredSS)
 					)
@@ -6694,18 +6755,6 @@
 				
 				clockSync = {||}
 				
-				Clock_CLID_sRun(id__,x__,
-						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
-					TimeOut_1(
-						sRun::entered -> Clock_CLID_sRun(id__,0,
-								          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
-						[]
-						get_CLID_sRun!x__ -> Clock_CLID_sRun(id__,x__,
-								          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
-						[]
-						terminate -> SKIP,Clock_CLID_sRun(id__,clock_type_plus(x__,1,CLID_sRun_clock_type(id__,
-								          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)),
-								          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 				Clock_CLID_sWaitStart(id__,x__,
 						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 					TimeOut_1(
@@ -6718,16 +6767,28 @@
 						terminate -> SKIP,Clock_CLID_sWaitStart(id__,clock_type_plus(x__,1,CLID_sWaitStart_clock_type(id__,
 								          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)),
 								          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
+				Clock_CLID_sRun(id__,x__,
+						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
+					TimeOut_1(
+						sRun::entered -> Clock_CLID_sRun(id__,0,
+								          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
+						[]
+						get_CLID_sRun!x__ -> Clock_CLID_sRun(id__,x__,
+								          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
+						[]
+						terminate -> SKIP,Clock_CLID_sRun(id__,clock_type_plus(x__,1,CLID_sRun_clock_type(id__,
+								          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)),
+								          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 				
 				StateClocks(id__,
-						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = dbisim(Clock_CLID_sRun(id__,0,
+						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = dbisim(Clock_CLID_sWaitStart(id__,0,
 						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 				[| { terminate } |] (
-				dbisim(Clock_CLID_sWaitStart(id__,0,
+				dbisim(Clock_CLID_sRun(id__,0,
 						          const_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 				)
 				
-				stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
+				stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
 				
 				-- Shared memory
 				-- Shared memory variables
@@ -7438,6 +7499,906 @@
 				sharedVarHide = {||}
 				}
 		endmodule
+		module stm_halt_ref
+		exports
+			transparent diamond
+			transparent sbisim
+			transparent dbisim
+			transparent chase
+		
+			-- Transition identifiers
+			-- declaring identifiers of transitions
+			datatype NIDS = 
+			              NID_sInitial|
+			              NID_sFinal|
+			              NID_sWaitStart|
+			              NID_sRun
+			
+			channel internal__ : NIDS
+			
+			-- Flow channels		
+			channel interrupt
+			channel exited
+			channel exit
+			channel terminate
+			
+			-- Variable channels
+			channel get_skill, set_skill, setL_skill, setR_skill: carryBallOnBallPlacement_Skill
+			channel get_nodeStatus, set_nodeStatus, setL_nodeStatus, setR_nodeStatus: NODE_STATUS
+			
+			-- Shared variable channels
+			channel set_EXT_nodeStatus: NODE_STATUS
+			
+			-- Local variable channels for defined operations that are required by the state machine
+			
+			-- Declaring state machine events
+			channel startHalt__: NIDS.InOut
+			channel startHalt: InOut
+			channel stopHalt__: NIDS.InOut
+			channel stopHalt: InOut
+			channel haltSkill__: NIDS.InOut
+			channel haltSkill: InOut
+			
+			-- Declaring call and ret events for undefined operations
+			
+			enterSS = {|
+			sInitial::enter,
+			sFinal::enter,
+			sWaitStart::enter,
+			sRun::enter
+			|}
+			
+			enteredSS = 	{|
+			sFinal::entered,
+			sWaitStart::entered,
+			sRun::entered
+			|}
+			
+			internal_events = union(enteredSS,union(enterSS,{|interrupt,exited|}))
+			
+			shared_variable_events = {|
+				set_EXT_nodeStatus
+			|}
+			
+			-- channel set with all visible events
+			sem__events = {|
+				terminate
+			,	set_EXT_nodeStatus, set_nodeStatus
+			,	startHalt,
+				stopHalt,
+				haltSkill
+				|}
+			
+			channel clockReset, clockResetL, clockResetR 
+			
+			localClockResets = {||}
+			
+			
+			channel get_CLID_sWaitStart : core_clock_type 
+			channel get_CLID_sFinal : core_clock_type 
+			channel get_CLID_sRun : core_clock_type 
+			--channel increment__
+			
+			CLID_sWaitStart_clock_type(id__) = 
+				let
+					max = (clock_type_max(Union({
+			}))+1)
+				ctype = {0..max}
+			within
+				if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
+			
+			CLID_sFinal_clock_type(id__) = 
+				let
+					max = (clock_type_max(Union({
+			}))+1)
+				ctype = {0..max}
+			within
+				if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
+			
+			CLID_sRun_clock_type(id__) = 
+				let
+					max = (clock_type_max(Union({
+			}))+1)
+				ctype = {0..max}
+			within
+				if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
+			
+			
+		
+				-- Nodes --
+				-- declaring all nodes
+				
+				----------------------------------------------------------------------
+				-- Initial: sInitial
+				module sInitial
+				exports
+				
+					channel enter, interrupt
+					
+					Timed(OneStep) {
+						D__(id__) = 
+							dbisim(let
+								Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+								
+								Termination = terminate -> SKIP
+								
+								Active 		= share__choice(interrupt -> SKIP) ; Inactive
+							within
+								Inactive [| {terminate} |> SKIP)
+						
+						VS_O__(id__) = D__(id__)
+					}
+				
+				endmodule
+				----------------------------------------------------------------------
+				
+				
+				----------------------------------------------------------------------
+				-- Final state: sFinal
+				module sFinal
+				
+				exports
+				
+					channel enter, entered, interrupt
+					channel enteredL, enteredR
+					
+					Timed(OneStep) {
+						--	Rule: behaviours(Node)
+						D__(id__) = 
+							dbisim(let
+								Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Entering
+								
+								Entering 	= entered -> SKIP ; Active
+								Active		= share__choice(terminate -> SKIP [] interrupt -> SKIP) ; Interrupted
+								Interrupted	= share__choice(exit -> exited -> Inactive)
+							within
+								Inactive [| {terminate} |> SKIP)
+							
+						VS_O__(id__) = D__(id__)
+					}
+				
+				endmodule
+				----------------------------------------------------------------------
+				
+				
+				----------------------------------------------------------------------
+				-- State: sWaitStart
+				module sWaitStart
+				
+				enterSS = {}
+				
+				enteredSS = {}
+				
+				exports
+				
+					--  Declarations
+					
+					channel enter, entered, interrupt
+					channel enteredL, enteredR
+					
+									
+					
+					--channel increment__
+					
+					
+					--	Nodes
+					-- declaring all nodes
+					
+					
+					Timed(OneStep) {
+						--	Rule: behaviours(Node)
+						--  Note that FDR has problems with efficiently compiling the process below
+						-- 	if using a different recursion pattern.
+						D__(id__) = 
+						dbisim(let
+							-- IMPLEMENTATION NOTE: 
+							-- The following should be defined as: Inactive = share__choice(Activation [] Termination),
+							-- however FDR struggles with that form in certain cases. So we use the exception operator
+							-- instead to 'terminate'.
+							
+							Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+							
+							Termination = terminate -> SKIP
+							
+							Active 		= share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; 
+									 	  Behaviour ; 
+									 	  share__choice(exit -> SKIP) ; SKIP ; 
+									 	  share__choice(exited -> SKIP) ; Inactive
+						
+							Behaviour 	= entered -> During
+							During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+						within
+							Inactive [| {terminate} |> SKIP)
+							
+						VS_O__(id__) = 
+						dbisim(let
+							Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+							
+							Termination = terminate -> SKIP
+							
+							Active 		= share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; 
+									 	  Behaviour ; 
+									 	  share__choice(exit -> SKIP) ; SKIP ; 
+									 	  share__choice(exited -> SKIP) ; Inactive
+						
+							Behaviour 	= entered -> During
+							During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+						within
+							Inactive [| {terminate} |> SKIP)
+						
+						
+						-- Clocks
+						
+						StateClocks(id__) = terminate -> SKIP
+						
+						stateClockSync = {||}
+					}
+				
+				endmodule
+				----------------------------------------------------------------------
+				
+				
+				----------------------------------------------------------------------
+				-- State: sRun
+				module sRun
+				
+				enterSS = 
+						{|			sInitial::enter,
+							sFinal::enter
+						|}
+				enteredSS = 
+						{|			sFinal::entered
+						|}
+				exports
+				
+					--  Declarations
+					
+					channel enter, entered, interrupt
+					channel enteredL, enteredR
+					
+									
+					-- declaring identifiers of transitions
+					datatype NIDS = 
+					              NID_sInitial|
+					              NID_sFinal
+					
+					channel internal__ : NIDS
+					channel startHalt__: NIDS.InOut
+					channel stopHalt__: NIDS.InOut
+					channel haltSkill__: NIDS.InOut
+					
+					--channel increment__
+					
+					
+					--	Nodes
+					-- declaring all nodes
+					
+					----------------------------------------------------------------------
+					-- Initial: sInitial
+					module sInitial
+					exports
+					
+						channel enter, interrupt
+						
+						Timed(OneStep) {
+							D__(id__) = 
+								dbisim(let
+									Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+									
+									Termination = terminate -> SKIP
+									
+									Active 		= share__choice(interrupt -> SKIP) ; Inactive
+								within
+									Inactive [| {terminate} |> SKIP)
+							
+							VS_O__(id__) = D__(id__)
+						}
+					
+					endmodule
+					----------------------------------------------------------------------
+					
+					
+					----------------------------------------------------------------------
+					-- Final state: sFinal
+					module sFinal
+					
+					exports
+					
+						channel enter, entered, interrupt
+						channel enteredL, enteredR
+						
+						Timed(OneStep) {
+							--	Rule: behaviours(Node)
+							D__(id__) = 
+								dbisim(let
+									Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Entering
+									
+									Entering 	= entered -> SKIP ; Active
+									Active		= share__choice(terminate -> SKIP [] interrupt -> SKIP) ; Interrupted
+									Interrupted	= share__choice(exit -> exited -> Inactive)
+								within
+									Inactive [| {terminate} |> SKIP)
+								
+							VS_O__(id__) = D__(id__)
+						}
+					
+					endmodule
+					----------------------------------------------------------------------
+					
+					
+					
+					Timed(OneStep) {
+						--	Rule: behaviours(Node)
+						--  Note that FDR has problems with efficiently compiling the process below
+						-- 	if using a different recursion pattern.
+						D__(id__) = 
+						dbisim(let
+							-- IMPLEMENTATION NOTE: 
+							-- The following should be defined as: Inactive = share__choice(Activation [] Termination),
+							-- however FDR struggles with that form in certain cases. So we use the exception operator
+							-- instead to 'terminate'.
+							
+							Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+							
+							Termination = terminate -> SKIP
+							
+							Active 		= SKIP ; 
+									 	  Behaviour ; 
+									 	  share__choice(exit -> SKIP) ; SKIP ; 
+									 	  share__choice(exited -> SKIP) ; Inactive
+						
+						
+							Behaviour 	= dbisim(
+								((
+								 ((((let
+								 	-- IMPLEMENTATION NOTE:
+								 	-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
+								 	-- modules for defining the semantics of each node.
+								 	enterSS = {|
+								 	sInitial::enter,
+								 	sFinal::enter
+								 	|}
+								 	hideSet = union(enterSS,{|exit,exited,internal__|})
+								 within 
+								 	((let
+								 		-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
+								 		-- because CSPM modules are used for the semantics of Node.
+								 		flowevts = union(enterSS,{|exit,exited,interrupt|})
+								 		transSync = {|internal__.NID_sInitial|}
+								 	within
+								 		((
+								 		 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
+								 		   sInitial::D__(id__)
+								 		   [| { share__, terminate } |] (
+								 		   sFinal::D__(id__)
+								 		   )
+								 		 )
+								 		 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+								 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
+								 		 )
+								 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+								 		 )
+								 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+								 		|}) |]
+								 		 ((sInitial::enter -> Transitions(id__))
+								 		  [[ share__ <- x__ | x__ <- {| share__ |} ]]
+								 		 )
+								 		)
+								 		)
+								 	)
+								 	 \ hideSet)
+								 	[[
+								 		startHalt__.x____ <- startHalt,
+								 		stopHalt__.x____ <- stopHalt,
+								 		haltSkill__.x____ <- haltSkill
+								 		| x____ <- NIDS
+								 	]]
+								 )
+								 ))
+								  [[ share__ <- x__ | x__ <- {| share__,setR_skill,setR_nodeStatus |} ]] 
+								  [[set_skill <- setL_skill,set_nodeStatus <- setL_nodeStatus]]
+								 )
+								 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+								 			,setL_skill
+								 			,setL_nodeStatus
+								 			,setR_skill
+								 			 			,setR_nodeStatus
+								 			|}) |]
+								 ((During)
+								  [[ share__ <- x__ | x__ <- {| share__,setL_skill,setL_nodeStatus |} ]]
+								  [[set_skill <- setR_skill,set_nodeStatus <- setR_nodeStatus]]
+								 )
+								)[[setL_skill <- set_skill,setL_nodeStatus <- set_nodeStatus]]
+								 [[setR_skill <- set_skill,setR_nodeStatus <- set_nodeStatus]]
+								)\union(enteredSS,{terminate}) 
+							)
+							During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
+									 	  ; entered -> ((CRUN(enteredSS) ||| SKIP ; SStop) /\ interrupt -> share__choice(terminate -> SKIP))
+						within
+							Inactive [| {terminate} |> SKIP)
+							
+						VS_O__(id__) = 
+						dbisim(let
+							Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+							
+							Termination = terminate -> SKIP
+							
+							Active 		= SKIP ; 
+									 	  Behaviour ; 
+									 	  share__choice(exit -> SKIP) ; SKIP ; 
+									 	  share__choice(exited -> SKIP) ; Inactive
+						
+						
+							Behaviour 	= dbisim(
+								((
+								 ((((let
+								 	-- IMPLEMENTATION NOTE:
+								 	-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
+								 	-- modules for defining the semantics of each node.
+								 	enterSS = {|
+								 	sInitial::enter,
+								 	sFinal::enter
+								 	|}
+								 	hideSet = union(enterSS,{|exit,exited,internal__|})
+								 within 
+								 	((let
+								 		-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
+								 		-- because CSPM modules are used for the semantics of Node.
+								 		flowevts = union(enterSS,{|exit,exited,interrupt|})
+								 		transSync = {|internal__.NID_sInitial|}
+								 	within
+								 		((
+								 		 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
+								 		   sInitial::VS_O__(id__)
+								 		   [| { share__, terminate } |] (
+								 		   sFinal::VS_O__(id__)
+								 		   )
+								 		 )
+								 		 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+								 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
+								 		 )
+								 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+								 		 )
+								 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+								 		|}) |]
+								 		 ((sInitial::enter -> Transitions(id__))
+								 		  [[ share__ <- x__ | x__ <- {| share__ |} ]]
+								 		 )
+								 		)
+								 		)
+								 	)
+								 	 \ hideSet)
+								 	[[
+								 		startHalt__.x____ <- startHalt,
+								 		stopHalt__.x____ <- stopHalt,
+								 		haltSkill__.x____ <- haltSkill
+								 		| x____ <- NIDS
+								 	]]
+								 )
+								 ))
+								  [[ share__ <- x__ | x__ <- {| share__,setR_skill,setR_nodeStatus |} ]] 
+								  [[set_skill <- setL_skill,set_nodeStatus <- setL_nodeStatus]]
+								 )
+								 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+								 			,setL_skill
+								 			,setL_nodeStatus
+								 			,setR_skill
+								 			 			,setR_nodeStatus
+								 			|}) |]
+								 ((During)
+								  [[ share__ <- x__ | x__ <- {| share__,setL_skill,setL_nodeStatus |} ]]
+								  [[set_skill <- setR_skill,set_nodeStatus <- setR_nodeStatus]]
+								 )
+								)[[setL_skill <- set_skill,setL_nodeStatus <- set_nodeStatus]]
+								 [[setR_skill <- set_skill,setR_nodeStatus <- set_nodeStatus]]
+								)\{terminate} 
+							)
+							During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
+									 	  ; entered -> ((CRUN(enteredSS) ||| SKIP ; SStop) /\ interrupt -> share__choice(terminate -> SKIP))
+						within
+							Inactive [| {terminate} |> SKIP)
+						
+						Transitions(id__) = ((let
+							Trans = TimeOut_1(
+								 (share__ -> SKIP
+								 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sFinal::enter -> SKIP))))
+								 []
+								 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
+								 []
+								 terminate -> SKIP
+								 )
+							,SKIP);Trans
+						within
+							Trans [|{terminate}|> SKIP
+						)
+						)
+						
+						
+						-- Clocks
+						
+						StateClocks(id__) = terminate -> SKIP
+						
+						stateClockSync = {||}
+					}
+				
+				endmodule
+				----------------------------------------------------------------------
+				
+				-- END of Nodes --
+				
+				Timed(OneStep) {
+				-- Operation calls --
+				-- Only the undefined operations are declared here.
+				-- If the state machine is in isolation, all required operations will be undefined.
+				-- If it is in the context of a controller, the required operations not provided by the
+				-- controller will be declared here, and the defined operations will be defined in the
+				-- context of the Controller module, and therefore within scope of the state machine module.
+				
+				-- END of Operation calls --
+			
+				-- STM processes
+				STM(id__) = prioritise(-- RULE: [[stm:StateMachineDef]]_STM^nops : CSPProcess
+				( 
+					(
+						(
+							(IteratedStateful(id__) \ {terminate} ; share__choice(terminate -> SKIP))
+						 	[[ share__ <- x__ | x__ <- {|set_EXT_nodeStatus|} ]]
+						)
+					[| {share__} |]
+					SKIP
+					)
+					[| union(sharedVarSync,{terminate}) |]
+					dbisim(sharedVarMemory(id__))
+				)\sharedVarHide
+				,<{terminate},{tock}>)
+				
+				STM_VS_O(id__) = prioritise(-- RULE: [[stm:StateMachineDef]]_STM^nops : CSPProcess
+				( 
+					(
+						(
+							(IteratedStateful_VS_O(id__) \ {terminate} ; share__choice(terminate -> SKIP))
+						 	[[ share__ <- x__ | x__ <- {|set_EXT_nodeStatus|} ]]
+						)
+					[| {share__} |]
+					SKIP
+					)
+					[| union(sharedVarSync,{terminate}) |]
+					dbisim(sharedVarMemory(id__))
+				)\sharedVarHide
+				,<{terminate},{tock}>)
+				
+				-- Transitions
+				Transitions(id__) = ((let
+					Trans = TimeOut_1(
+						 (share__ -> SKIP
+						 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sWaitStart::enter -> SKIP))))
+						 [] dbisim((true)&(startHalt__!NID_sWaitStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_skill!carryBallOnBallPlacement_Skill_NONE -> SKIP))) ; sRun::enter -> SKIP)))
+						 [] dbisim((true)&(stopHalt__!NID_sRun.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP)));share__choice(true & (share__choice(set_skill!carryBallOnBallPlacement_Skill_NONE -> SKIP))) ; sFinal::enter -> SKIP)))
+						 []
+						 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
+						 []
+						 terminate -> SKIP
+						 )
+					,SKIP);Trans
+				within
+					Trans [|{terminate}|> SKIP
+				)
+				)
+				
+				-- Stateful
+				-- RULE: Stateful(stm:StateMachineBody) : CSPProcess
+				
+				-- Named process definitions
+				MachineBody(id__) = 
+					dbisim((
+					let
+						finalNodesEntered = {|sFinal::entered|}
+					within
+						(dbisim((dbisim((let
+							-- IMPLEMENTATION NOTE:
+							-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
+							-- modules for defining the semantics of each node.
+							enterSS = {|
+							sInitial::enter,
+							sFinal::enter,
+							sWaitStart::enter,
+							sRun::enter
+							|}
+							hideSet = union(enterSS,{|exit,exited,internal__|})
+						within 
+							((let
+								-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
+								-- because CSPM modules are used for the semantics of Node.
+								flowevts = union(enterSS,{|exit,exited,interrupt|})
+								transSync = {|internal__.NID_sInitial,startHalt__.NID_sWaitStart.in,stopHalt__.NID_sRun.in|}
+							within
+								((
+								 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
+								   sInitial::D__(id__)
+								   [| { share__, terminate } |] (
+								   sFinal::D__(id__)
+								   [| { share__, terminate } |] (
+								   sWaitStart::D__(id__)
+								   [| { share__, terminate } |] (
+								   sRun::D__(id__)
+								   )
+								   )
+								   )
+								 )
+								 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+								 [[sWaitStart::interrupt <- x__ | x__ <- {|interrupt,startHalt__.NID_sWaitStart.in|}]]
+								 [[sRun::interrupt <- x__ | x__ <- {|interrupt,stopHalt__.NID_sRun.in|}]]
+								 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
+								 )
+								  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+								 )
+								 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+								|}) |]
+								 ((sInitial::enter -> Transitions(id__))
+								  [[ share__ <- x__ | x__ <- {| share__ |} ]]
+								 )
+								)
+								)
+							)
+							 \ hideSet)
+							[[
+								startHalt__.x____ <- startHalt,
+								stopHalt__.x____ <- stopHalt,
+								haltSkill__.x____ <- haltSkill
+								| x____ <- NIDS
+							]]
+						)
+						)
+						 [| union(stateClockSync,{terminate}) |]
+						 StateClocks(id__)
+						)\diff(stateClockSync,enteredSS))
+						 [| {| interrupt |} |] SKIP)
+					)
+					)
+				
+				Behaviour(id__) = 
+					dbisim((let
+						stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+					 within
+						(MachineBody(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ union(stateClockSync,enteredSS)
+					)
+					)
+				
+				IteratedBehaviour(id__) = 
+					dbisim((let
+						stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+					 within
+						(dbisim(
+							sbisim(
+								dbisim(
+									sbisim(
+										MachineBody(id__)
+										[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+										dbisim(Clock_CLID_sRun(id__,0))
+									)\{|get_CLID_sRun|}
+								)
+								[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+								dbisim(Clock_CLID_sWaitStart(id__,0))
+							)\{|get_CLID_sWaitStart|}
+						)
+						) \ union(stateClockSync,enteredSS)
+					)
+					)
+				
+				Stateful(id__) = 
+					((let
+						getsetLocalChannels = {|get_skill,set_skill|}
+						clockSync = {||}
+					within
+						(Behaviour(id__) 
+						 [| union(union(getsetLocalChannels,clockSync),{terminate}) |] 
+						 (varMemory(id__) [| {terminate} |] Clocks(id__))
+					 	)\union(getsetLocalChannels,clockSync)
+					)
+					)
+				
+				IteratedStateful(id__) =
+					(dbisim(
+						sbisim(
+							IteratedBehaviour(id__)
+							[| {|get_skill,set_skill,terminate|} |]
+							Memory_skill(carryBallOnBallPlacement_Skill_NONE)
+						)\{|get_skill,set_skill|}
+					)
+					)
+				
+				-- Visible counterparts
+				MachineBody_VS_O(id__) = 
+					dbisim((
+					let
+						finalNodesEntered = {|sFinal::entered|}
+					within
+						(dbisim((dbisim((let
+							-- IMPLEMENTATION NOTE:
+							-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
+							-- modules for defining the semantics of each node.
+							enterSS = {|
+							sInitial::enter,
+							sFinal::enter,
+							sWaitStart::enter,
+							sRun::enter
+							|}
+							hideSet = union(enterSS,{|exit,exited,internal__|})
+						within 
+							((let
+								-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
+								-- because CSPM modules are used for the semantics of Node.
+								flowevts = union(enterSS,{|exit,exited,interrupt|})
+								transSync = {|internal__.NID_sInitial,startHalt__.NID_sWaitStart.in,stopHalt__.NID_sRun.in|}
+							within
+								((
+								 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
+								   sInitial::VS_O__(id__)
+								   [| { share__, terminate } |] (
+								   sFinal::VS_O__(id__)
+								   [| { share__, terminate } |] (
+								   sWaitStart::VS_O__(id__)
+								   [| { share__, terminate } |] (
+								   sRun::VS_O__(id__)
+								   )
+								   )
+								   )
+								 )
+								 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+								 [[sWaitStart::interrupt <- x__ | x__ <- {|interrupt,startHalt__.NID_sWaitStart.in|}]]
+								 [[sRun::interrupt <- x__ | x__ <- {|interrupt,stopHalt__.NID_sRun.in|}]]
+								 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
+								 )
+								  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+								 )
+								 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+								|}) |]
+								 ((sInitial::enter -> Transitions(id__))
+								  [[ share__ <- x__ | x__ <- {| share__ |} ]]
+								 )
+								)
+								)
+							)
+							 \ hideSet)
+							[[
+								startHalt__.x____ <- startHalt,
+								stopHalt__.x____ <- stopHalt,
+								haltSkill__.x____ <- haltSkill
+								| x____ <- NIDS
+							]]
+						)
+						)
+						 [| union(stateClockSync,{terminate}) |]
+						 StateClocks(id__)
+						)\diff(stateClockSync,enteredSS))
+						 [| {| interrupt |} |] SKIP)
+					)
+					)
+				
+				Behaviour_VS_O(id__) = 
+					dbisim((let
+						stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+					 within
+						(MachineBody_VS_O(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ diff(union(stateClockSync,enteredSS),enteredSS)
+					)
+					)
+				
+				IteratedBehaviour_VS_O(id__) = 
+					dbisim((let
+						stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+					 within
+						(dbisim(
+							sbisim(
+								dbisim(
+									sbisim(
+										MachineBody_VS_O(id__)
+										[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+										dbisim(Clock_CLID_sRun(id__,0))
+									)\{|get_CLID_sRun|}
+								)
+								[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+								dbisim(Clock_CLID_sWaitStart(id__,0))
+							)\{|get_CLID_sWaitStart|}
+						)
+						) \ diff(union(stateClockSync,enteredSS),enteredSS)
+					)
+					)
+				
+				Stateful_VS_O(id__) = 
+					dbisim((let
+						getsetLocalChannels = {|get_skill,set_skill|}
+						clockSync = {||}
+					within
+						(Behaviour_VS_O(id__) 
+						 [| union(union(getsetLocalChannels,clockSync),{terminate}) |] 
+						 (varMemory(id__) [| {terminate} |] Clocks(id__))
+					 	)\union(getsetLocalChannels,clockSync)
+					)
+					)
+				
+				IteratedStateful_VS_O(id__) =
+					(dbisim(
+						sbisim(
+							IteratedBehaviour_VS_O(id__)
+							[| {|get_skill,set_skill,terminate|} |]
+							Memory_skill(carryBallOnBallPlacement_Skill_NONE)
+						)\{|get_skill,set_skill|}
+					)
+					)
+				
+				-- END
+				
+				-- Memory
+				-- Memory variables
+				Memory_skill(skill) =
+					get_skill!skill -> Memory_skill(skill)
+					[]
+					set_skill?x__ -> Memory_skill(x__)
+					[]
+					terminate -> SKIP
+				
+				-- varMemory process
+				varMemory(id__) = Memory_skill(carryBallOnBallPlacement_Skill_NONE)
+				
+				getsetLocalChannels = {|get_skill,set_skill|}
+				
+				-- Definition of the behaviour of state machines (default, optimised, visible, visible and optimised)
+				FVS__(id__) = STM_VS_O(id__) \ localClockResets
+				D__(id__) = timed_priority(STM(id__) \ union(internal_events,localClockResets))
+				O__(id__) = dbisim(D__(id__))
+				VS__(id__) = FVS__(id__)
+				VS_O__(id__) = dbisim(FVS__(id__))
+				HEXT__(id__) = O__(id__) [|shared_variable_events|] SKIP
+				FVS_C__(id__) = dbisim(timed_priority(STM(id__) \ internal_events))
+				HUP__(id__) = timed_priority(O__(id__) [|{share__}|] SKIP)
+				
+				-- Clocks
+				
+				Clocks(id__) = terminate -> SKIP
+				
+				clockSync = {||}
+				
+				Clock_CLID_sWaitStart(id__,x__) = 
+					TimeOut_1(
+						sWaitStart::entered -> Clock_CLID_sWaitStart(id__,0)
+						[]
+						get_CLID_sWaitStart!x__ -> Clock_CLID_sWaitStart(id__,x__)
+						[]
+						terminate -> SKIP,Clock_CLID_sWaitStart(id__,clock_type_plus(x__,1,CLID_sWaitStart_clock_type(id__))))
+				Clock_CLID_sRun(id__,x__) = 
+					TimeOut_1(
+						sRun::entered -> Clock_CLID_sRun(id__,0)
+						[]
+						get_CLID_sRun!x__ -> Clock_CLID_sRun(id__,x__)
+						[]
+						terminate -> SKIP,Clock_CLID_sRun(id__,clock_type_plus(x__,1,CLID_sRun_clock_type(id__))))
+				
+				StateClocks(id__) = dbisim(Clock_CLID_sWaitStart(id__,0))
+				[| { terminate } |] (
+				dbisim(Clock_CLID_sRun(id__,0))
+				)
+				
+				stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+				
+				-- Shared memory
+				-- Shared memory variables
+				Memory_nodeStatus(nodeStatus) =
+					get_nodeStatus!nodeStatus -> Memory_nodeStatus(nodeStatus)
+					[]
+					set_nodeStatus?x__ -> Memory_nodeStatus(x__)
+					[]
+					set_EXT_nodeStatus?x__ -> Memory_nodeStatus(x__)
+					[]
+					terminate -> SKIP
+				
+				-- sharedVarMemory process
+				sharedVarMemory(id__) = Memory_nodeStatus(NODE_STATUS_RUNNING)
+				
+				sharedVarSync = {|get_nodeStatus,set_nodeStatus,set_EXT_nodeStatus|}
+				
+				sharedVarHide = {|get_nodeStatus|}
+				}
+		endmodule
 		
 		Timed(OneStep) {
 				-- undefined operations
@@ -7450,7 +8411,7 @@
 					set_skill?x__ -> 
 					Memory(id__,currentTactic,x__,nodeStatus)
 					  []
-					set_nodeStatus?x__ -> stm_carry_ball_on_ball_placement_ref::set_EXT_nodeStatus!x__ -> stm_go_to_behind_ball_ref::set_EXT_nodeStatus!x__ -> stm_approach_ball_ref::set_EXT_nodeStatus!x__ -> stm_carry_ball_ref::set_EXT_nodeStatus!x__ -> stm_move_away_ref::set_EXT_nodeStatus!x__ -> 
+					set_nodeStatus?x__ -> stm_carry_ball_on_ball_placement_ref::set_EXT_nodeStatus!x__ -> stm_go_to_behind_ball_ref::set_EXT_nodeStatus!x__ -> stm_approach_ball_ref::set_EXT_nodeStatus!x__ -> stm_carry_ball_ref::set_EXT_nodeStatus!x__ -> stm_move_away_ref::set_EXT_nodeStatus!x__ -> stm_halt_ref::set_EXT_nodeStatus!x__ -> 
 					Memory(id__,currentTactic,skill,x__)
 				)
 				
@@ -7464,15 +8425,12 @@
 								stm_behavior_ref::receiveTactic <- receiveTactic,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.in <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.out,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.out <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.in,
-								stm_behavior_ref::sendAction <- sendAction
+								stm_behavior_ref::sendAction <- sendAction,
+								stm_behavior_ref::haltSkill.in <- stm_halt_ref::haltSkill.out,
+								stm_behavior_ref::haltSkill.out <- stm_halt_ref::haltSkill.in
 							]]
-							\ {|
-								stm_behavior_ref::startHalt,
-								stm_behavior_ref::stopHalt,
-								stm_behavior_ref::haltSkill
-							|}
 						)
-							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|}|]
+							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|}|]
 						(
 							(
 								stm_carry_ball_on_ball_placement_ref::D__(id__)[[
@@ -7543,12 +8501,30 @@
 											)
 												[|{|terminate, stm_skill_ref::startMoveAwayFromPosition, stm_skill_ref::stopMoveAwayFromPosition|}|]
 											(
-												stm_skill_ref::D__(id__)[[
-													stm_skill_ref::terminate <- terminate
-												]]
-												\ {|
-													stm_skill_ref::receiveSkill
-												|}
+												(
+													stm_skill_ref::D__(id__)[[
+														stm_skill_ref::terminate <- terminate
+													]]
+													\ {|
+														stm_skill_ref::receiveSkill
+													|}
+												)
+													[|{|terminate|}|]
+												(
+													stm_halt_ref::D__(id__)[[
+														stm_halt_ref::terminate <- terminate,
+														stm_halt_ref::startHalt.in <- stm_behavior_ref::startHalt.out,
+														stm_halt_ref::startHalt.out <- stm_behavior_ref::startHalt.in,
+														stm_halt_ref::stopHalt.in <- stm_behavior_ref::stopHalt.out,
+														stm_halt_ref::stopHalt.out <- stm_behavior_ref::stopHalt.in,
+														stm_halt_ref::set_nodeStatus <- set_nodeStatus,
+														stm_halt_ref::get_nodeStatus <- get_nodeStatus
+													]]
+												)
+											)
+											\diff(
+												{|terminate|},
+												{|terminate|}
 											)
 										)
 										\diff(
@@ -7577,7 +8553,7 @@
 						)
 					)
 					\diff(
-						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|},
+						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|},
 						{|terminate|}
 					)
 						[|
@@ -7592,7 +8568,8 @@
 									stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 									stm_approach_ball_ref::set_EXT_nodeStatus,
 									stm_carry_ball_ref::set_EXT_nodeStatus,
-									stm_move_away_ref::set_EXT_nodeStatus
+									stm_move_away_ref::set_EXT_nodeStatus,
+									stm_halt_ref::set_EXT_nodeStatus
 								|}
 							)
 						|]
@@ -7609,7 +8586,8 @@
 						stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 						stm_approach_ball_ref::set_EXT_nodeStatus,
 						stm_carry_ball_ref::set_EXT_nodeStatus,
-						stm_move_away_ref::set_EXT_nodeStatus
+						stm_move_away_ref::set_EXT_nodeStatus,
+						stm_halt_ref::set_EXT_nodeStatus
 					|}
 				)
 				[|{|terminate|}|>SKIP
@@ -7626,15 +8604,12 @@
 								stm_behavior_ref::receiveTactic <- receiveTactic,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.in <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.out,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.out <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.in,
-								stm_behavior_ref::sendAction <- sendAction
+								stm_behavior_ref::sendAction <- sendAction,
+								stm_behavior_ref::haltSkill.in <- stm_halt_ref::haltSkill.out,
+								stm_behavior_ref::haltSkill.out <- stm_halt_ref::haltSkill.in
 							]]
-							\ {|
-								stm_behavior_ref::startHalt,
-								stm_behavior_ref::stopHalt,
-								stm_behavior_ref::haltSkill
-							|}
 						)
-							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|}|]
+							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|}|]
 						(
 							(
 								stm_carry_ball_on_ball_placement_ref::VS__(id__)[[
@@ -7705,12 +8680,30 @@
 											)
 												[|{|terminate, stm_skill_ref::startMoveAwayFromPosition, stm_skill_ref::stopMoveAwayFromPosition|}|]
 											(
-												stm_skill_ref::VS__(id__)[[
-													stm_skill_ref::terminate <- terminate
-												]]
-												\ {|
-													stm_skill_ref::receiveSkill
-												|}
+												(
+													stm_skill_ref::VS__(id__)[[
+														stm_skill_ref::terminate <- terminate
+													]]
+													\ {|
+														stm_skill_ref::receiveSkill
+													|}
+												)
+													[|{|terminate|}|]
+												(
+													stm_halt_ref::VS__(id__)[[
+														stm_halt_ref::terminate <- terminate,
+														stm_halt_ref::startHalt.in <- stm_behavior_ref::startHalt.out,
+														stm_halt_ref::startHalt.out <- stm_behavior_ref::startHalt.in,
+														stm_halt_ref::stopHalt.in <- stm_behavior_ref::stopHalt.out,
+														stm_halt_ref::stopHalt.out <- stm_behavior_ref::stopHalt.in,
+														stm_halt_ref::set_nodeStatus <- set_nodeStatus,
+														stm_halt_ref::get_nodeStatus <- get_nodeStatus
+													]]
+												)
+											)
+											\diff(
+												{|terminate|},
+												{|terminate|}
 											)
 										)
 										\diff(
@@ -7739,7 +8732,7 @@
 						)
 					)
 					\diff(
-						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|},
+						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|},
 						{|terminate|}
 					)
 						[|
@@ -7754,7 +8747,8 @@
 									stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 									stm_approach_ball_ref::set_EXT_nodeStatus,
 									stm_carry_ball_ref::set_EXT_nodeStatus,
-									stm_move_away_ref::set_EXT_nodeStatus
+									stm_move_away_ref::set_EXT_nodeStatus,
+									stm_halt_ref::set_EXT_nodeStatus
 								|}
 							)
 						|]
@@ -7771,7 +8765,8 @@
 						stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 						stm_approach_ball_ref::set_EXT_nodeStatus,
 						stm_carry_ball_ref::set_EXT_nodeStatus,
-						stm_move_away_ref::set_EXT_nodeStatus
+						stm_move_away_ref::set_EXT_nodeStatus,
+						stm_halt_ref::set_EXT_nodeStatus
 					|}
 				)
 				[|{|terminate|}|>SKIP
@@ -7788,15 +8783,12 @@
 								stm_behavior_ref::receiveTactic <- receiveTactic,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.in <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.out,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.out <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.in,
-								stm_behavior_ref::sendAction <- sendAction
+								stm_behavior_ref::sendAction <- sendAction,
+								stm_behavior_ref::haltSkill.in <- stm_halt_ref::haltSkill.out,
+								stm_behavior_ref::haltSkill.out <- stm_halt_ref::haltSkill.in
 							]]
-							\ {|
-								stm_behavior_ref::startHalt,
-								stm_behavior_ref::stopHalt,
-								stm_behavior_ref::haltSkill
-							|}
 						)
-							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|}|]
+							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|}|]
 						(
 							(
 								stm_carry_ball_on_ball_placement_ref::O__(id__)[[
@@ -7867,12 +8859,30 @@
 											)
 												[|{|terminate, stm_skill_ref::startMoveAwayFromPosition, stm_skill_ref::stopMoveAwayFromPosition|}|]
 											(
-												stm_skill_ref::O__(id__)[[
-													stm_skill_ref::terminate <- terminate
-												]]
-												\ {|
-													stm_skill_ref::receiveSkill
-												|}
+												(
+													stm_skill_ref::O__(id__)[[
+														stm_skill_ref::terminate <- terminate
+													]]
+													\ {|
+														stm_skill_ref::receiveSkill
+													|}
+												)
+													[|{|terminate|}|]
+												(
+													stm_halt_ref::O__(id__)[[
+														stm_halt_ref::terminate <- terminate,
+														stm_halt_ref::startHalt.in <- stm_behavior_ref::startHalt.out,
+														stm_halt_ref::startHalt.out <- stm_behavior_ref::startHalt.in,
+														stm_halt_ref::stopHalt.in <- stm_behavior_ref::stopHalt.out,
+														stm_halt_ref::stopHalt.out <- stm_behavior_ref::stopHalt.in,
+														stm_halt_ref::set_nodeStatus <- set_nodeStatus,
+														stm_halt_ref::get_nodeStatus <- get_nodeStatus
+													]]
+												)
+											)
+											\diff(
+												{|terminate|},
+												{|terminate|}
 											)
 										)
 										\diff(
@@ -7901,7 +8911,7 @@
 						)
 					)
 					\diff(
-						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|},
+						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|},
 						{|terminate|}
 					)
 						[|
@@ -7916,7 +8926,8 @@
 									stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 									stm_approach_ball_ref::set_EXT_nodeStatus,
 									stm_carry_ball_ref::set_EXT_nodeStatus,
-									stm_move_away_ref::set_EXT_nodeStatus
+									stm_move_away_ref::set_EXT_nodeStatus,
+									stm_halt_ref::set_EXT_nodeStatus
 								|}
 							)
 						|]
@@ -7933,7 +8944,8 @@
 						stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 						stm_approach_ball_ref::set_EXT_nodeStatus,
 						stm_carry_ball_ref::set_EXT_nodeStatus,
-						stm_move_away_ref::set_EXT_nodeStatus
+						stm_move_away_ref::set_EXT_nodeStatus,
+						stm_halt_ref::set_EXT_nodeStatus
 					|}
 				)
 				[|{|terminate|}|>SKIP
@@ -7950,15 +8962,12 @@
 								stm_behavior_ref::receiveTactic <- receiveTactic,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.in <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.out,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.out <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.in,
-								stm_behavior_ref::sendAction <- sendAction
+								stm_behavior_ref::sendAction <- sendAction,
+								stm_behavior_ref::haltSkill.in <- stm_halt_ref::haltSkill.out,
+								stm_behavior_ref::haltSkill.out <- stm_halt_ref::haltSkill.in
 							]]
-							\ {|
-								stm_behavior_ref::startHalt,
-								stm_behavior_ref::stopHalt,
-								stm_behavior_ref::haltSkill
-							|}
 						)
-							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|}|]
+							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|}|]
 						(
 							(
 								stm_carry_ball_on_ball_placement_ref::VS_O__(id__)[[
@@ -8029,12 +9038,30 @@
 											)
 												[|{|terminate, stm_skill_ref::startMoveAwayFromPosition, stm_skill_ref::stopMoveAwayFromPosition|}|]
 											(
-												stm_skill_ref::VS_O__(id__)[[
-													stm_skill_ref::terminate <- terminate
-												]]
-												\ {|
-													stm_skill_ref::receiveSkill
-												|}
+												(
+													stm_skill_ref::VS_O__(id__)[[
+														stm_skill_ref::terminate <- terminate
+													]]
+													\ {|
+														stm_skill_ref::receiveSkill
+													|}
+												)
+													[|{|terminate|}|]
+												(
+													stm_halt_ref::VS_O__(id__)[[
+														stm_halt_ref::terminate <- terminate,
+														stm_halt_ref::startHalt.in <- stm_behavior_ref::startHalt.out,
+														stm_halt_ref::startHalt.out <- stm_behavior_ref::startHalt.in,
+														stm_halt_ref::stopHalt.in <- stm_behavior_ref::stopHalt.out,
+														stm_halt_ref::stopHalt.out <- stm_behavior_ref::stopHalt.in,
+														stm_halt_ref::set_nodeStatus <- set_nodeStatus,
+														stm_halt_ref::get_nodeStatus <- get_nodeStatus
+													]]
+												)
+											)
+											\diff(
+												{|terminate|},
+												{|terminate|}
 											)
 										)
 										\diff(
@@ -8063,7 +9090,7 @@
 						)
 					)
 					\diff(
-						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|},
+						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|},
 						{|terminate|}
 					)
 						[|
@@ -8078,7 +9105,8 @@
 									stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 									stm_approach_ball_ref::set_EXT_nodeStatus,
 									stm_carry_ball_ref::set_EXT_nodeStatus,
-									stm_move_away_ref::set_EXT_nodeStatus
+									stm_move_away_ref::set_EXT_nodeStatus,
+									stm_halt_ref::set_EXT_nodeStatus
 								|}
 							)
 						|]
@@ -8095,7 +9123,8 @@
 						stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 						stm_approach_ball_ref::set_EXT_nodeStatus,
 						stm_carry_ball_ref::set_EXT_nodeStatus,
-						stm_move_away_ref::set_EXT_nodeStatus
+						stm_move_away_ref::set_EXT_nodeStatus,
+						stm_halt_ref::set_EXT_nodeStatus
 					|}
 				)
 				[|{|terminate|}|>SKIP

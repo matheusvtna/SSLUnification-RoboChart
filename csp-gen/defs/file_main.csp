@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 08-11-2023 14:21:25
+-- Automatically generated on 08-11-2023 16:01:20
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -1616,8 +1616,8 @@ module SSL
 			
 			
 			-- declaring call and ret events for undefined operations
-			channel moveCall: core_real.core_real
 			channel stopCall
+			channel moveCall: core_real.core_real
 			
 			-- declaring controller termination channel
 			channel terminate
@@ -1628,8 +1628,8 @@ module SSL
 			,	receiveFrame,
 				receiveField,
 				receiveCommand
-			,	moveCall,
-				stopCall
+			,	stopCall,
+				moveCall
 			|}
 	
 			-- defined operations
@@ -1959,10 +1959,10 @@ module SSL
 			endmodule
 			
 				-- undefined operations
+				CALL__stop(id__) 	= stopCall -> SKIP
 				CALL__move(id__,
 						    param_linearVelocity,
 						    param_angularVelocity) 	= moveCall.param_linearVelocity.param_angularVelocity -> SKIP
-				CALL__stop(id__) 	= stopCall -> SKIP
 				
 				-- declaring controller memory
 				Memory(id__) = SKIP
@@ -2122,7 +2122,8 @@ module SSL
 				              NID_sWaitTactic|
 				              NID_jCheckCurrentTactic|
 				              NID_jStopLastTactic|
-				              NID_jStartCurrentTactic
+				              NID_jStartCurrentTactic|
+				              NID_jCheckSkillForTactic
 				
 				channel internal__ : NIDS
 				
@@ -2136,6 +2137,7 @@ module SSL
 				channel get_currentTactic, set_currentTactic, setL_currentTactic, setR_currentTactic: Tactic
 				channel get_lastTactic, set_lastTactic, setL_lastTactic, setR_lastTactic: Tactic
 				channel get_nodeStatus, set_nodeStatus, setL_nodeStatus, setR_nodeStatus: NODE_STATUS
+				channel get_skill, set_skill, setL_skill, setR_skill: carryBallOnBallPlacement_Skill
 				
 				-- Shared variable channels
 				
@@ -2170,7 +2172,8 @@ module SSL
 				sWaitTactic::enter,
 				jCheckCurrentTactic::enter,
 				jStopLastTactic::enter,
-				jStartCurrentTactic::enter
+				jStartCurrentTactic::enter,
+				jCheckSkillForTactic::enter
 				|}
 				
 				enteredSS = 	{|
@@ -2351,6 +2354,27 @@ module SSL
 				endmodule
 				----------------------------------------------------------------------
 				
+				
+				----------------------------------------------------------------------
+				-- Junction: jCheckSkillForTactic
+				module jCheckSkillForTactic
+				exports
+				
+					channel enter, interrupt
+					
+					D__(id__) = 
+						dbisim(let
+							Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+							
+							Active 		= share__choice(interrupt -> SKIP) ; Inactive
+						within
+							Inactive [| {terminate} |> SKIP)
+						
+					VS_O__(id__) = D__(id__)
+				
+				endmodule
+				----------------------------------------------------------------------
+				
 				-- END of Nodes --
 				
 				-- Operation calls --
@@ -2393,7 +2417,7 @@ module SSL
 				
 				-- Transitions
 				Transitions(id__) = ((let
-					Trans = share__choice(get_lastTactic?lastTactic -> get_currentTactic?currentTactic -> (
+					Trans = share__choice(get_currentTactic?currentTactic -> get_lastTactic?lastTactic -> (
 						((share__ -> SKIP
 						 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sWaitTactic::enter -> SKIP))))
 						 	 [] dbisim((true)&(receiveTactic__!NID_sWaitTactic.in?currentTactic:{currentTactic|currentTactic <- Tactic, true} -> share__choice(set_currentTactic!currentTactic -> SKIP) ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; jCheckCurrentTactic::enter -> SKIP)))
@@ -2403,6 +2427,8 @@ module SSL
 						 	 [] dbisim(((lastTactic==Tactic_HALT))&(internal__!NID_jStopLastTactic -> SKIP ;  ((true&(share__choice(stopHalt.out -> SKIP)) ; jStartCurrentTactic::enter -> SKIP))))
 						 	 [] dbisim(((currentTactic==Tactic_PLACE_BALL_IN_POSITION))&(internal__!NID_jStartCurrentTactic -> SKIP ;  ((true&(share__choice(startCarryBallOnBallPlacement.out -> SKIP)) ; sWaitTactic::enter -> SKIP))))
 						 	 [] dbisim(((currentTactic==Tactic_HALT))&(internal__!NID_jStartCurrentTactic -> SKIP ;  ((true&(share__choice(startHalt.out -> SKIP)) ; sWaitTactic::enter -> SKIP))))
+						 	 [] dbisim((true)&(carryBallOnBallPlacementSkill__!NID_sWaitTactic.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; jCheckSkillForTactic::enter -> SKIP)))
+						 	 [] dbisim(((currentTactic==Tactic_PLACE_BALL_IN_POSITION))&(internal__!NID_jCheckSkillForTactic -> SKIP ;  ((true&(share__choice(.in?skill -> (SStop /\ set_skill!skill -> SKIP))) ; sWaitTactic::enter -> SKIP))))
 						 ) ; Trans)
 						 []
 						 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
@@ -2433,7 +2459,8 @@ module SSL
 							sWaitTactic::enter,
 							jCheckCurrentTactic::enter,
 							jStopLastTactic::enter,
-							jStartCurrentTactic::enter
+							jStartCurrentTactic::enter,
+							jCheckSkillForTactic::enter
 							|}
 							hideSet = union(enterSS,{|exit,exited,internal__|})
 						within 
@@ -2441,7 +2468,7 @@ module SSL
 								-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 								-- because CSPM modules are used for the semantics of Node.
 								flowevts = union(enterSS,{|exit,exited,interrupt|})
-								transSync = {|internal__.NID_sInitial,receiveTactic__.NID_sWaitTactic.in,internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic,internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic,internal__.NID_jStartCurrentTactic,internal__.NID_jStartCurrentTactic|}
+								transSync = {|internal__.NID_sInitial,receiveTactic__.NID_sWaitTactic.in,internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic,internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic,internal__.NID_jStartCurrentTactic,internal__.NID_jStartCurrentTactic,carryBallOnBallPlacementSkill__.NID_sWaitTactic.in,internal__.NID_jCheckSkillForTactic|}
 							within
 								((
 								 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
@@ -2454,30 +2481,34 @@ module SSL
 								   jStopLastTactic::D__(id__)
 								   [| { share__, terminate } |] (
 								   jStartCurrentTactic::D__(id__)
+								   [| { share__, terminate } |] (
+								   jCheckSkillForTactic::D__(id__)
+								   )
 								   )
 								   )
 								   )
 								   )
 								 )
-								 [[sWaitTactic::interrupt <- x__ | x__ <- {|interrupt,receiveTactic__.NID_sWaitTactic.in|}]]
+								 [[sWaitTactic::interrupt <- x__ | x__ <- {|interrupt,receiveTactic__.NID_sWaitTactic.in,carryBallOnBallPlacementSkill__.NID_sWaitTactic.in|}]]
 								 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 								 [[jCheckCurrentTactic::interrupt <- x__ | x__ <- {|internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic|}]]
 								 [[jStopLastTactic::interrupt <- x__ | x__ <- {|internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic|}]]
 								 [[jStartCurrentTactic::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentTactic,internal__.NID_jStartCurrentTactic|}]]
+								 [[jCheckSkillForTactic::interrupt <- x__ | x__ <- {|internal__.NID_jCheckSkillForTactic|}]]
 								 )
 								  [[ share__ <- x__ | x__ <- {| share__,setR_currentTactic |} ]] 
-								  [[set_lastTactic <- setL_lastTactic,set_currentTactic <- setL_currentTactic]]
+								  [[set_currentTactic <- setL_currentTactic,set_lastTactic <- setL_lastTactic]]
 								 )
 								 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-								 			,setL_lastTactic
 								 			,setL_currentTactic
+								 			,setL_lastTactic
 								 			,setR_currentTactic
 								 			|}) |]
 								 ((sInitial::enter -> Transitions(id__))
-								  [[ share__ <- x__ | x__ <- {| share__,setL_lastTactic,setL_currentTactic |} ]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_currentTactic,setL_lastTactic |} ]]
 								  [[set_currentTactic <- setR_currentTactic]]
 								 )
-								)[[setL_lastTactic <- set_lastTactic,setL_currentTactic <- set_currentTactic]]
+								)[[setL_currentTactic <- set_currentTactic,setL_lastTactic <- set_lastTactic]]
 								 [[setR_currentTactic <- set_currentTactic]]
 								)
 							)
@@ -2522,7 +2553,13 @@ module SSL
 								sbisim(
 									dbisim(
 										sbisim(
-											Behaviour(id__)
+											dbisim(
+												sbisim(
+													Behaviour(id__)
+													[| {|get_skill,set_skill,terminate|} |]
+													Memory_skill(carryBallOnBallPlacement_Skill_NONE)
+												)\{|get_skill,set_skill|}
+											)
 											[| {|get_nodeStatus,set_nodeStatus,terminate|} |]
 											Memory_nodeStatus(NODE_STATUS_RUNNING)
 										)\{|get_nodeStatus,set_nodeStatus|}
@@ -2552,7 +2589,8 @@ module SSL
 							sWaitTactic::enter,
 							jCheckCurrentTactic::enter,
 							jStopLastTactic::enter,
-							jStartCurrentTactic::enter
+							jStartCurrentTactic::enter,
+							jCheckSkillForTactic::enter
 							|}
 							hideSet = union(enterSS,{|exit,exited,internal__|})
 						within 
@@ -2560,7 +2598,7 @@ module SSL
 								-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 								-- because CSPM modules are used for the semantics of Node.
 								flowevts = union(enterSS,{|exit,exited,interrupt|})
-								transSync = {|internal__.NID_sInitial,receiveTactic__.NID_sWaitTactic.in,internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic,internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic,internal__.NID_jStartCurrentTactic,internal__.NID_jStartCurrentTactic|}
+								transSync = {|internal__.NID_sInitial,receiveTactic__.NID_sWaitTactic.in,internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic,internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic,internal__.NID_jStartCurrentTactic,internal__.NID_jStartCurrentTactic,carryBallOnBallPlacementSkill__.NID_sWaitTactic.in,internal__.NID_jCheckSkillForTactic|}
 							within
 								((
 								 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
@@ -2573,30 +2611,34 @@ module SSL
 								   jStopLastTactic::VS_O__(id__)
 								   [| { share__, terminate } |] (
 								   jStartCurrentTactic::VS_O__(id__)
+								   [| { share__, terminate } |] (
+								   jCheckSkillForTactic::VS_O__(id__)
+								   )
 								   )
 								   )
 								   )
 								   )
 								 )
-								 [[sWaitTactic::interrupt <- x__ | x__ <- {|interrupt,receiveTactic__.NID_sWaitTactic.in|}]]
+								 [[sWaitTactic::interrupt <- x__ | x__ <- {|interrupt,receiveTactic__.NID_sWaitTactic.in,carryBallOnBallPlacementSkill__.NID_sWaitTactic.in|}]]
 								 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 								 [[jCheckCurrentTactic::interrupt <- x__ | x__ <- {|internal__.NID_jCheckCurrentTactic,internal__.NID_jCheckCurrentTactic|}]]
 								 [[jStopLastTactic::interrupt <- x__ | x__ <- {|internal__.NID_jStopLastTactic,internal__.NID_jStopLastTactic|}]]
 								 [[jStartCurrentTactic::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentTactic,internal__.NID_jStartCurrentTactic|}]]
+								 [[jCheckSkillForTactic::interrupt <- x__ | x__ <- {|internal__.NID_jCheckSkillForTactic|}]]
 								 )
 								  [[ share__ <- x__ | x__ <- {| share__,setR_currentTactic |} ]] 
-								  [[set_lastTactic <- setL_lastTactic,set_currentTactic <- setL_currentTactic]]
+								  [[set_currentTactic <- setL_currentTactic,set_lastTactic <- setL_lastTactic]]
 								 )
 								 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-								 			,setL_lastTactic
 								 			,setL_currentTactic
+								 			,setL_lastTactic
 								 			,setR_currentTactic
 								 			|}) |]
 								 ((sInitial::enter -> Transitions(id__))
-								  [[ share__ <- x__ | x__ <- {| share__,setL_lastTactic,setL_currentTactic |} ]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_currentTactic,setL_lastTactic |} ]]
 								  [[set_currentTactic <- setR_currentTactic]]
 								 )
-								)[[setL_lastTactic <- set_lastTactic,setL_currentTactic <- set_currentTactic]]
+								)[[setL_currentTactic <- set_currentTactic,setL_lastTactic <- set_lastTactic]]
 								 [[setR_currentTactic <- set_currentTactic]]
 								)
 							)
@@ -2641,7 +2683,13 @@ module SSL
 								sbisim(
 									dbisim(
 										sbisim(
-											Behaviour_VS_O(id__)
+											dbisim(
+												sbisim(
+													Behaviour_VS_O(id__)
+													[| {|get_skill,set_skill,terminate|} |]
+													Memory_skill(carryBallOnBallPlacement_Skill_NONE)
+												)\{|get_skill,set_skill|}
+											)
 											[| {|get_nodeStatus,set_nodeStatus,terminate|} |]
 											Memory_nodeStatus(NODE_STATUS_RUNNING)
 										)\{|get_nodeStatus,set_nodeStatus|}
@@ -2678,6 +2726,12 @@ module SSL
 					set_nodeStatus?x__ -> Memory_nodeStatus(x__)
 					[]
 					terminate -> SKIP
+				Memory_skill(skill) =
+					get_skill!skill -> Memory_skill(skill)
+					[]
+					set_skill?x__ -> Memory_skill(x__)
+					[]
+					terminate -> SKIP
 				
 				-- varMemory process
 				varMemory(id__) = Memory_currentTactic(Tactic_HALT)
@@ -2685,10 +2739,13 @@ module SSL
 				Memory_lastTactic(Tactic_HALT)
 				[| { terminate } |] (
 				Memory_nodeStatus(NODE_STATUS_RUNNING)
+				[| { terminate } |] (
+				Memory_skill(carryBallOnBallPlacement_Skill_NONE)
+				)
 				)
 				)
 				
-				getsetLocalChannels = {|get_currentTactic,set_currentTactic,get_lastTactic,set_lastTactic,get_nodeStatus,set_nodeStatus|}
+				getsetLocalChannels = {|get_currentTactic,set_currentTactic,get_lastTactic,set_lastTactic,get_nodeStatus,set_nodeStatus,get_skill,set_skill|}
 				
 				-- Definition of the behaviour of state machines (default, optimised, visible, visible and optimised)
 				FVS__(id__) = STM_VS_O(id__)
@@ -3422,25 +3479,25 @@ module SSL
 							 	]]
 							 )
 							 )
-							  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotHasMovedAwayFromBall,setR_runningStm,setR_skill |} ]] 
-							  [[set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_runningStm <- setL_runningStm,set_skill <- setL_skill]]
+							  [[ share__ <- x__ | x__ <- {| share__,setR_robotHasMovedAwayFromBall,setR_runningStm,setR_nodeStatus,setR_skill |} ]] 
+							  [[set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_runningStm <- setL_runningStm,set_nodeStatus <- setL_nodeStatus,set_skill <- setL_skill]]
 							 )
 							 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-							 			,setL_nodeStatus
 							 			,setL_robotHasMovedAwayFromBall
 							 			,setL_runningStm
+							 			,setL_nodeStatus
 							 			,setL_skill
-							 			,setR_nodeStatus
-							 			 			,setR_robotHasMovedAwayFromBall
+							 			,setR_robotHasMovedAwayFromBall
 							 			 			,setR_runningStm
+							 			 			,setR_nodeStatus
 							 			 			,setR_skill
 							 			|}) |]
 							 ((During)
-							  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotHasMovedAwayFromBall,setL_runningStm,setL_skill |} ]]
-							  [[set_nodeStatus <- setR_nodeStatus,set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_runningStm <- setR_runningStm,set_skill <- setR_skill]]
+							  [[ share__ <- x__ | x__ <- {| share__,setL_robotHasMovedAwayFromBall,setL_runningStm,setL_nodeStatus,setL_skill |} ]]
+							  [[set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_runningStm <- setR_runningStm,set_nodeStatus <- setR_nodeStatus,set_skill <- setR_skill]]
 							 )
-							)[[setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_runningStm <- set_runningStm,setL_skill <- set_skill]]
-							 [[setR_nodeStatus <- set_nodeStatus,setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_runningStm <- set_runningStm,setR_skill <- set_skill]]
+							)[[setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_runningStm <- set_runningStm,setL_nodeStatus <- set_nodeStatus,setL_skill <- set_skill]]
+							 [[setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_runningStm <- set_runningStm,setR_nodeStatus <- set_nodeStatus,setR_skill <- set_skill]]
 							)\union(enteredSS,{terminate}) 
 						)
 						During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -3535,25 +3592,25 @@ module SSL
 							 	]]
 							 )
 							 )
-							  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotHasMovedAwayFromBall,setR_runningStm,setR_skill |} ]] 
-							  [[set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_runningStm <- setL_runningStm,set_skill <- setL_skill]]
+							  [[ share__ <- x__ | x__ <- {| share__,setR_robotHasMovedAwayFromBall,setR_runningStm,setR_nodeStatus,setR_skill |} ]] 
+							  [[set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_runningStm <- setL_runningStm,set_nodeStatus <- setL_nodeStatus,set_skill <- setL_skill]]
 							 )
 							 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-							 			,setL_nodeStatus
 							 			,setL_robotHasMovedAwayFromBall
 							 			,setL_runningStm
+							 			,setL_nodeStatus
 							 			,setL_skill
-							 			,setR_nodeStatus
-							 			 			,setR_robotHasMovedAwayFromBall
+							 			,setR_robotHasMovedAwayFromBall
 							 			 			,setR_runningStm
+							 			 			,setR_nodeStatus
 							 			 			,setR_skill
 							 			|}) |]
 							 ((During)
-							  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotHasMovedAwayFromBall,setL_runningStm,setL_skill |} ]]
-							  [[set_nodeStatus <- setR_nodeStatus,set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_runningStm <- setR_runningStm,set_skill <- setR_skill]]
+							  [[ share__ <- x__ | x__ <- {| share__,setL_robotHasMovedAwayFromBall,setL_runningStm,setL_nodeStatus,setL_skill |} ]]
+							  [[set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_runningStm <- setR_runningStm,set_nodeStatus <- setR_nodeStatus,set_skill <- setR_skill]]
 							 )
-							)[[setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_runningStm <- set_runningStm,setL_skill <- set_skill]]
-							 [[setR_nodeStatus <- set_nodeStatus,setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_runningStm <- set_runningStm,setR_skill <- set_skill]]
+							)[[setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_runningStm <- set_runningStm,setL_nodeStatus <- set_nodeStatus,setL_skill <- set_skill]]
+							 [[setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_runningStm <- set_runningStm,setR_nodeStatus <- set_nodeStatus,setR_skill <- set_skill]]
 							)\{terminate} 
 						)
 						During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -4313,17 +4370,17 @@ module SSL
 							 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 							 		 )
 							 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-							 		  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+							 		  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setL_allyIsBehindBall]]
 							 		 )
 							 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-							 		 			,setL_allyIsBehindBall
 							 		 			,setL_allyIsCloseToBall
 							 		 			,setL_allyIsPushingBallWithHisBack
+							 		 			,setL_allyIsBehindBall
 							 		|}) |]
 							 		 ((sInitial::enter -> Transitions(id__))
-							 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack |} ]]
+							 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack,setL_allyIsBehindBall |} ]]
 							 		 )
-							 		)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+							 		)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsBehindBall <- set_allyIsBehindBall]]
 							 		)
 							 	)
 							 	 \ hideSet)
@@ -4334,25 +4391,25 @@ module SSL
 							 	]]
 							 )
 							 )
-							  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack |} ]] 
-							  [[set_nodeStatus <- setL_nodeStatus,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+							  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack,setR_allyIsBehindBall |} ]] 
+							  [[set_nodeStatus <- setL_nodeStatus,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setL_allyIsBehindBall]]
 							 )
 							 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
 							 			,setL_nodeStatus
-							 			,setL_allyIsBehindBall
 							 			,setL_allyIsCloseToBall
 							 			,setL_allyIsPushingBallWithHisBack
+							 			,setL_allyIsBehindBall
 							 			,setR_nodeStatus
-							 			 			,setR_allyIsBehindBall
 							 			 			,setR_allyIsCloseToBall
 							 			 			,setR_allyIsPushingBallWithHisBack
+							 			 			,setR_allyIsBehindBall
 							 			|}) |]
 							 ((During)
-							  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack |} ]]
-							  [[set_nodeStatus <- setR_nodeStatus,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack]]
+							  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack,setL_allyIsBehindBall |} ]]
+							  [[set_nodeStatus <- setR_nodeStatus,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setR_allyIsBehindBall]]
 							 )
-							)[[setL_nodeStatus <- set_nodeStatus,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
-							 [[setR_nodeStatus <- set_nodeStatus,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+							)[[setL_nodeStatus <- set_nodeStatus,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+							 [[setR_nodeStatus <- set_nodeStatus,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setR_allyIsBehindBall <- set_allyIsBehindBall]]
 							)\union(enteredSS,{terminate}) 
 						)
 						During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -4406,17 +4463,17 @@ module SSL
 							 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 							 		 )
 							 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-							 		  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+							 		  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setL_allyIsBehindBall]]
 							 		 )
 							 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-							 		 			,setL_allyIsBehindBall
 							 		 			,setL_allyIsCloseToBall
 							 		 			,setL_allyIsPushingBallWithHisBack
+							 		 			,setL_allyIsBehindBall
 							 		|}) |]
 							 		 ((sInitial::enter -> Transitions(id__))
-							 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack |} ]]
+							 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack,setL_allyIsBehindBall |} ]]
 							 		 )
-							 		)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+							 		)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsBehindBall <- set_allyIsBehindBall]]
 							 		)
 							 	)
 							 	 \ hideSet)
@@ -4427,25 +4484,25 @@ module SSL
 							 	]]
 							 )
 							 )
-							  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack |} ]] 
-							  [[set_nodeStatus <- setL_nodeStatus,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+							  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack,setR_allyIsBehindBall |} ]] 
+							  [[set_nodeStatus <- setL_nodeStatus,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setL_allyIsBehindBall]]
 							 )
 							 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
 							 			,setL_nodeStatus
-							 			,setL_allyIsBehindBall
 							 			,setL_allyIsCloseToBall
 							 			,setL_allyIsPushingBallWithHisBack
+							 			,setL_allyIsBehindBall
 							 			,setR_nodeStatus
-							 			 			,setR_allyIsBehindBall
 							 			 			,setR_allyIsCloseToBall
 							 			 			,setR_allyIsPushingBallWithHisBack
+							 			 			,setR_allyIsBehindBall
 							 			|}) |]
 							 ((During)
-							  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack |} ]]
-							  [[set_nodeStatus <- setR_nodeStatus,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack]]
+							  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack,setL_allyIsBehindBall |} ]]
+							  [[set_nodeStatus <- setR_nodeStatus,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack,set_allyIsBehindBall <- setR_allyIsBehindBall]]
 							 )
-							)[[setL_nodeStatus <- set_nodeStatus,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
-							 [[setR_nodeStatus <- set_nodeStatus,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+							)[[setL_nodeStatus <- set_nodeStatus,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+							 [[setR_nodeStatus <- set_nodeStatus,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setR_allyIsBehindBall <- set_allyIsBehindBall]]
 							)\{terminate} 
 						)
 						During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -4454,7 +4511,7 @@ module SSL
 						Inactive [| {terminate} |> SKIP)
 					
 					Transitions(id__) = ((let
-						Trans = share__choice(get_allyIsBehindBall?allyIsBehindBall -> get_allyIsCloseToBall?allyIsCloseToBall -> get_allyIsPushingBallWithHisBack?allyIsPushingBallWithHisBack -> (
+						Trans = share__choice(get_allyIsCloseToBall?allyIsCloseToBall -> get_allyIsPushingBallWithHisBack?allyIsPushingBallWithHisBack -> get_allyIsBehindBall?allyIsBehindBall -> (
 							((share__ -> SKIP
 							 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sGoToBehindBall::enter -> SKIP))))
 							 	 [] dbisim((((allyIsBehindBall and allyIsCloseToBall)))&(internal__!NID_sGoToBehindBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
@@ -5198,17 +5255,17 @@ module SSL
 							 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 							 		 )
 							 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-							 		  [[set_allyHasBall <- setL_allyHasBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+							 		  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyHasBall <- setL_allyHasBall]]
 							 		 )
 							 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-							 		 			,setL_allyHasBall
-							 		 			,setL_allyIsCloseToBall
 							 		 			,setL_allyIsBehindBall
+							 		 			,setL_allyIsCloseToBall
+							 		 			,setL_allyHasBall
 							 		|}) |]
 							 		 ((sInitial::enter -> Transitions(id__))
-							 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_allyIsCloseToBall,setL_allyIsBehindBall |} ]]
+							 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyHasBall |} ]]
 							 		 )
-							 		)[[setL_allyHasBall <- set_allyHasBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+							 		)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyHasBall <- set_allyHasBall]]
 							 		)
 							 	)
 							 	 \ hideSet)
@@ -5219,25 +5276,25 @@ module SSL
 							 	]]
 							 )
 							 )
-							  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyHasBall,setR_allyIsCloseToBall,setR_allyIsBehindBall |} ]] 
-							  [[set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+							  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_nodeStatus,setR_allyHasBall |} ]] 
+							  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall]]
 							 )
 							 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+							 			,setL_allyIsBehindBall
+							 			,setL_allyIsCloseToBall
 							 			,setL_nodeStatus
 							 			,setL_allyHasBall
-							 			,setL_allyIsCloseToBall
-							 			,setL_allyIsBehindBall
-							 			,setR_nodeStatus
-							 			 			,setR_allyHasBall
+							 			,setR_allyIsBehindBall
 							 			 			,setR_allyIsCloseToBall
-							 			 			,setR_allyIsBehindBall
+							 			 			,setR_nodeStatus
+							 			 			,setR_allyHasBall
 							 			|}) |]
 							 ((During)
-							  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyHasBall,setL_allyIsCloseToBall,setL_allyIsBehindBall |} ]]
-							  [[set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsBehindBall <- setR_allyIsBehindBall]]
+							  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_nodeStatus,setL_allyHasBall |} ]]
+							  [[set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall]]
 							 )
-							)[[setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
-							 [[setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsBehindBall <- set_allyIsBehindBall]]
+							)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall]]
+							 [[setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall]]
 							)\union(enteredSS,{terminate}) 
 						)
 						During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -5291,17 +5348,17 @@ module SSL
 							 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 							 		 )
 							 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-							 		  [[set_allyHasBall <- setL_allyHasBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+							 		  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyHasBall <- setL_allyHasBall]]
 							 		 )
 							 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-							 		 			,setL_allyHasBall
-							 		 			,setL_allyIsCloseToBall
 							 		 			,setL_allyIsBehindBall
+							 		 			,setL_allyIsCloseToBall
+							 		 			,setL_allyHasBall
 							 		|}) |]
 							 		 ((sInitial::enter -> Transitions(id__))
-							 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_allyIsCloseToBall,setL_allyIsBehindBall |} ]]
+							 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_allyHasBall |} ]]
 							 		 )
-							 		)[[setL_allyHasBall <- set_allyHasBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
+							 		)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyHasBall <- set_allyHasBall]]
 							 		)
 							 	)
 							 	 \ hideSet)
@@ -5312,25 +5369,25 @@ module SSL
 							 	]]
 							 )
 							 )
-							  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyHasBall,setR_allyIsCloseToBall,setR_allyIsBehindBall |} ]] 
-							  [[set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall]]
+							  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsBehindBall,setR_allyIsCloseToBall,setR_nodeStatus,setR_allyHasBall |} ]] 
+							  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall]]
 							 )
 							 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+							 			,setL_allyIsBehindBall
+							 			,setL_allyIsCloseToBall
 							 			,setL_nodeStatus
 							 			,setL_allyHasBall
-							 			,setL_allyIsCloseToBall
-							 			,setL_allyIsBehindBall
-							 			,setR_nodeStatus
-							 			 			,setR_allyHasBall
+							 			,setR_allyIsBehindBall
 							 			 			,setR_allyIsCloseToBall
-							 			 			,setR_allyIsBehindBall
+							 			 			,setR_nodeStatus
+							 			 			,setR_allyHasBall
 							 			|}) |]
 							 ((During)
-							  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyHasBall,setL_allyIsCloseToBall,setL_allyIsBehindBall |} ]]
-							  [[set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsBehindBall <- setR_allyIsBehindBall]]
+							  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsCloseToBall,setL_nodeStatus,setL_allyHasBall |} ]]
+							  [[set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall]]
 							 )
-							)[[setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall]]
-							 [[setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsBehindBall <- set_allyIsBehindBall]]
+							)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall]]
+							 [[setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall]]
 							)\{terminate} 
 						)
 						During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -5339,7 +5396,7 @@ module SSL
 						Inactive [| {terminate} |> SKIP)
 					
 					Transitions(id__) = ((let
-						Trans = share__choice(get_allyHasBall?allyHasBall -> get_allyIsCloseToBall?allyIsCloseToBall -> get_allyIsBehindBall?allyIsBehindBall -> (
+						Trans = share__choice(get_allyIsBehindBall?allyIsBehindBall -> get_allyIsCloseToBall?allyIsCloseToBall -> get_allyHasBall?allyHasBall -> (
 							((share__ -> SKIP
 							 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sApproach::enter -> SKIP))))
 							 	 [] dbisim((allyHasBall)&(internal__!NID_sApproach -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
@@ -6082,16 +6139,16 @@ module SSL
 							 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 							 		 )
 							 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-							 		  [[set_allyHasBall <- setL_allyHasBall,set_ballIsPositioned <- setL_ballIsPositioned]]
+							 		  [[set_ballIsPositioned <- setL_ballIsPositioned,set_allyHasBall <- setL_allyHasBall]]
 							 		 )
 							 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-							 		 			,setL_allyHasBall
 							 		 			,setL_ballIsPositioned
+							 		 			,setL_allyHasBall
 							 		|}) |]
 							 		 ((sInitial::enter -> Transitions(id__))
-							 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_ballIsPositioned |} ]]
+							 		  [[ share__ <- x__ | x__ <- {| share__,setL_ballIsPositioned,setL_allyHasBall |} ]]
 							 		 )
-							 		)[[setL_allyHasBall <- set_allyHasBall,setL_ballIsPositioned <- set_ballIsPositioned]]
+							 		)[[setL_ballIsPositioned <- set_ballIsPositioned,setL_allyHasBall <- set_allyHasBall]]
 							 		)
 							 	)
 							 	 \ hideSet)
@@ -6102,23 +6159,23 @@ module SSL
 							 	]]
 							 )
 							 )
-							  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyHasBall,setR_ballIsPositioned |} ]] 
-							  [[set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall,set_ballIsPositioned <- setL_ballIsPositioned]]
+							  [[ share__ <- x__ | x__ <- {| share__,setR_ballIsPositioned,setR_nodeStatus,setR_allyHasBall |} ]] 
+							  [[set_ballIsPositioned <- setL_ballIsPositioned,set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall]]
 							 )
 							 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+							 			,setL_ballIsPositioned
 							 			,setL_nodeStatus
 							 			,setL_allyHasBall
-							 			,setL_ballIsPositioned
-							 			,setR_nodeStatus
+							 			,setR_ballIsPositioned
+							 			 			,setR_nodeStatus
 							 			 			,setR_allyHasBall
-							 			 			,setR_ballIsPositioned
 							 			|}) |]
 							 ((During)
-							  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyHasBall,setL_ballIsPositioned |} ]]
-							  [[set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall,set_ballIsPositioned <- setR_ballIsPositioned]]
+							  [[ share__ <- x__ | x__ <- {| share__,setL_ballIsPositioned,setL_nodeStatus,setL_allyHasBall |} ]]
+							  [[set_ballIsPositioned <- setR_ballIsPositioned,set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall]]
 							 )
-							)[[setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall,setL_ballIsPositioned <- set_ballIsPositioned]]
-							 [[setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall,setR_ballIsPositioned <- set_ballIsPositioned]]
+							)[[setL_ballIsPositioned <- set_ballIsPositioned,setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall]]
+							 [[setR_ballIsPositioned <- set_ballIsPositioned,setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall]]
 							)\union(enteredSS,{terminate}) 
 						)
 						During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -6172,16 +6229,16 @@ module SSL
 							 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 							 		 )
 							 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-							 		  [[set_allyHasBall <- setL_allyHasBall,set_ballIsPositioned <- setL_ballIsPositioned]]
+							 		  [[set_ballIsPositioned <- setL_ballIsPositioned,set_allyHasBall <- setL_allyHasBall]]
 							 		 )
 							 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-							 		 			,setL_allyHasBall
 							 		 			,setL_ballIsPositioned
+							 		 			,setL_allyHasBall
 							 		|}) |]
 							 		 ((sInitial::enter -> Transitions(id__))
-							 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_ballIsPositioned |} ]]
+							 		  [[ share__ <- x__ | x__ <- {| share__,setL_ballIsPositioned,setL_allyHasBall |} ]]
 							 		 )
-							 		)[[setL_allyHasBall <- set_allyHasBall,setL_ballIsPositioned <- set_ballIsPositioned]]
+							 		)[[setL_ballIsPositioned <- set_ballIsPositioned,setL_allyHasBall <- set_allyHasBall]]
 							 		)
 							 	)
 							 	 \ hideSet)
@@ -6192,23 +6249,23 @@ module SSL
 							 	]]
 							 )
 							 )
-							  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyHasBall,setR_ballIsPositioned |} ]] 
-							  [[set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall,set_ballIsPositioned <- setL_ballIsPositioned]]
+							  [[ share__ <- x__ | x__ <- {| share__,setR_ballIsPositioned,setR_nodeStatus,setR_allyHasBall |} ]] 
+							  [[set_ballIsPositioned <- setL_ballIsPositioned,set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall]]
 							 )
 							 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+							 			,setL_ballIsPositioned
 							 			,setL_nodeStatus
 							 			,setL_allyHasBall
-							 			,setL_ballIsPositioned
-							 			,setR_nodeStatus
+							 			,setR_ballIsPositioned
+							 			 			,setR_nodeStatus
 							 			 			,setR_allyHasBall
-							 			 			,setR_ballIsPositioned
 							 			|}) |]
 							 ((During)
-							  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyHasBall,setL_ballIsPositioned |} ]]
-							  [[set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall,set_ballIsPositioned <- setR_ballIsPositioned]]
+							  [[ share__ <- x__ | x__ <- {| share__,setL_ballIsPositioned,setL_nodeStatus,setL_allyHasBall |} ]]
+							  [[set_ballIsPositioned <- setR_ballIsPositioned,set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall]]
 							 )
-							)[[setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall,setL_ballIsPositioned <- set_ballIsPositioned]]
-							 [[setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall,setR_ballIsPositioned <- set_ballIsPositioned]]
+							)[[setL_ballIsPositioned <- set_ballIsPositioned,setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall]]
+							 [[setR_ballIsPositioned <- set_ballIsPositioned,setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall]]
 							)\{terminate} 
 						)
 						During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -6217,7 +6274,7 @@ module SSL
 						Inactive [| {terminate} |> SKIP)
 					
 					Transitions(id__) = ((let
-						Trans = share__choice(get_allyHasBall?allyHasBall -> get_ballIsPositioned?ballIsPositioned -> (
+						Trans = share__choice(get_ballIsPositioned?ballIsPositioned -> get_allyHasBall?allyHasBall -> (
 							((share__ -> SKIP
 							 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sCarryBall::enter -> SKIP))))
 							 	 [] dbisim((ballIsPositioned)&(internal__!NID_sCarryBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
@@ -7739,7 +7796,7 @@ module SSL
 				
 				-- Transitions
 				Transitions(id__) = ((let
-					Trans = share__choice(get_currentSkill?currentSkill -> get_lastSkill?lastSkill -> (
+					Trans = share__choice(get_lastSkill?lastSkill -> get_currentSkill?currentSkill -> (
 						((share__ -> SKIP
 						 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sWaitSkill::enter -> SKIP))))
 						 	 [] dbisim((true)&(receiveSkill__!NID_sWaitSkill.in?currentSkill:{currentSkill|currentSkill <- carryBallOnBallPlacement_Skill, true} -> share__choice(set_currentSkill!currentSkill -> SKIP) ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; jCheckCurrentSkill::enter -> SKIP)))
@@ -7816,18 +7873,18 @@ module SSL
 								 [[jStartCurrentSkill::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill|}]]
 								 )
 								  [[ share__ <- x__ | x__ <- {| share__,setR_currentSkill |} ]] 
-								  [[set_currentSkill <- setL_currentSkill,set_lastSkill <- setL_lastSkill]]
+								  [[set_lastSkill <- setL_lastSkill,set_currentSkill <- setL_currentSkill]]
 								 )
 								 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-								 			,setL_currentSkill
 								 			,setL_lastSkill
+								 			,setL_currentSkill
 								 			,setR_currentSkill
 								 			|}) |]
 								 ((sInitial::enter -> Transitions(id__))
-								  [[ share__ <- x__ | x__ <- {| share__,setL_currentSkill,setL_lastSkill |} ]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_lastSkill,setL_currentSkill |} ]]
 								  [[set_currentSkill <- setR_currentSkill]]
 								 )
-								)[[setL_currentSkill <- set_currentSkill,setL_lastSkill <- set_lastSkill]]
+								)[[setL_lastSkill <- set_lastSkill,setL_currentSkill <- set_currentSkill]]
 								 [[setR_currentSkill <- set_currentSkill]]
 								)
 							)
@@ -7928,18 +7985,18 @@ module SSL
 								 [[jStartCurrentSkill::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill|}]]
 								 )
 								  [[ share__ <- x__ | x__ <- {| share__,setR_currentSkill |} ]] 
-								  [[set_currentSkill <- setL_currentSkill,set_lastSkill <- setL_lastSkill]]
+								  [[set_lastSkill <- setL_lastSkill,set_currentSkill <- setL_currentSkill]]
 								 )
 								 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-								 			,setL_currentSkill
 								 			,setL_lastSkill
+								 			,setL_currentSkill
 								 			,setR_currentSkill
 								 			|}) |]
 								 ((sInitial::enter -> Transitions(id__))
-								  [[ share__ <- x__ | x__ <- {| share__,setL_currentSkill,setL_lastSkill |} ]]
+								  [[ share__ <- x__ | x__ <- {| share__,setL_lastSkill,setL_currentSkill |} ]]
 								  [[set_currentSkill <- setR_currentSkill]]
 								 )
-								)[[setL_currentSkill <- set_currentSkill,setL_lastSkill <- set_lastSkill]]
+								)[[setL_lastSkill <- set_lastSkill,setL_currentSkill <- set_currentSkill]]
 								 [[setR_currentSkill <- set_currentSkill]]
 								)
 							)
@@ -8037,6 +8094,748 @@ module SSL
 				
 				sharedVarHide = {||}
 			endmodule
+			module stm_halt_ref
+			exports
+				transparent diamond
+				transparent sbisim
+				transparent dbisim
+				transparent chase
+			
+				-- Transition identifiers
+				-- declaring identifiers of transitions
+				datatype NIDS = 
+				              NID_sInitial|
+				              NID_sFinal|
+				              NID_sWaitStart|
+				              NID_sRun
+				
+				channel internal__ : NIDS
+				
+				-- Flow channels		
+				channel interrupt
+				channel exited
+				channel exit
+				channel terminate
+				
+				-- Variable channels
+				channel get_skill, set_skill, setL_skill, setR_skill: carryBallOnBallPlacement_Skill
+				channel get_nodeStatus, set_nodeStatus, setL_nodeStatus, setR_nodeStatus: NODE_STATUS
+				
+				-- Shared variable channels
+				channel set_EXT_nodeStatus: NODE_STATUS
+				
+				-- Local variable channels for defined operations that are required by the state machine
+				
+				-- Declaring state machine events
+				channel startHalt__: NIDS.InOut
+				channel startHalt: InOut
+				channel stopHalt__: NIDS.InOut
+				channel stopHalt: InOut
+				channel haltSkill__: NIDS.InOut
+				channel haltSkill: InOut
+				
+				-- Declaring call and ret events for undefined operations
+				
+				enterSS = {|
+				sInitial::enter,
+				sFinal::enter,
+				sWaitStart::enter,
+				sRun::enter
+				|}
+				
+				enteredSS = 	{|
+				sFinal::entered,
+				sWaitStart::entered,
+				sRun::entered
+				|}
+				
+				internal_events = union(enteredSS,union(enterSS,{|interrupt,exited|}))
+				
+				shared_variable_events = {|
+					set_EXT_nodeStatus
+				|}
+				
+				-- channel set with all visible events
+				sem__events = {|
+					terminate
+				,	set_EXT_nodeStatus, set_nodeStatus
+				,	startHalt,
+					stopHalt,
+					haltSkill
+					|}
+			
+				-- Nodes --
+				-- declaring all nodes
+				
+				----------------------------------------------------------------------
+				-- Initial: sInitial
+				module sInitial
+				exports
+				
+					channel enter, interrupt
+					
+					D__(id__) = 
+						dbisim(let
+							Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+							
+							Termination = terminate -> SKIP
+							
+							Active 		= share__choice(interrupt -> SKIP) ; Inactive
+						within
+							Inactive [| {terminate} |> SKIP)
+					
+					VS_O__(id__) = D__(id__)
+				
+				endmodule
+				----------------------------------------------------------------------
+				
+				
+				----------------------------------------------------------------------
+				-- Final state: sFinal
+				module sFinal
+				
+				exports
+				
+					channel enter, entered, interrupt
+					channel enteredL, enteredR
+					
+					--	Rule: behaviours(Node)
+					D__(id__) = 
+						dbisim(let
+							Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Entering
+							
+							Entering 	= entered -> SKIP ; Active
+							Active		= share__choice(terminate -> SKIP [] interrupt -> SKIP) ; Interrupted
+							Interrupted	= share__choice(exit -> exited -> Inactive)
+						within
+							Inactive [| {terminate} |> SKIP)
+						
+					VS_O__(id__) = D__(id__)
+				
+				endmodule
+				----------------------------------------------------------------------
+				
+				
+				----------------------------------------------------------------------
+				-- State: sWaitStart
+				module sWaitStart
+				
+				enterSS = {}
+				
+				enteredSS = {}
+				
+				exports
+				
+					--  Declarations
+					
+					channel enter, entered, interrupt
+					channel enteredL, enteredR
+					
+									
+					
+					--	Nodes
+					-- declaring all nodes
+					
+					
+					--	Rule: behaviours(Node)
+					--  Note that FDR has problems with efficiently compiling the process below
+					-- 	if using a different recursion pattern.
+					D__(id__) = 
+					dbisim(let
+						-- IMPLEMENTATION NOTE: 
+						-- The following should be defined as: Inactive = share__choice(Activation [] Termination),
+						-- however FDR struggles with that form in certain cases. So we use the exception operator
+						-- instead to 'terminate'.
+						
+						Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+						
+						Termination = terminate -> SKIP
+						
+						Active 		= share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; 
+								 	  Behaviour ; 
+								 	  share__choice(exit -> SKIP) ; SKIP ; 
+								 	  share__choice(exited -> SKIP) ; Inactive
+					
+						Behaviour 	= entered -> During
+						During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+					within
+						Inactive [| {terminate} |> SKIP)
+						
+					VS_O__(id__) = 
+					dbisim(let
+						Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+						
+						Termination = terminate -> SKIP
+						
+						Active 		= share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_RUNNING -> SKIP))) ; 
+								 	  Behaviour ; 
+								 	  share__choice(exit -> SKIP) ; SKIP ; 
+								 	  share__choice(exited -> SKIP) ; Inactive
+					
+						Behaviour 	= entered -> During
+						During 		= ((SKIP ; SStop) /\ interrupt -> SKIP)
+					within
+						Inactive [| {terminate} |> SKIP)
+					
+				
+				endmodule
+				----------------------------------------------------------------------
+				
+				
+				----------------------------------------------------------------------
+				-- State: sRun
+				module sRun
+				
+				enterSS = 
+						{|			sInitial::enter,
+							sFinal::enter
+						|}
+				enteredSS = 
+						{|			sFinal::entered
+						|}
+				exports
+				
+					--  Declarations
+					
+					channel enter, entered, interrupt
+					channel enteredL, enteredR
+					
+									
+					-- declaring identifiers of transitions
+					datatype NIDS = 
+					              NID_sInitial|
+					              NID_sFinal
+					
+					channel internal__ : NIDS
+					channel startHalt__: NIDS.InOut
+					channel stopHalt__: NIDS.InOut
+					channel haltSkill__: NIDS.InOut
+					
+					--	Nodes
+					-- declaring all nodes
+					
+					----------------------------------------------------------------------
+					-- Initial: sInitial
+					module sInitial
+					exports
+					
+						channel enter, interrupt
+						
+						D__(id__) = 
+							dbisim(let
+								Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+								
+								Termination = terminate -> SKIP
+								
+								Active 		= share__choice(interrupt -> SKIP) ; Inactive
+							within
+								Inactive [| {terminate} |> SKIP)
+						
+						VS_O__(id__) = D__(id__)
+					
+					endmodule
+					----------------------------------------------------------------------
+					
+					
+					----------------------------------------------------------------------
+					-- Final state: sFinal
+					module sFinal
+					
+					exports
+					
+						channel enter, entered, interrupt
+						channel enteredL, enteredR
+						
+						--	Rule: behaviours(Node)
+						D__(id__) = 
+							dbisim(let
+								Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Entering
+								
+								Entering 	= entered -> SKIP ; Active
+								Active		= share__choice(terminate -> SKIP [] interrupt -> SKIP) ; Interrupted
+								Interrupted	= share__choice(exit -> exited -> Inactive)
+							within
+								Inactive [| {terminate} |> SKIP)
+							
+						VS_O__(id__) = D__(id__)
+					
+					endmodule
+					----------------------------------------------------------------------
+					
+					
+					
+					--	Rule: behaviours(Node)
+					--  Note that FDR has problems with efficiently compiling the process below
+					-- 	if using a different recursion pattern.
+					D__(id__) = 
+					dbisim(let
+						-- IMPLEMENTATION NOTE: 
+						-- The following should be defined as: Inactive = share__choice(Activation [] Termination),
+						-- however FDR struggles with that form in certain cases. So we use the exception operator
+						-- instead to 'terminate'.
+						
+						Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+						
+						Termination = terminate -> SKIP
+						
+						Active 		= SKIP ; 
+								 	  Behaviour ; 
+								 	  share__choice(exit -> SKIP) ; SKIP ; 
+								 	  share__choice(exited -> SKIP) ; Inactive
+					
+					
+						Behaviour 	= dbisim(
+							((
+							 (((let
+							 	-- IMPLEMENTATION NOTE:
+							 	-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
+							 	-- modules for defining the semantics of each node.
+							 	enterSS = {|
+							 	sInitial::enter,
+							 	sFinal::enter
+							 	|}
+							 	hideSet = union(enterSS,{|exit,exited,internal__|})
+							 within 
+							 	((let
+							 		-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
+							 		-- because CSPM modules are used for the semantics of Node.
+							 		flowevts = union(enterSS,{|exit,exited,interrupt|})
+							 		transSync = {|internal__.NID_sInitial|}
+							 	within
+							 		((
+							 		 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
+							 		   sInitial::D__(id__)
+							 		   [| { share__, terminate } |] (
+							 		   sFinal::D__(id__)
+							 		   )
+							 		 )
+							 		 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+							 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
+							 		 )
+							 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+							 		 )
+							 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+							 		|}) |]
+							 		 ((sInitial::enter -> Transitions(id__))
+							 		  [[ share__ <- x__ | x__ <- {| share__ |} ]]
+							 		 )
+							 		)
+							 		)
+							 	)
+							 	 \ hideSet)
+							 	[[
+							 		startHalt__.x____ <- startHalt,
+							 		stopHalt__.x____ <- stopHalt,
+							 		haltSkill__.x____ <- haltSkill
+							 		| x____ <- NIDS
+							 	]]
+							 )
+							 )
+							  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_skill |} ]] 
+							  [[set_nodeStatus <- setL_nodeStatus,set_skill <- setL_skill]]
+							 )
+							 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+							 			,setL_nodeStatus
+							 			,setL_skill
+							 			,setR_nodeStatus
+							 			 			,setR_skill
+							 			|}) |]
+							 ((During)
+							  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_skill |} ]]
+							  [[set_nodeStatus <- setR_nodeStatus,set_skill <- setR_skill]]
+							 )
+							)[[setL_nodeStatus <- set_nodeStatus,setL_skill <- set_skill]]
+							 [[setR_nodeStatus <- set_nodeStatus,setR_skill <- set_skill]]
+							)\union(enteredSS,{terminate}) 
+						)
+						During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
+								 	  ; entered -> ((CRUN(enteredSS) ||| SKIP ; SStop) /\ interrupt -> share__choice(terminate -> SKIP))
+					within
+						Inactive [| {terminate} |> SKIP)
+						
+					VS_O__(id__) = 
+					dbisim(let
+						Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+						
+						Termination = terminate -> SKIP
+						
+						Active 		= SKIP ; 
+								 	  Behaviour ; 
+								 	  share__choice(exit -> SKIP) ; SKIP ; 
+								 	  share__choice(exited -> SKIP) ; Inactive
+					
+					
+						Behaviour 	= dbisim(
+							((
+							 (((let
+							 	-- IMPLEMENTATION NOTE:
+							 	-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
+							 	-- modules for defining the semantics of each node.
+							 	enterSS = {|
+							 	sInitial::enter,
+							 	sFinal::enter
+							 	|}
+							 	hideSet = union(enterSS,{|exit,exited,internal__|})
+							 within 
+							 	((let
+							 		-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
+							 		-- because CSPM modules are used for the semantics of Node.
+							 		flowevts = union(enterSS,{|exit,exited,interrupt|})
+							 		transSync = {|internal__.NID_sInitial|}
+							 	within
+							 		((
+							 		 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
+							 		   sInitial::VS_O__(id__)
+							 		   [| { share__, terminate } |] (
+							 		   sFinal::VS_O__(id__)
+							 		   )
+							 		 )
+							 		 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+							 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
+							 		 )
+							 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+							 		 )
+							 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+							 		|}) |]
+							 		 ((sInitial::enter -> Transitions(id__))
+							 		  [[ share__ <- x__ | x__ <- {| share__ |} ]]
+							 		 )
+							 		)
+							 		)
+							 	)
+							 	 \ hideSet)
+							 	[[
+							 		startHalt__.x____ <- startHalt,
+							 		stopHalt__.x____ <- stopHalt,
+							 		haltSkill__.x____ <- haltSkill
+							 		| x____ <- NIDS
+							 	]]
+							 )
+							 )
+							  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_skill |} ]] 
+							  [[set_nodeStatus <- setL_nodeStatus,set_skill <- setL_skill]]
+							 )
+							 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+							 			,setL_nodeStatus
+							 			,setL_skill
+							 			,setR_nodeStatus
+							 			 			,setR_skill
+							 			|}) |]
+							 ((During)
+							  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_skill |} ]]
+							  [[set_nodeStatus <- setR_nodeStatus,set_skill <- setR_skill]]
+							 )
+							)[[setL_nodeStatus <- set_nodeStatus,setL_skill <- set_skill]]
+							 [[setR_nodeStatus <- set_nodeStatus,setR_skill <- set_skill]]
+							)\{terminate} 
+						)
+						During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
+								 	  ; entered -> ((CRUN(enteredSS) ||| SKIP ; SStop) /\ interrupt -> share__choice(terminate -> SKIP))
+					within
+						Inactive [| {terminate} |> SKIP)
+					
+					Transitions(id__) = ((let
+						Trans = (
+							((share__ -> SKIP
+							 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sFinal::enter -> SKIP))))
+							 ) ; Trans)
+							 []
+							 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
+							 []
+							 terminate -> SKIP
+						)
+					within
+						Trans
+					)
+					)
+					
+				
+				endmodule
+				----------------------------------------------------------------------
+				
+				-- END of Nodes --
+				
+				-- Operation calls --
+				-- Only the undefined operations are declared here.
+				-- If the state machine is in isolation, all required operations will be undefined.
+				-- If it is in the context of a controller, the required operations not provided by the
+				-- controller will be declared here, and the defined operations will be defined in the
+				-- context of the Controller module, and therefore within scope of the state machine module.
+				
+				-- END of Operation calls --
+				
+				-- STM processes
+				STM(id__) = -- RULE: [[stm:StateMachineDef]]_STM^nops : CSPProcess
+				( 
+					(
+						(
+							(IteratedStateful(id__) \ {terminate} ; share__choice(terminate -> SKIP))
+						 	[[ share__ <- x__ | x__ <- {|set_EXT_nodeStatus|} ]]
+						)
+					[| {share__} |]
+					SKIP
+					)
+					[| union(sharedVarSync,{terminate}) |]
+					dbisim(sharedVarMemory(id__))
+				)\sharedVarHide
+				
+				STM_VS_O(id__) = -- RULE: [[stm:StateMachineDef]]_STM^nops : CSPProcess
+				( 
+					(
+						(
+							(IteratedStateful_VS_O(id__) \ {terminate} ; share__choice(terminate -> SKIP))
+						 	[[ share__ <- x__ | x__ <- {|set_EXT_nodeStatus|} ]]
+						)
+					[| {share__} |]
+					SKIP
+					)
+					[| union(sharedVarSync,{terminate}) |]
+					dbisim(sharedVarMemory(id__))
+				)\sharedVarHide
+				
+				-- Transitions
+				Transitions(id__) = ((let
+					Trans = (
+						((share__ -> SKIP
+						 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sWaitStart::enter -> SKIP))))
+						 	 [] dbisim((true)&(startHalt__!NID_sWaitStart.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_skill!carryBallOnBallPlacement_Skill_NONE -> SKIP))) ; sRun::enter -> SKIP)))
+						 	 [] dbisim((true)&(stopHalt__!NID_sRun.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_ABORTED -> SKIP)));share__choice(true & (share__choice(set_skill!carryBallOnBallPlacement_Skill_NONE -> SKIP))) ; sFinal::enter -> SKIP)))
+						 ) ; Trans)
+						 []
+						 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
+						 []
+						 terminate -> SKIP
+					)
+				within
+					Trans
+				)
+				)
+				
+				-- Stateful
+				-- RULE: Stateful(stm:StateMachineBody) : CSPProcess
+				
+				-- Named process definitions
+				MachineBody(id__) = 
+					dbisim((
+					let
+						finalNodesEntered = {|sFinal::entered|}
+					within
+						((let
+							-- IMPLEMENTATION NOTE:
+							-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
+							-- modules for defining the semantics of each node.
+							enterSS = {|
+							sInitial::enter,
+							sFinal::enter,
+							sWaitStart::enter,
+							sRun::enter
+							|}
+							hideSet = union(enterSS,{|exit,exited,internal__|})
+						within 
+							((let
+								-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
+								-- because CSPM modules are used for the semantics of Node.
+								flowevts = union(enterSS,{|exit,exited,interrupt|})
+								transSync = {|internal__.NID_sInitial,startHalt__.NID_sWaitStart.in,stopHalt__.NID_sRun.in|}
+							within
+								((
+								 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
+								   sInitial::D__(id__)
+								   [| { share__, terminate } |] (
+								   sFinal::D__(id__)
+								   [| { share__, terminate } |] (
+								   sWaitStart::D__(id__)
+								   [| { share__, terminate } |] (
+								   sRun::D__(id__)
+								   )
+								   )
+								   )
+								 )
+								 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+								 [[sWaitStart::interrupt <- x__ | x__ <- {|interrupt,startHalt__.NID_sWaitStart.in|}]]
+								 [[sRun::interrupt <- x__ | x__ <- {|interrupt,stopHalt__.NID_sRun.in|}]]
+								 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
+								 )
+								  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+								 )
+								 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+								|}) |]
+								 ((sInitial::enter -> Transitions(id__))
+								  [[ share__ <- x__ | x__ <- {| share__ |} ]]
+								 )
+								)
+								)
+							)
+							 \ hideSet)
+							[[
+								startHalt__.x____ <- startHalt,
+								stopHalt__.x____ <- stopHalt,
+								haltSkill__.x____ <- haltSkill
+								| x____ <- NIDS
+							]]
+						)
+						 [| {| interrupt |} |] SKIP)
+					)
+					)
+				
+				Behaviour(id__) = 
+					dbisim((MachineBody(id__)\ enteredSS)
+					)
+				
+				IteratedBehaviour(id__) = 
+					dbisim((MachineBody(id__)\ enteredSS)
+					)
+				
+				Stateful(id__) = 
+					((
+						(Behaviour(id__) [| union(getsetLocalChannels,{terminate}) |] varMemory(id__))
+					 	\getsetLocalChannels
+					)
+					)
+				
+				IteratedStateful(id__) =
+					(dbisim(
+						sbisim(
+							Behaviour(id__)
+							[| {|get_skill,set_skill,terminate|} |]
+							Memory_skill(carryBallOnBallPlacement_Skill_NONE)
+						)\{|get_skill,set_skill|}
+					)
+					)
+				
+				-- Visible counterparts
+				MachineBody_VS_O(id__) = 
+					dbisim((
+					let
+						finalNodesEntered = {|sFinal::entered|}
+					within
+						((let
+							-- IMPLEMENTATION NOTE:
+							-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
+							-- modules for defining the semantics of each node.
+							enterSS = {|
+							sInitial::enter,
+							sFinal::enter,
+							sWaitStart::enter,
+							sRun::enter
+							|}
+							hideSet = union(enterSS,{|exit,exited,internal__|})
+						within 
+							((let
+								-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
+								-- because CSPM modules are used for the semantics of Node.
+								flowevts = union(enterSS,{|exit,exited,interrupt|})
+								transSync = {|internal__.NID_sInitial,startHalt__.NID_sWaitStart.in,stopHalt__.NID_sRun.in|}
+							within
+								((
+								 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
+								   sInitial::VS_O__(id__)
+								   [| { share__, terminate } |] (
+								   sFinal::VS_O__(id__)
+								   [| { share__, terminate } |] (
+								   sWaitStart::VS_O__(id__)
+								   [| { share__, terminate } |] (
+								   sRun::VS_O__(id__)
+								   )
+								   )
+								   )
+								 )
+								 [[sFinal::interrupt <- x__ | x__ <- {|interrupt|}]]
+								 [[sWaitStart::interrupt <- x__ | x__ <- {|interrupt,startHalt__.NID_sWaitStart.in|}]]
+								 [[sRun::interrupt <- x__ | x__ <- {|interrupt,stopHalt__.NID_sRun.in|}]]
+								 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
+								 )
+								  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+								 )
+								 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+								|}) |]
+								 ((sInitial::enter -> Transitions(id__))
+								  [[ share__ <- x__ | x__ <- {| share__ |} ]]
+								 )
+								)
+								)
+							)
+							 \ hideSet)
+							[[
+								startHalt__.x____ <- startHalt,
+								stopHalt__.x____ <- stopHalt,
+								haltSkill__.x____ <- haltSkill
+								| x____ <- NIDS
+							]]
+						)
+						 [| {| interrupt |} |] SKIP)
+					)
+					)
+				
+				Behaviour_VS_O(id__) = 
+					dbisim((MachineBody_VS_O(id__))
+					)
+				
+				IteratedBehaviour_VS_O(id__) = 
+					dbisim((MachineBody_VS_O(id__))
+					)
+				
+				Stateful_VS_O(id__) = 
+					dbisim((
+						(Behaviour_VS_O(id__) [| union(getsetLocalChannels,{terminate}) |] varMemory(id__))
+					 	\getsetLocalChannels
+					)
+					)
+				
+				IteratedStateful_VS_O(id__) =
+					(dbisim(
+						sbisim(
+							Behaviour_VS_O(id__)
+							[| {|get_skill,set_skill,terminate|} |]
+							Memory_skill(carryBallOnBallPlacement_Skill_NONE)
+						)\{|get_skill,set_skill|}
+					)
+					)
+				
+				-- END
+				
+				-- Memory
+				-- Memory variables
+				Memory_skill(skill) =
+					get_skill!skill -> Memory_skill(skill)
+					[]
+					set_skill?x__ -> Memory_skill(x__)
+					[]
+					terminate -> SKIP
+				
+				-- varMemory process
+				varMemory(id__) = Memory_skill(carryBallOnBallPlacement_Skill_NONE)
+				
+				getsetLocalChannels = {|get_skill,set_skill|}
+				
+				-- Definition of the behaviour of state machines (default, optimised, visible, visible and optimised)
+				FVS__(id__) = STM_VS_O(id__)
+				
+				D__(id__) = STM(id__) \ internal_events
+				O__(id__) = sbisim(diamond(D__(id__)))
+				VS__(id__) = FVS__(id__)
+				VS_O__(id__) = sbisim(diamond(FVS__(id__)))
+				HEXT__(id__) = O__(id__) [|shared_variable_events|] SKIP
+				HUP__(id__) = O__(id__) [|{share__}|] SKIP
+				
+				-- Shared memory
+				-- Shared memory variables
+				Memory_nodeStatus(nodeStatus) =
+					get_nodeStatus!nodeStatus -> Memory_nodeStatus(nodeStatus)
+					[]
+					set_nodeStatus?x__ -> Memory_nodeStatus(x__)
+					[]
+					set_EXT_nodeStatus?x__ -> Memory_nodeStatus(x__)
+					[]
+					terminate -> SKIP
+				
+				-- sharedVarMemory process
+				sharedVarMemory(id__) = Memory_nodeStatus(NODE_STATUS_RUNNING)
+				
+				sharedVarSync = {|get_nodeStatus,set_nodeStatus,set_EXT_nodeStatus|}
+				
+				sharedVarHide = {|get_nodeStatus|}
+			endmodule
 			
 				-- undefined operations
 				
@@ -8048,7 +8847,7 @@ module SSL
 					set_skill?x__ -> 
 					Memory(id__,currentTactic,x__,nodeStatus)
 					  []
-					set_nodeStatus?x__ -> stm_carry_ball_on_ball_placement_ref::set_EXT_nodeStatus!x__ -> stm_go_to_behind_ball_ref::set_EXT_nodeStatus!x__ -> stm_approach_ball_ref::set_EXT_nodeStatus!x__ -> stm_carry_ball_ref::set_EXT_nodeStatus!x__ -> stm_move_away_ref::set_EXT_nodeStatus!x__ -> 
+					set_nodeStatus?x__ -> stm_carry_ball_on_ball_placement_ref::set_EXT_nodeStatus!x__ -> stm_go_to_behind_ball_ref::set_EXT_nodeStatus!x__ -> stm_approach_ball_ref::set_EXT_nodeStatus!x__ -> stm_carry_ball_ref::set_EXT_nodeStatus!x__ -> stm_move_away_ref::set_EXT_nodeStatus!x__ -> stm_halt_ref::set_EXT_nodeStatus!x__ -> 
 					Memory(id__,currentTactic,skill,x__)
 				)
 				
@@ -8062,15 +8861,12 @@ module SSL
 								stm_behavior_ref::receiveTactic <- receiveTactic,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.in <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.out,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.out <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.in,
-								stm_behavior_ref::sendAction <- sendAction
+								stm_behavior_ref::sendAction <- sendAction,
+								stm_behavior_ref::haltSkill.in <- stm_halt_ref::haltSkill.out,
+								stm_behavior_ref::haltSkill.out <- stm_halt_ref::haltSkill.in
 							]]
-							\ {|
-								stm_behavior_ref::startHalt,
-								stm_behavior_ref::stopHalt,
-								stm_behavior_ref::haltSkill
-							|}
 						)
-							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|}|]
+							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|}|]
 						(
 							(
 								stm_carry_ball_on_ball_placement_ref::D__(id__)[[
@@ -8141,12 +8937,30 @@ module SSL
 											)
 												[|{|terminate, stm_skill_ref::startMoveAwayFromPosition, stm_skill_ref::stopMoveAwayFromPosition|}|]
 											(
-												stm_skill_ref::D__(id__)[[
-													stm_skill_ref::terminate <- terminate
-												]]
-												\ {|
-													stm_skill_ref::receiveSkill
-												|}
+												(
+													stm_skill_ref::D__(id__)[[
+														stm_skill_ref::terminate <- terminate
+													]]
+													\ {|
+														stm_skill_ref::receiveSkill
+													|}
+												)
+													[|{|terminate|}|]
+												(
+													stm_halt_ref::D__(id__)[[
+														stm_halt_ref::terminate <- terminate,
+														stm_halt_ref::startHalt.in <- stm_behavior_ref::startHalt.out,
+														stm_halt_ref::startHalt.out <- stm_behavior_ref::startHalt.in,
+														stm_halt_ref::stopHalt.in <- stm_behavior_ref::stopHalt.out,
+														stm_halt_ref::stopHalt.out <- stm_behavior_ref::stopHalt.in,
+														stm_halt_ref::set_nodeStatus <- set_nodeStatus,
+														stm_halt_ref::get_nodeStatus <- get_nodeStatus
+													]]
+												)
+											)
+											\diff(
+												{|terminate|},
+												{|terminate|}
 											)
 										)
 										\diff(
@@ -8175,7 +8989,7 @@ module SSL
 						)
 					)
 					\diff(
-						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|},
+						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|},
 						{|terminate|}
 					)
 						[|
@@ -8190,7 +9004,8 @@ module SSL
 									stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 									stm_approach_ball_ref::set_EXT_nodeStatus,
 									stm_carry_ball_ref::set_EXT_nodeStatus,
-									stm_move_away_ref::set_EXT_nodeStatus
+									stm_move_away_ref::set_EXT_nodeStatus,
+									stm_halt_ref::set_EXT_nodeStatus
 								|}
 							)
 						|]
@@ -8207,7 +9022,8 @@ module SSL
 						stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 						stm_approach_ball_ref::set_EXT_nodeStatus,
 						stm_carry_ball_ref::set_EXT_nodeStatus,
-						stm_move_away_ref::set_EXT_nodeStatus
+						stm_move_away_ref::set_EXT_nodeStatus,
+						stm_halt_ref::set_EXT_nodeStatus
 					|}
 				)
 				[|{|terminate|}|>SKIP
@@ -8223,15 +9039,12 @@ module SSL
 								stm_behavior_ref::receiveTactic <- receiveTactic,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.in <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.out,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.out <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.in,
-								stm_behavior_ref::sendAction <- sendAction
+								stm_behavior_ref::sendAction <- sendAction,
+								stm_behavior_ref::haltSkill.in <- stm_halt_ref::haltSkill.out,
+								stm_behavior_ref::haltSkill.out <- stm_halt_ref::haltSkill.in
 							]]
-							\ {|
-								stm_behavior_ref::startHalt,
-								stm_behavior_ref::stopHalt,
-								stm_behavior_ref::haltSkill
-							|}
 						)
-							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|}|]
+							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|}|]
 						(
 							(
 								stm_carry_ball_on_ball_placement_ref::VS__(id__)[[
@@ -8302,12 +9115,30 @@ module SSL
 											)
 												[|{|terminate, stm_skill_ref::startMoveAwayFromPosition, stm_skill_ref::stopMoveAwayFromPosition|}|]
 											(
-												stm_skill_ref::VS__(id__)[[
-													stm_skill_ref::terminate <- terminate
-												]]
-												\ {|
-													stm_skill_ref::receiveSkill
-												|}
+												(
+													stm_skill_ref::VS__(id__)[[
+														stm_skill_ref::terminate <- terminate
+													]]
+													\ {|
+														stm_skill_ref::receiveSkill
+													|}
+												)
+													[|{|terminate|}|]
+												(
+													stm_halt_ref::VS__(id__)[[
+														stm_halt_ref::terminate <- terminate,
+														stm_halt_ref::startHalt.in <- stm_behavior_ref::startHalt.out,
+														stm_halt_ref::startHalt.out <- stm_behavior_ref::startHalt.in,
+														stm_halt_ref::stopHalt.in <- stm_behavior_ref::stopHalt.out,
+														stm_halt_ref::stopHalt.out <- stm_behavior_ref::stopHalt.in,
+														stm_halt_ref::set_nodeStatus <- set_nodeStatus,
+														stm_halt_ref::get_nodeStatus <- get_nodeStatus
+													]]
+												)
+											)
+											\diff(
+												{|terminate|},
+												{|terminate|}
 											)
 										)
 										\diff(
@@ -8336,7 +9167,7 @@ module SSL
 						)
 					)
 					\diff(
-						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|},
+						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|},
 						{|terminate|}
 					)
 						[|
@@ -8351,7 +9182,8 @@ module SSL
 									stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 									stm_approach_ball_ref::set_EXT_nodeStatus,
 									stm_carry_ball_ref::set_EXT_nodeStatus,
-									stm_move_away_ref::set_EXT_nodeStatus
+									stm_move_away_ref::set_EXT_nodeStatus,
+									stm_halt_ref::set_EXT_nodeStatus
 								|}
 							)
 						|]
@@ -8368,7 +9200,8 @@ module SSL
 						stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 						stm_approach_ball_ref::set_EXT_nodeStatus,
 						stm_carry_ball_ref::set_EXT_nodeStatus,
-						stm_move_away_ref::set_EXT_nodeStatus
+						stm_move_away_ref::set_EXT_nodeStatus,
+						stm_halt_ref::set_EXT_nodeStatus
 					|}
 				)
 				[|{|terminate|}|>SKIP
@@ -8384,15 +9217,12 @@ module SSL
 								stm_behavior_ref::receiveTactic <- receiveTactic,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.in <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.out,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.out <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.in,
-								stm_behavior_ref::sendAction <- sendAction
+								stm_behavior_ref::sendAction <- sendAction,
+								stm_behavior_ref::haltSkill.in <- stm_halt_ref::haltSkill.out,
+								stm_behavior_ref::haltSkill.out <- stm_halt_ref::haltSkill.in
 							]]
-							\ {|
-								stm_behavior_ref::startHalt,
-								stm_behavior_ref::stopHalt,
-								stm_behavior_ref::haltSkill
-							|}
 						)
-							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|}|]
+							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|}|]
 						(
 							(
 								stm_carry_ball_on_ball_placement_ref::O__(id__)[[
@@ -8463,12 +9293,30 @@ module SSL
 											)
 												[|{|terminate, stm_skill_ref::startMoveAwayFromPosition, stm_skill_ref::stopMoveAwayFromPosition|}|]
 											(
-												stm_skill_ref::O__(id__)[[
-													stm_skill_ref::terminate <- terminate
-												]]
-												\ {|
-													stm_skill_ref::receiveSkill
-												|}
+												(
+													stm_skill_ref::O__(id__)[[
+														stm_skill_ref::terminate <- terminate
+													]]
+													\ {|
+														stm_skill_ref::receiveSkill
+													|}
+												)
+													[|{|terminate|}|]
+												(
+													stm_halt_ref::O__(id__)[[
+														stm_halt_ref::terminate <- terminate,
+														stm_halt_ref::startHalt.in <- stm_behavior_ref::startHalt.out,
+														stm_halt_ref::startHalt.out <- stm_behavior_ref::startHalt.in,
+														stm_halt_ref::stopHalt.in <- stm_behavior_ref::stopHalt.out,
+														stm_halt_ref::stopHalt.out <- stm_behavior_ref::stopHalt.in,
+														stm_halt_ref::set_nodeStatus <- set_nodeStatus,
+														stm_halt_ref::get_nodeStatus <- get_nodeStatus
+													]]
+												)
+											)
+											\diff(
+												{|terminate|},
+												{|terminate|}
 											)
 										)
 										\diff(
@@ -8497,7 +9345,7 @@ module SSL
 						)
 					)
 					\diff(
-						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|},
+						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|},
 						{|terminate|}
 					)
 						[|
@@ -8512,7 +9360,8 @@ module SSL
 									stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 									stm_approach_ball_ref::set_EXT_nodeStatus,
 									stm_carry_ball_ref::set_EXT_nodeStatus,
-									stm_move_away_ref::set_EXT_nodeStatus
+									stm_move_away_ref::set_EXT_nodeStatus,
+									stm_halt_ref::set_EXT_nodeStatus
 								|}
 							)
 						|]
@@ -8529,7 +9378,8 @@ module SSL
 						stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 						stm_approach_ball_ref::set_EXT_nodeStatus,
 						stm_carry_ball_ref::set_EXT_nodeStatus,
-						stm_move_away_ref::set_EXT_nodeStatus
+						stm_move_away_ref::set_EXT_nodeStatus,
+						stm_halt_ref::set_EXT_nodeStatus
 					|}
 				)
 				[|{|terminate|}|>SKIP
@@ -8546,15 +9396,12 @@ module SSL
 								stm_behavior_ref::receiveTactic <- receiveTactic,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.in <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.out,
 								stm_behavior_ref::carryBallOnBallPlacementSkill.out <- stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill.in,
-								stm_behavior_ref::sendAction <- sendAction
+								stm_behavior_ref::sendAction <- sendAction,
+								stm_behavior_ref::haltSkill.in <- stm_halt_ref::haltSkill.out,
+								stm_behavior_ref::haltSkill.out <- stm_halt_ref::haltSkill.in
 							]]
-							\ {|
-								stm_behavior_ref::startHalt,
-								stm_behavior_ref::stopHalt,
-								stm_behavior_ref::haltSkill
-							|}
 						)
-							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|}|]
+							[|{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|}|]
 						(
 							(
 								stm_carry_ball_on_ball_placement_ref::VS_O__(id__)[[
@@ -8625,12 +9472,30 @@ module SSL
 											)
 												[|{|terminate, stm_skill_ref::startMoveAwayFromPosition, stm_skill_ref::stopMoveAwayFromPosition|}|]
 											(
-												stm_skill_ref::VS_O__(id__)[[
-													stm_skill_ref::terminate <- terminate
-												]]
-												\ {|
-													stm_skill_ref::receiveSkill
-												|}
+												(
+													stm_skill_ref::VS_O__(id__)[[
+														stm_skill_ref::terminate <- terminate
+													]]
+													\ {|
+														stm_skill_ref::receiveSkill
+													|}
+												)
+													[|{|terminate|}|]
+												(
+													stm_halt_ref::VS_O__(id__)[[
+														stm_halt_ref::terminate <- terminate,
+														stm_halt_ref::startHalt.in <- stm_behavior_ref::startHalt.out,
+														stm_halt_ref::startHalt.out <- stm_behavior_ref::startHalt.in,
+														stm_halt_ref::stopHalt.in <- stm_behavior_ref::stopHalt.out,
+														stm_halt_ref::stopHalt.out <- stm_behavior_ref::stopHalt.in,
+														stm_halt_ref::set_nodeStatus <- set_nodeStatus,
+														stm_halt_ref::get_nodeStatus <- get_nodeStatus
+													]]
+												)
+											)
+											\diff(
+												{|terminate|},
+												{|terminate|}
 											)
 										)
 										\diff(
@@ -8659,7 +9524,7 @@ module SSL
 						)
 					)
 					\diff(
-						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill|},
+						{|terminate, stm_behavior_ref::startCarryBallOnBallPlacement, stm_behavior_ref::stopCarryBallOnBallPlacement, stm_carry_ball_on_ball_placement_ref::carryBallOnBallPlacementSkill, stm_behavior_ref::startHalt, stm_behavior_ref::stopHalt, stm_halt_ref::haltSkill|},
 						{|terminate|}
 					)
 						[|
@@ -8674,7 +9539,8 @@ module SSL
 									stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 									stm_approach_ball_ref::set_EXT_nodeStatus,
 									stm_carry_ball_ref::set_EXT_nodeStatus,
-									stm_move_away_ref::set_EXT_nodeStatus
+									stm_move_away_ref::set_EXT_nodeStatus,
+									stm_halt_ref::set_EXT_nodeStatus
 								|}
 							)
 						|]
@@ -8691,7 +9557,8 @@ module SSL
 						stm_go_to_behind_ball_ref::set_EXT_nodeStatus,
 						stm_approach_ball_ref::set_EXT_nodeStatus,
 						stm_carry_ball_ref::set_EXT_nodeStatus,
-						stm_move_away_ref::set_EXT_nodeStatus
+						stm_move_away_ref::set_EXT_nodeStatus,
+						stm_halt_ref::set_EXT_nodeStatus
 					|}
 				)
 				[|{|terminate|}|>SKIP
@@ -8787,8 +9654,8 @@ module SSL
 									(
 										navigationControllerRef::D__(id__)[[
 											navigationControllerRef::terminate <- terminate,
-											navigationControllerRef::moveCall <- moveCall,
-											navigationControllerRef::stopCall <- stopCall
+											navigationControllerRef::stopCall <- stopCall,
+											navigationControllerRef::moveCall <- moveCall
 										]]
 									)
 										[|{|terminate|}|]
@@ -8948,8 +9815,8 @@ module SSL
 									(
 										navigationControllerRef::VS__(id__)[[
 											navigationControllerRef::terminate <- terminate,
-											navigationControllerRef::moveCall <- moveCall,
-											navigationControllerRef::stopCall <- stopCall
+											navigationControllerRef::stopCall <- stopCall,
+											navigationControllerRef::moveCall <- moveCall
 										]]
 									)
 										[|{|terminate|}|]
@@ -9109,8 +9976,8 @@ module SSL
 									(
 										navigationControllerRef::O__(id__)[[
 											navigationControllerRef::terminate <- terminate,
-											navigationControllerRef::moveCall <- moveCall,
-											navigationControllerRef::stopCall <- stopCall
+											navigationControllerRef::stopCall <- stopCall,
+											navigationControllerRef::moveCall <- moveCall
 										]]
 									)
 										[|{|terminate|}|]
@@ -9271,8 +10138,8 @@ module SSL
 									(
 										navigationControllerRef::VS_O__(id__)[[
 											navigationControllerRef::terminate <- terminate,
-											navigationControllerRef::moveCall <- moveCall,
-											navigationControllerRef::stopCall <- stopCall
+											navigationControllerRef::stopCall <- stopCall,
+											navigationControllerRef::moveCall <- moveCall
 										]]
 									)
 										[|{|terminate|}|]
@@ -9433,8 +10300,8 @@ module SSL
 									(
 										navigationControllerRef::O__(id__)[[
 											navigationControllerRef::terminate <- terminate,
-											navigationControllerRef::moveCall <- moveCall,
-											navigationControllerRef::stopCall <- stopCall
+											navigationControllerRef::stopCall <- stopCall,
+											navigationControllerRef::moveCall <- moveCall
 										]]
 									)
 										[|{|terminate|}|]

@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 08-11-2023 14:21:25
+-- Automatically generated on 08-11-2023 16:01:34
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -169,6 +169,25 @@ assert prioritise(P_carryBallOnBallPlacement_BehaviorController_stm_skill_ref[[t
 
 -- timelock free
 assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_carryBallOnBallPlacement_BehaviorController_stm_skill_ref
+-- generate carryBallOnBallPlacement_BehaviorController_stm_halt_ref
+P_carryBallOnBallPlacement_BehaviorController_stm_halt_ref = let
+	id__ = 0
+	
+	
+	
+within
+	carryBallOnBallPlacement_BehaviorController::stm_halt_ref::O__(
+		id__
+	)
+assert P_carryBallOnBallPlacement_BehaviorController_stm_halt_ref :[deadlock-free]	
+assert P_carryBallOnBallPlacement_BehaviorController_stm_halt_ref;RUN({r__}) :[deadlock-free]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_halt_ref :[deterministic]
+assert P_carryBallOnBallPlacement_BehaviorController_stm_halt_ref :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_carryBallOnBallPlacement_BehaviorController_stm_halt_ref[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_carryBallOnBallPlacement_BehaviorController_stm_halt_ref
 -- timed deadlock free
 assert prioritise(P_carryBallOnBallPlacement_BehaviorController[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
 

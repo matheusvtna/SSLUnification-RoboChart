@@ -79,6 +79,12 @@ controller BehaviorController {
 	
 	connection stm_carry_ball_on_ball_placement_ref on carryBallOnBallPlacementSkill to stm_behavior_ref on carryBallOnBallPlacementSkill
 	connection stm_behavior_ref on sendAction to BehaviorController on sendAction
+
+	sref stm_halt_ref = HaltSTM
+	connection stm_behavior_ref on startHalt to stm_halt_ref on startHalt
+	connection stm_behavior_ref on stopHalt to stm_halt_ref on stopHalt
+	connection stm_halt_ref on haltSkill to stm_behavior_ref on haltSkill
+	// connection stm_behavior_ref on sendSkill to stm_skill_ref on receiveSkill
 }
 // END TODO
 
@@ -263,9 +269,13 @@ stm BehaviorSTM {
 	// Behavior Tree Control Interfaces.
 	uses NodeStatusI
 	
-	// Controls the start/stop for this BehaviorSTM --> Input events.
+	// Controls the start/stop for this BehaviorSTM --> Output events.
 	uses CarryBallOnBallPlacementI
 	uses HaltI
+	
+	// Controls the Skill for the current tactic.
+	uses TacticI
+	// event sendSkill: Skill
 	
 	// Current Tactic.
 	//
@@ -281,6 +291,7 @@ stm BehaviorSTM {
 	junction jCheckCurrentTactic
 	junction jStopLastTactic
 	junction jStartCurrentTactic
+	junction jCheckSkillForTactic
 	
 	// Transitions.
 	//
@@ -351,6 +362,19 @@ stm BehaviorSTM {
 		to sWaitTactic
 		condition currentTactic == Tactic :: HALT
 		action startHalt
+	}
+
+
+	transition carryBallOnBallPlacementSkill {
+		from sWaitTactic
+		to jCheckSkillForTactic
+		trigger carryBallOnBallPlacementSkill
+	}
+	transition t1 {
+		from jCheckSkillForTactic
+		to sWaitTactic
+		condition currentTactic == Tactic :: PLACE_BALL_IN_POSITION
+		// action sendSkill?skill
 	}
 }
 
@@ -493,3 +517,52 @@ stm SkillSTM {
 	}
 }
 
+
+stm HaltSTM {
+	// Controls the start/stop for this BehaviorSTM --> Input events.
+	uses HaltI
+	
+	// Control the Skill for this behaviorSTM --> Output events.
+	uses TacticI
+	
+	// Defines the status of each node within the Behavior Tree.
+	requires NodeStatusI
+	
+	// States.
+	initial sInitial
+	final sFinal
+	
+	state sWaitStart {
+		entry nodeStatus = NODE_STATUS :: RUNNING
+	}
+	state sRun {
+		// Execution states.
+		initial sInitial
+		final sFinal
+		
+		transition finish {
+			from sInitial
+			to sFinal
+		}	
+	}	
+
+	transition waitStart {
+		from sInitial
+		to sWaitStart
+	}
+	
+	transition run {
+		from sWaitStart
+		to sRun
+		trigger startHalt
+		action skill=Skill::NONE
+	}
+	
+	transition abort {
+		from sRun
+		to sFinal
+		trigger stopHalt
+		// Set NONE to stop all Skill STMs.
+		action nodeStatus = NODE_STATUS::ABORTED; skill=Skill::NONE
+	}
+}
