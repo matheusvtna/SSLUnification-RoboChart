@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 21-11-2023 22:08:15
+-- Automatically generated on 21-11-2023 22:57:55
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -82,20 +82,10 @@ exports
 	localClockResets = {||}
 	
 	
-	channel get_CLID_sWaitStart : core_clock_type 
 	channel get_CLID_sFinal : core_clock_type 
 	channel get_CLID_sRun : core_clock_type 
+	channel get_CLID_sWaitStart : core_clock_type 
 	--channel increment__
-	
-	CLID_sWaitStart_clock_type(id__,
-			          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
-		let
-			max = (clock_type_max(Union({
-	{}
-	}))+1)
-		ctype = {0..max}
-	within
-		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
 	CLID_sFinal_clock_type(id__,
 			          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
@@ -108,6 +98,16 @@ exports
 		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
 	CLID_sRun_clock_type(id__,
+			          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
+		let
+			max = (clock_type_max(Union({
+	{}
+	}))+1)
+		ctype = {0..max}
+	within
+		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
+	
+	CLID_sWaitStart_clock_type(id__,
 			          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 		let
 			max = (clock_type_max(Union({
@@ -540,21 +540,21 @@ exports
 						 	)\{|get_CLID_sMoveAway|}
 						 )
 						 ))
-						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotIsFarEnoughFromPosition |} ]] 
-						  [[set_nodeStatus <- setL_nodeStatus,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_robotIsFarEnoughFromPosition,setR_nodeStatus |} ]] 
+						  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition,set_nodeStatus <- setL_nodeStatus]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-						 			,setL_nodeStatus
 						 			,setL_robotIsFarEnoughFromPosition
-						 			,setR_nodeStatus
-						 			 			,setR_robotIsFarEnoughFromPosition
+						 			,setL_nodeStatus
+						 			,setR_robotIsFarEnoughFromPosition
+						 			 			,setR_nodeStatus
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotIsFarEnoughFromPosition |} ]]
-						  [[set_nodeStatus <- setR_nodeStatus,set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition,setL_nodeStatus |} ]]
+						  [[set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition,set_nodeStatus <- setR_nodeStatus]]
 						 )
-						)[[setL_nodeStatus <- set_nodeStatus,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
-						 [[setR_nodeStatus <- set_nodeStatus,setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+						)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setL_nodeStatus <- set_nodeStatus]]
+						 [[setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setR_nodeStatus <- set_nodeStatus]]
 						)\union(enteredSS,{terminate}) 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -641,21 +641,21 @@ exports
 						 	)\{|get_CLID_sMoveAway|}
 						 )
 						 ))
-						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotIsFarEnoughFromPosition |} ]] 
-						  [[set_nodeStatus <- setL_nodeStatus,set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_robotIsFarEnoughFromPosition,setR_nodeStatus |} ]] 
+						  [[set_robotIsFarEnoughFromPosition <- setL_robotIsFarEnoughFromPosition,set_nodeStatus <- setL_nodeStatus]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-						 			,setL_nodeStatus
 						 			,setL_robotIsFarEnoughFromPosition
-						 			,setR_nodeStatus
-						 			 			,setR_robotIsFarEnoughFromPosition
+						 			,setL_nodeStatus
+						 			,setR_robotIsFarEnoughFromPosition
+						 			 			,setR_nodeStatus
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotIsFarEnoughFromPosition |} ]]
-						  [[set_nodeStatus <- setR_nodeStatus,set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_robotIsFarEnoughFromPosition,setL_nodeStatus |} ]]
+						  [[set_robotIsFarEnoughFromPosition <- setR_robotIsFarEnoughFromPosition,set_nodeStatus <- setR_nodeStatus]]
 						 )
-						)[[setL_nodeStatus <- set_nodeStatus,setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
-						 [[setR_nodeStatus <- set_nodeStatus,setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition]]
+						)[[setL_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setL_nodeStatus <- set_nodeStatus]]
+						 [[setR_robotIsFarEnoughFromPosition <- set_robotIsFarEnoughFromPosition,setR_nodeStatus <- set_nodeStatus]]
 						)\{terminate} 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -863,7 +863,7 @@ exports
 		Behaviour(id__,
 				    const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+				stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
 			 within
 				(MachineBody(id__,
 						    const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) [| union(stateClockSync,{terminate}) |] StateClocks(id__,
@@ -874,7 +874,7 @@ exports
 		IteratedBehaviour(id__,
 				    const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+				stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
 			 within
 				(dbisim(
 					sbisim(
@@ -882,15 +882,15 @@ exports
 							sbisim(
 								MachineBody(id__,
 										    const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
-								[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-								dbisim(Clock_CLID_sRun(id__,0,
+								[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+								dbisim(Clock_CLID_sWaitStart(id__,0,
 										          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-							)\{|get_CLID_sRun|}
+							)\{|get_CLID_sWaitStart|}
 						)
-						[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-						dbisim(Clock_CLID_sWaitStart(id__,0,
+						[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+						dbisim(Clock_CLID_sRun(id__,0,
 								          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-					)\{|get_CLID_sWaitStart|}
+					)\{|get_CLID_sRun|}
 				)
 				) \ union(stateClockSync,enteredSS)
 			)
@@ -1004,7 +1004,7 @@ exports
 		Behaviour_VS_O(id__,
 				    const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+				stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
 			 within
 				(MachineBody_VS_O(id__,
 						    const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) [| union(stateClockSync,{terminate}) |] StateClocks(id__,
@@ -1015,7 +1015,7 @@ exports
 		IteratedBehaviour_VS_O(id__,
 				    const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+				stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
 			 within
 				(dbisim(
 					sbisim(
@@ -1023,15 +1023,15 @@ exports
 							sbisim(
 								MachineBody_VS_O(id__,
 										    const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
-								[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-								dbisim(Clock_CLID_sRun(id__,0,
+								[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+								dbisim(Clock_CLID_sWaitStart(id__,0,
 										          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-							)\{|get_CLID_sRun|}
+							)\{|get_CLID_sWaitStart|}
 						)
-						[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-						dbisim(Clock_CLID_sWaitStart(id__,0,
+						[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+						dbisim(Clock_CLID_sRun(id__,0,
 								          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
-					)\{|get_CLID_sWaitStart|}
+					)\{|get_CLID_sRun|}
 				)
 				) \ diff(union(stateClockSync,enteredSS),enteredSS)
 			)
@@ -1115,18 +1115,6 @@ exports
 		
 		clockSync = {||}
 		
-		Clock_CLID_sWaitStart(id__,x__,
-				          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
-			TimeOut_1(
-				sWaitStart::entered -> Clock_CLID_sWaitStart(id__,0,
-						          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
-				[]
-				get_CLID_sWaitStart!x__ -> Clock_CLID_sWaitStart(id__,x__,
-						          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
-				[]
-				terminate -> SKIP,Clock_CLID_sWaitStart(id__,clock_type_plus(x__,1,CLID_sWaitStart_clock_type(id__,
-						          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)),
-						          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 		Clock_CLID_sRun(id__,x__,
 				          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
 			TimeOut_1(
@@ -1139,16 +1127,28 @@ exports
 				terminate -> SKIP,Clock_CLID_sRun(id__,clock_type_plus(x__,1,CLID_sRun_clock_type(id__,
 						          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)),
 						          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
+		Clock_CLID_sWaitStart(id__,x__,
+				          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = 
+			TimeOut_1(
+				sWaitStart::entered -> Clock_CLID_sWaitStart(id__,0,
+						          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
+				[]
+				get_CLID_sWaitStart!x__ -> Clock_CLID_sWaitStart(id__,x__,
+						          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)
+				[]
+				terminate -> SKIP,Clock_CLID_sWaitStart(id__,clock_type_plus(x__,1,CLID_sWaitStart_clock_type(id__,
+						          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE)),
+						          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 		
 		StateClocks(id__,
-				          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = dbisim(Clock_CLID_sWaitStart(id__,0,
+				          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE) = dbisim(Clock_CLID_sRun(id__,0,
 				          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 		[| { terminate } |] (
-		dbisim(Clock_CLID_sRun(id__,0,
+		dbisim(Clock_CLID_sWaitStart(id__,0,
 				          const_behavior_MoveAwayFromPositionSTM_TIME_LIMIT_TO_BEHAVE))
 		)
 		
-		stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+		stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
 		
 		-- Shared memory
 		-- Shared memory variables

@@ -13,7 +13,7 @@ interface BehaviorI {
 	event receiveTactic: Tactic
 		
 	// Output events.
-	event sendAction: string	
+	event sendAction: Action	
 }
 
 interface TacticI {
@@ -87,8 +87,9 @@ controller BehaviorController {
 	connection stm_behavior_ref on sendSkill to stm_skill_ref on receiveSkill
 	connection stm_go_to_behind_ball_ref on goToBehindBallAction to stm_skill_ref on goToBehindBallAction
 	connection stm_approach_ball_ref on approachBallAction to stm_skill_ref on approachBallAction
-connection stm_carry_ball_ref on carryBallAction to stm_skill_ref on carryBallAction
+	connection stm_carry_ball_ref on carryBallAction to stm_skill_ref on carryBallAction
 	connection stm_move_away_ref on moveAwayAction to stm_skill_ref on moveAwayAction
+	connection stm_skill_ref on sendAction to stm_behavior_ref on receiveAction
 }
 // END TODO
 
@@ -277,9 +278,15 @@ stm BehaviorSTM {
 	uses CarryBallOnBallPlacementI
 	uses HaltI
 	
-	// Controls the Skill for the current tactic.
+	// Controls the Skill/Action for the current tactic.
 	uses TacticI
 	event sendSkill: Skill
+	event receiveAction: Action
+	
+	// The current Action.
+	//
+	// Receives value from `receiveAction` event from SkillSTM.
+	var currentAction: Action
 	
 	// The current Skill.
 	//
@@ -296,23 +303,25 @@ stm BehaviorSTM {
 	
 	// States.
 	initial sInitial
-	state sWaitTacticOrSkill {}
+	state sWaitTacticOrSkillOrAction {}
 	junction jCheckCurrentTactic
 	junction jStopLastTactic
 	junction jStartCurrentTactic
-	junction jCheckSkillForTactic
+	junction jCheckSkillForPlaceBallInPositionTactic
+	junction jCheckSkillForHaltTactic
+	junction jSendAction
 	
 	// Transitions.
 	//
 	// Start transition. Just wait for a tactic.
 	transition start {
 		from sInitial
-		to sWaitTacticOrSkill
+		to sWaitTacticOrSkillOrAction
 	}
 	
 	// A tactic has been received.
 	transition receiveTactic {
-		from sWaitTacticOrSkill
+		from sWaitTacticOrSkillOrAction
 		to jCheckCurrentTactic
 		trigger receiveTactic?currentTactic
 	}
@@ -322,7 +331,7 @@ stm BehaviorSTM {
 	// running and don't trigger any event.
 	transition sameTactic {
 		from jCheckCurrentTactic
-		to sWaitTacticOrSkill
+		to sWaitTacticOrSkillOrAction
 		condition currentTactic == lastTactic
 	}
 	
@@ -359,7 +368,7 @@ stm BehaviorSTM {
 	// is Tactic::PLACE_BALL_IN_POSITION.
 	transition startCarryBallOnBallPlacement {
 		from jStartCurrentTactic
-		to sWaitTacticOrSkill
+		to sWaitTacticOrSkillOrAction
 		condition currentTactic == Tactic :: PLACE_BALL_IN_POSITION
 		action startCarryBallOnBallPlacement
 	}
@@ -368,22 +377,56 @@ stm BehaviorSTM {
 	// tactic is Tactic::HALT.
 	transition startHalt {
 		from jStartCurrentTactic
-		to sWaitTacticOrSkill
+		to sWaitTacticOrSkillOrAction
 		condition currentTactic == Tactic :: HALT
 		action startHalt
 	}
 
-
+	// Receives CarryBalloOnBallPlacementSkill.
 	transition carryBallOnBallPlacementSkill {
-		from sWaitTacticOrSkill
-		to jCheckSkillForTactic
+		from sWaitTacticOrSkillOrAction
+		to jCheckSkillForPlaceBallInPositionTactic
 		trigger carryBallOnBallPlacementSkill
 	}
-	transition sendProperlySkill {
-		from jCheckSkillForTactic
-		to sWaitTacticOrSkill
+	transition sendCarryBallPlacementSkill {
+		from jCheckSkillForPlaceBallInPositionTactic
+		to sWaitTacticOrSkillOrAction
 		condition currentTactic == Tactic :: PLACE_BALL_IN_POSITION
 		action sendSkill!currentSkill
+	}
+	transition carryBallPlacemenSkilltIsWrong {
+		from jCheckSkillForPlaceBallInPositionTactic
+		to sWaitTacticOrSkillOrAction
+		condition currentTactic != Tactic :: PLACE_BALL_IN_POSITION
+	}
+	
+	// Receives HaltSkill.
+	transition haltSkill {
+		from sWaitTacticOrSkillOrAction
+		to jCheckSkillForHaltTactic
+		trigger haltSkill
+	}
+	transition sendHaltSkill {
+		from jCheckSkillForHaltTactic
+		to sWaitTacticOrSkillOrAction
+		condition currentTactic == Tactic :: HALT
+		action sendSkill ! currentSkill
+	}
+	transition haltSkilltIsWrong {
+		from jCheckSkillForHaltTactic
+		to sWaitTacticOrSkillOrAction
+		condition currentTactic != Tactic :: HALT
+	}
+
+	transition sendAction {
+		from sWaitTacticOrSkillOrAction
+		to jSendAction
+		trigger receiveAction?currentAction
+		action sendAction!currentAction
+	}
+	transition waitNextTacticOrSkillOrAction {
+		from jSendAction
+		to sWaitTacticOrSkillOrAction
 	}
 }
 
@@ -412,8 +455,11 @@ stm SkillSTM {
 	junction jCheckCurrentSkill
 	junction jStopLastSkill
 	junction jStartCurrentSkill
-	junction jCheckActionForSkill
-	
+	junction jCheckActionForGoToBehindBallSkill
+	junction jCheckActionForApproachBallSkill
+	junction jCheckActionForCarryBallSkill
+	junction jCheckActionForMoveAwaySkill
+
 	// Sub-FSMs --> Output events.
 	uses behavior::GoToBehindBallI
 	uses behavior::ApproachBallI
@@ -533,15 +579,76 @@ stm SkillSTM {
 		action startMoveAwayFromPosition
 	}
 
+	// Receives GoToBehindBallAction.
 	transition goToBehindBallAction {
 		from sWaitSkillOrAction
-		to jCheckActionForSkill
+		to jCheckActionForGoToBehindBallSkill
 		trigger goToBehindBallAction?currentAction
 	}
-	
-	transition sendProperlyAction {
-		from jCheckActionForSkill
+	transition sendGoToBehindBallAction {
+		from jCheckActionForGoToBehindBallSkill
 		to sWaitSkillOrAction
+		condition currentSkill == Skill :: GO_TO_BEHIND_BALL
+		action sendAction ! currentAction
+	}
+	transition goToBehindBallActionIsWrong {
+		from jCheckActionForGoToBehindBallSkill
+		to sWaitSkillOrAction
+		condition currentSkill != GO_TO_BEHIND_BALL
+	}
+	
+	// Receives ApproachBallAction.
+	transition approachBallAction {
+		from sWaitSkillOrAction
+		to jCheckActionForApproachBallSkill
+		trigger approachBallAction ? currentAction
+	}
+	transition sendApproachBallAction {
+		from jCheckActionForApproachBallSkill
+		to sWaitSkillOrAction
+		condition currentSkill == Skill :: APPROACH_BALL
+		action sendAction ! currentAction
+	}
+	transition approachBallActionIsWrong {
+		from jCheckActionForApproachBallSkill
+		to sWaitSkillOrAction
+		condition currentSkill != Skill :: APPROACH_BALL
+	}
+	
+	// Receives CarryBallAction.
+	transition carryBallAction {
+		from sWaitSkillOrAction
+		to jCheckActionForCarryBallSkill
+		trigger carryBallAction ? currentAction
+	}
+	transition sendCarryBallAction {
+		from jCheckActionForCarryBallSkill
+		to sWaitSkillOrAction
+		condition currentSkill == Skill :: CARRY_BALL
+		action sendAction ! currentAction
+	}
+	transition carryBallActionIsWrong {
+		from jCheckActionForCarryBallSkill
+		to sWaitSkillOrAction
+		condition currentSkill != Skill :: CARRY_BALL
+	}
+	
+	// Receives MoveAwayAction.
+	transition moveAwayAction {
+		from sWaitSkillOrAction
+		to jCheckActionForMoveAwaySkill
+		trigger moveAwayAction ? currentAction
+	}
+	transition sendMoveAwayAction {
+		from jCheckActionForMoveAwaySkill
+		to sWaitSkillOrAction
+		condition currentSkill == Skill :: MOVE_AWAY_FROM_POSITION
+		action sendAction ! currentAction
+	}
+	transition moveAwayActionIsWrong {
+		from jCheckActionForMoveAwaySkill
+		to sWaitSkillOrAction
+		condition currentSkill != Skill :: MOVE_AWAY_FROM_POSITION
 	}
 }
 

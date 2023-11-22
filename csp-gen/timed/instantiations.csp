@@ -12,7 +12,7 @@
 
 -- generate nat
 nametype core_nat = union({0..2},{calc_type_min(Union(
-			{{30},{0..2}}))..calc_type_max(Union({{30},{0..2}}))})
+			{}))..calc_type_max(Union({}))})
 
 -- generate core_clock_type
 nametype core_clock_type = {0..10}
@@ -24,7 +24,7 @@ nametype core_string = LSeq(Char,2)
 
 -- generate real
 nametype core_real = union({ -2..2},{calc_type_min(Union(
-			{{30},{0..2}}))..calc_type_max(Union({{30},{0..2}}))}) 
+			{}))..calc_type_max(Union({}))}) 
 
 -- VECTOR TYPES AND OPERATIONS
 
@@ -33,7 +33,7 @@ nametype core_real = union({ -2..2},{calc_type_min(Union(
 
 -- generate int
 nametype core_int = union({ -2..2},{calc_type_min(Union(
-			{{30},{0..2}}))..calc_type_max(Union({{30},{0..2}}))})
+			{}))..calc_type_max(Union({}))})
 
 -- generate -- OPERATION BOUNDS
 

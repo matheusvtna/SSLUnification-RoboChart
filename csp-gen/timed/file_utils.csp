@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 08-11-2023 13:36:05
+-- Automatically generated on 21-11-2023 22:57:55
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -12,12 +12,9 @@ include "defs/file_ball_defs.csp"
 include "defs/file_point_defs.csp"
 include "defs/file_controllers_defs.csp"
 include "defs/file_behaviors_defs.csp"
-include "defs/file_carryBall_defs.csp"
 include "defs/file_main_defs.csp"
-include "defs/file_approachBall_defs.csp"
 include "defs/file_visionController_defs.csp"
 include "defs/core_timed_defs.csp"
-include "defs/file_goToBehindBall_defs.csp"
 include "defs/file_geometry_defs.csp"
 include "defs/file_visionSTM_defs.csp"
 include "defs/file_decisionController_defs.csp"
@@ -28,11 +25,11 @@ include "defs/file_navigationSTM_defs.csp"
 include "defs/file_planningController_defs.csp"
 include "defs/file_decisionSTM_defs.csp"
 include "defs/file_planningSTM_defs.csp"
-include "defs/file_moveAwayFromPosition_defs.csp"
 include "defs/file_modules_defs.csp"
 include "defs/file_utils_defs.csp"
 include "defs/file_behavior_tree_defs.csp"
 include "defs/robochart_defs.csp"
+include "defs/file_action_defs.csp"
 include "defs/file_robot_defs.csp"
 include "defs/file_utils.csp"
 include "instantiations.csp"

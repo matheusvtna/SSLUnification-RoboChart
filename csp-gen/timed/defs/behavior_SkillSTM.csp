@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 21-11-2023 22:22:01
+-- Automatically generated on 21-11-2023 23:05:57
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -22,7 +22,10 @@ exports
 	              NID_jCheckCurrentSkill|
 	              NID_jStopLastSkill|
 	              NID_jStartCurrentSkill|
-	              NID_jCheckActionForSkill
+	              NID_jCheckActionForGoToBehindBallSkill|
+	              NID_jCheckActionForApproachBallSkill|
+	              NID_jCheckActionForCarryBallSkill|
+	              NID_jCheckActionForMoveAwaySkill
 	
 	channel internal__ : NIDS
 	
@@ -79,7 +82,10 @@ exports
 	jCheckCurrentSkill::enter,
 	jStopLastSkill::enter,
 	jStartCurrentSkill::enter,
-	jCheckActionForSkill::enter
+	jCheckActionForGoToBehindBallSkill::enter,
+	jCheckActionForApproachBallSkill::enter,
+	jCheckActionForCarryBallSkill::enter,
+	jCheckActionForMoveAwaySkill::enter
 	|}
 	
 	enteredSS = 	{|
@@ -304,8 +310,77 @@ exports
 		
 		
 		----------------------------------------------------------------------
-		-- Junction: jCheckActionForSkill
-		module jCheckActionForSkill
+		-- Junction: jCheckActionForGoToBehindBallSkill
+		module jCheckActionForGoToBehindBallSkill
+		exports
+		
+			channel enter, interrupt
+			
+			Timed(OneStep) {
+				D__(id__) = 
+					dbisim(let
+						Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+						
+						Active 		= share__choice(interrupt -> SKIP) ; Inactive
+					within
+						Inactive [| {terminate} |> SKIP)
+					
+				VS_O__(id__) = D__(id__)
+			}
+		
+		endmodule
+		----------------------------------------------------------------------
+		
+		
+		----------------------------------------------------------------------
+		-- Junction: jCheckActionForApproachBallSkill
+		module jCheckActionForApproachBallSkill
+		exports
+		
+			channel enter, interrupt
+			
+			Timed(OneStep) {
+				D__(id__) = 
+					dbisim(let
+						Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+						
+						Active 		= share__choice(interrupt -> SKIP) ; Inactive
+					within
+						Inactive [| {terminate} |> SKIP)
+					
+				VS_O__(id__) = D__(id__)
+			}
+		
+		endmodule
+		----------------------------------------------------------------------
+		
+		
+		----------------------------------------------------------------------
+		-- Junction: jCheckActionForCarryBallSkill
+		module jCheckActionForCarryBallSkill
+		exports
+		
+			channel enter, interrupt
+			
+			Timed(OneStep) {
+				D__(id__) = 
+					dbisim(let
+						Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+						
+						Active 		= share__choice(interrupt -> SKIP) ; Inactive
+					within
+						Inactive [| {terminate} |> SKIP)
+					
+				VS_O__(id__) = D__(id__)
+			}
+		
+		endmodule
+		----------------------------------------------------------------------
+		
+		
+		----------------------------------------------------------------------
+		-- Junction: jCheckActionForMoveAwaySkill
+		module jCheckActionForMoveAwaySkill
 		exports
 		
 			channel enter, interrupt
@@ -370,7 +445,7 @@ exports
 		
 		-- Transitions
 		Transitions(id__) = ((let
-			Trans = share__choice(get_currentSkill?currentSkill -> get_lastSkill?lastSkill -> TimeOut_1(
+			Trans = share__choice(get_lastSkill?lastSkill -> get_currentSkill?currentSkill -> TimeOut_1(
 				 (share__ -> SKIP
 				 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sWaitSkillOrAction::enter -> SKIP))))
 				 [] dbisim((true)&(receiveSkill__!NID_sWaitSkillOrAction.in?currentSkill:{currentSkill|currentSkill <- behavior_Skill, true} -> share__choice(set_currentSkill!currentSkill -> SKIP) ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; jCheckCurrentSkill::enter -> SKIP)))
@@ -384,8 +459,18 @@ exports
 				 [] dbisim(((currentSkill==behavior_Skill_APPROACH_BALL))&(internal__!NID_jStartCurrentSkill -> SKIP ;  ((true&(share__choice(startApproachBall.out -> SKIP)) ; sWaitSkillOrAction::enter -> SKIP))))
 				 [] dbisim(((currentSkill==behavior_Skill_CARRY_BALL))&(internal__!NID_jStartCurrentSkill -> SKIP ;  ((true&(share__choice(startCarryBall.out -> SKIP)) ; sWaitSkillOrAction::enter -> SKIP))))
 				 [] dbisim(((currentSkill==behavior_Skill_MOVE_AWAY_FROM_POSITION))&(internal__!NID_jStartCurrentSkill -> SKIP ;  ((true&(share__choice(startMoveAwayFromPosition.out -> SKIP)) ; sWaitSkillOrAction::enter -> SKIP))))
-				 [] dbisim((true)&(goToBehindBallAction__!NID_sWaitSkillOrAction.in?currentAction:{currentAction|currentAction <- Action, true} -> share__choice(set_currentAction!currentAction -> SKIP) ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; jCheckActionForSkill::enter -> SKIP)))
-				 [] dbisim((true)&(internal__!NID_jCheckActionForSkill -> SKIP ;  ((SKIP ; sWaitSkillOrAction::enter -> SKIP))))
+				 [] dbisim((true)&(goToBehindBallAction__!NID_sWaitSkillOrAction.in?currentAction:{currentAction|currentAction <- Action, true} -> share__choice(set_currentAction!currentAction -> SKIP) ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; jCheckActionForGoToBehindBallSkill::enter -> SKIP)))
+				 [] dbisim(((currentSkill==behavior_Skill_GO_TO_BEHIND_BALL))&(internal__!NID_jCheckActionForGoToBehindBallSkill -> SKIP ;  ((share__choice(get_currentAction?currentAction -> true&(share__choice(sendAction.out!currentAction -> SKIP))) ; sWaitSkillOrAction::enter -> SKIP))))
+				 [] dbisim(((currentSkill!=behavior_Skill_GO_TO_BEHIND_BALL))&(internal__!NID_jCheckActionForGoToBehindBallSkill -> SKIP ;  ((SKIP ; sWaitSkillOrAction::enter -> SKIP))))
+				 [] dbisim((true)&(approachBallAction__!NID_sWaitSkillOrAction.in?currentAction:{currentAction|currentAction <- Action, true} -> share__choice(set_currentAction!currentAction -> SKIP) ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; jCheckActionForApproachBallSkill::enter -> SKIP)))
+				 [] dbisim(((currentSkill==behavior_Skill_APPROACH_BALL))&(internal__!NID_jCheckActionForApproachBallSkill -> SKIP ;  ((share__choice(get_currentAction?currentAction -> true&(share__choice(sendAction.out!currentAction -> SKIP))) ; sWaitSkillOrAction::enter -> SKIP))))
+				 [] dbisim(((currentSkill!=behavior_Skill_APPROACH_BALL))&(internal__!NID_jCheckActionForApproachBallSkill -> SKIP ;  ((SKIP ; sWaitSkillOrAction::enter -> SKIP))))
+				 [] dbisim((true)&(carryBallAction__!NID_sWaitSkillOrAction.in?currentAction:{currentAction|currentAction <- Action, true} -> share__choice(set_currentAction!currentAction -> SKIP) ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; jCheckActionForCarryBallSkill::enter -> SKIP)))
+				 [] dbisim(((currentSkill==behavior_Skill_CARRY_BALL))&(internal__!NID_jCheckActionForCarryBallSkill -> SKIP ;  ((share__choice(get_currentAction?currentAction -> true&(share__choice(sendAction.out!currentAction -> SKIP))) ; sWaitSkillOrAction::enter -> SKIP))))
+				 [] dbisim(((currentSkill!=behavior_Skill_CARRY_BALL))&(internal__!NID_jCheckActionForCarryBallSkill -> SKIP ;  ((SKIP ; sWaitSkillOrAction::enter -> SKIP))))
+				 [] dbisim((true)&(moveAwayAction__!NID_sWaitSkillOrAction.in?currentAction:{currentAction|currentAction <- Action, true} -> share__choice(set_currentAction!currentAction -> SKIP) ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; jCheckActionForMoveAwaySkill::enter -> SKIP)))
+				 [] dbisim(((currentSkill==behavior_Skill_MOVE_AWAY_FROM_POSITION))&(internal__!NID_jCheckActionForMoveAwaySkill -> SKIP ;  ((share__choice(get_currentAction?currentAction -> true&(share__choice(sendAction.out!currentAction -> SKIP))) ; sWaitSkillOrAction::enter -> SKIP))))
+				 [] dbisim(((currentSkill!=behavior_Skill_MOVE_AWAY_FROM_POSITION))&(internal__!NID_jCheckActionForMoveAwaySkill -> SKIP ;  ((SKIP ; sWaitSkillOrAction::enter -> SKIP))))
 				 []
 				 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
 				 []
@@ -417,7 +502,10 @@ exports
 					jCheckCurrentSkill::enter,
 					jStopLastSkill::enter,
 					jStartCurrentSkill::enter,
-					jCheckActionForSkill::enter
+					jCheckActionForGoToBehindBallSkill::enter,
+					jCheckActionForApproachBallSkill::enter,
+					jCheckActionForCarryBallSkill::enter,
+					jCheckActionForMoveAwaySkill::enter
 					|}
 					hideSet = union(enterSS,{|exit,exited,internal__|})
 				within 
@@ -425,7 +513,7 @@ exports
 						-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 						-- because CSPM modules are used for the semantics of Node.
 						flowevts = union(enterSS,{|exit,exited,interrupt|})
-						transSync = {|internal__.NID_sInitial,receiveSkill__.NID_sWaitSkillOrAction.in,internal__.NID_jCheckCurrentSkill,internal__.NID_jCheckCurrentSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,goToBehindBallAction__.NID_sWaitSkillOrAction.in,internal__.NID_jCheckActionForSkill|}
+						transSync = {|internal__.NID_sInitial,receiveSkill__.NID_sWaitSkillOrAction.in,internal__.NID_jCheckCurrentSkill,internal__.NID_jCheckCurrentSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,goToBehindBallAction__.NID_sWaitSkillOrAction.in,internal__.NID_jCheckActionForGoToBehindBallSkill,internal__.NID_jCheckActionForGoToBehindBallSkill,approachBallAction__.NID_sWaitSkillOrAction.in,internal__.NID_jCheckActionForApproachBallSkill,internal__.NID_jCheckActionForApproachBallSkill,carryBallAction__.NID_sWaitSkillOrAction.in,internal__.NID_jCheckActionForCarryBallSkill,internal__.NID_jCheckActionForCarryBallSkill,moveAwayAction__.NID_sWaitSkillOrAction.in,internal__.NID_jCheckActionForMoveAwaySkill,internal__.NID_jCheckActionForMoveAwaySkill|}
 					within
 						((
 						 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
@@ -439,34 +527,46 @@ exports
 						   [| { share__, terminate } |] (
 						   jStartCurrentSkill::D__(id__)
 						   [| { share__, terminate } |] (
-						   jCheckActionForSkill::D__(id__)
+						   jCheckActionForGoToBehindBallSkill::D__(id__)
+						   [| { share__, terminate } |] (
+						   jCheckActionForApproachBallSkill::D__(id__)
+						   [| { share__, terminate } |] (
+						   jCheckActionForCarryBallSkill::D__(id__)
+						   [| { share__, terminate } |] (
+						   jCheckActionForMoveAwaySkill::D__(id__)
+						   )
+						   )
+						   )
 						   )
 						   )
 						   )
 						   )
 						   )
 						 )
-						 [[sWaitSkillOrAction::interrupt <- x__ | x__ <- {|interrupt,receiveSkill__.NID_sWaitSkillOrAction.in,goToBehindBallAction__.NID_sWaitSkillOrAction.in|}]]
+						 [[sWaitSkillOrAction::interrupt <- x__ | x__ <- {|interrupt,receiveSkill__.NID_sWaitSkillOrAction.in,goToBehindBallAction__.NID_sWaitSkillOrAction.in,approachBallAction__.NID_sWaitSkillOrAction.in,carryBallAction__.NID_sWaitSkillOrAction.in,moveAwayAction__.NID_sWaitSkillOrAction.in|}]]
 						 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 [[jCheckCurrentSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckCurrentSkill,internal__.NID_jCheckCurrentSkill|}]]
 						 [[jStopLastSkill::interrupt <- x__ | x__ <- {|internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill|}]]
 						 [[jStartCurrentSkill::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill|}]]
-						 [[jCheckActionForSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForSkill|}]]
+						 [[jCheckActionForGoToBehindBallSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForGoToBehindBallSkill,internal__.NID_jCheckActionForGoToBehindBallSkill|}]]
+						 [[jCheckActionForApproachBallSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForApproachBallSkill,internal__.NID_jCheckActionForApproachBallSkill|}]]
+						 [[jCheckActionForCarryBallSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForCarryBallSkill,internal__.NID_jCheckActionForCarryBallSkill|}]]
+						 [[jCheckActionForMoveAwaySkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForMoveAwaySkill,internal__.NID_jCheckActionForMoveAwaySkill|}]]
 						 )
 						  [[ share__ <- x__ | x__ <- {| share__,setR_currentSkill,setR_currentAction |} ]] 
-						  [[set_currentSkill <- setL_currentSkill,set_lastSkill <- setL_lastSkill]]
+						  [[set_lastSkill <- setL_lastSkill,set_currentSkill <- setL_currentSkill]]
 						 )
 						 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-						 			,setL_currentSkill
 						 			,setL_lastSkill
+						 			,setL_currentSkill
 						 			,setR_currentSkill
 						 			 			,setR_currentAction
 						 			|}) |]
 						 ((sInitial::enter -> Transitions(id__))
-						  [[ share__ <- x__ | x__ <- {| share__,setL_currentSkill,setL_lastSkill |} ]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_lastSkill,setL_currentSkill |} ]]
 						  [[set_currentSkill <- setR_currentSkill,set_currentAction <- setR_currentAction]]
 						 )
-						)[[setL_currentSkill <- set_currentSkill,setL_lastSkill <- set_lastSkill]]
+						)[[setL_lastSkill <- set_lastSkill,setL_currentSkill <- set_currentSkill]]
 						 [[setR_currentSkill <- set_currentSkill,setR_currentAction <- set_currentAction]]
 						)
 					)
@@ -572,7 +672,10 @@ exports
 					jCheckCurrentSkill::enter,
 					jStopLastSkill::enter,
 					jStartCurrentSkill::enter,
-					jCheckActionForSkill::enter
+					jCheckActionForGoToBehindBallSkill::enter,
+					jCheckActionForApproachBallSkill::enter,
+					jCheckActionForCarryBallSkill::enter,
+					jCheckActionForMoveAwaySkill::enter
 					|}
 					hideSet = union(enterSS,{|exit,exited,internal__|})
 				within 
@@ -580,7 +683,7 @@ exports
 						-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
 						-- because CSPM modules are used for the semantics of Node.
 						flowevts = union(enterSS,{|exit,exited,interrupt|})
-						transSync = {|internal__.NID_sInitial,receiveSkill__.NID_sWaitSkillOrAction.in,internal__.NID_jCheckCurrentSkill,internal__.NID_jCheckCurrentSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,goToBehindBallAction__.NID_sWaitSkillOrAction.in,internal__.NID_jCheckActionForSkill|}
+						transSync = {|internal__.NID_sInitial,receiveSkill__.NID_sWaitSkillOrAction.in,internal__.NID_jCheckCurrentSkill,internal__.NID_jCheckCurrentSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,goToBehindBallAction__.NID_sWaitSkillOrAction.in,internal__.NID_jCheckActionForGoToBehindBallSkill,internal__.NID_jCheckActionForGoToBehindBallSkill,approachBallAction__.NID_sWaitSkillOrAction.in,internal__.NID_jCheckActionForApproachBallSkill,internal__.NID_jCheckActionForApproachBallSkill,carryBallAction__.NID_sWaitSkillOrAction.in,internal__.NID_jCheckActionForCarryBallSkill,internal__.NID_jCheckActionForCarryBallSkill,moveAwayAction__.NID_sWaitSkillOrAction.in,internal__.NID_jCheckActionForMoveAwaySkill,internal__.NID_jCheckActionForMoveAwaySkill|}
 					within
 						((
 						 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
@@ -594,34 +697,46 @@ exports
 						   [| { share__, terminate } |] (
 						   jStartCurrentSkill::VS_O__(id__)
 						   [| { share__, terminate } |] (
-						   jCheckActionForSkill::VS_O__(id__)
+						   jCheckActionForGoToBehindBallSkill::VS_O__(id__)
+						   [| { share__, terminate } |] (
+						   jCheckActionForApproachBallSkill::VS_O__(id__)
+						   [| { share__, terminate } |] (
+						   jCheckActionForCarryBallSkill::VS_O__(id__)
+						   [| { share__, terminate } |] (
+						   jCheckActionForMoveAwaySkill::VS_O__(id__)
+						   )
+						   )
+						   )
 						   )
 						   )
 						   )
 						   )
 						   )
 						 )
-						 [[sWaitSkillOrAction::interrupt <- x__ | x__ <- {|interrupt,receiveSkill__.NID_sWaitSkillOrAction.in,goToBehindBallAction__.NID_sWaitSkillOrAction.in|}]]
+						 [[sWaitSkillOrAction::interrupt <- x__ | x__ <- {|interrupt,receiveSkill__.NID_sWaitSkillOrAction.in,goToBehindBallAction__.NID_sWaitSkillOrAction.in,approachBallAction__.NID_sWaitSkillOrAction.in,carryBallAction__.NID_sWaitSkillOrAction.in,moveAwayAction__.NID_sWaitSkillOrAction.in|}]]
 						 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 [[jCheckCurrentSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckCurrentSkill,internal__.NID_jCheckCurrentSkill|}]]
 						 [[jStopLastSkill::interrupt <- x__ | x__ <- {|internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill,internal__.NID_jStopLastSkill|}]]
 						 [[jStartCurrentSkill::interrupt <- x__ | x__ <- {|internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill,internal__.NID_jStartCurrentSkill|}]]
-						 [[jCheckActionForSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForSkill|}]]
+						 [[jCheckActionForGoToBehindBallSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForGoToBehindBallSkill,internal__.NID_jCheckActionForGoToBehindBallSkill|}]]
+						 [[jCheckActionForApproachBallSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForApproachBallSkill,internal__.NID_jCheckActionForApproachBallSkill|}]]
+						 [[jCheckActionForCarryBallSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForCarryBallSkill,internal__.NID_jCheckActionForCarryBallSkill|}]]
+						 [[jCheckActionForMoveAwaySkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForMoveAwaySkill,internal__.NID_jCheckActionForMoveAwaySkill|}]]
 						 )
 						  [[ share__ <- x__ | x__ <- {| share__,setR_currentSkill,setR_currentAction |} ]] 
-						  [[set_currentSkill <- setL_currentSkill,set_lastSkill <- setL_lastSkill]]
+						  [[set_lastSkill <- setL_lastSkill,set_currentSkill <- setL_currentSkill]]
 						 )
 						 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-						 			,setL_currentSkill
 						 			,setL_lastSkill
+						 			,setL_currentSkill
 						 			,setR_currentSkill
 						 			 			,setR_currentAction
 						 			|}) |]
 						 ((sInitial::enter -> Transitions(id__))
-						  [[ share__ <- x__ | x__ <- {| share__,setL_currentSkill,setL_lastSkill |} ]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_lastSkill,setL_currentSkill |} ]]
 						  [[set_currentSkill <- setR_currentSkill,set_currentAction <- setR_currentAction]]
 						 )
-						)[[setL_currentSkill <- set_currentSkill,setL_lastSkill <- set_lastSkill]]
+						)[[setL_lastSkill <- set_lastSkill,setL_currentSkill <- set_currentSkill]]
 						 [[setR_currentSkill <- set_currentSkill,setR_currentAction <- set_currentAction]]
 						)
 					)
