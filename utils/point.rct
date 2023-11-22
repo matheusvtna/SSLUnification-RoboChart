@@ -1,16 +1,16 @@
-//// ============================================
-//// =                DATATYPES                 =
-//// ============================================
-////
-//// Datatype to represent a Point in SSL Environment.
-//// 
-//// A Point contains a `x` and a `y` coordinates.
-//// Both properties are real values.
-//datatype Point {
-//	x: real
-//	y: real
-//}
+// ============================================
+// =                DATATYPES                 =
+// ============================================
 //
+// Datatype to represent a Point in SSL Environment.
+// 
+// A Point contains a `x` and a `y` coordinates.
+// Both properties are real values.
+datatype Point {
+	x: real
+	y: real
+}
+
 //// ============================================
 //// =               OPERATIONS                 =
 //// ============================================

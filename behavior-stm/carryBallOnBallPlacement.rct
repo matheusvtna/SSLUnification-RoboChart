@@ -1,4 +1,4 @@
-package carryBallOnBallPlacement
+package behavior
 
 import goToBehindBall
 import approachBall
@@ -52,22 +52,22 @@ controller BehaviorController {
 	uses TacticI
 	uses NodeStatusI
 		
-	sref stm_behavior_ref = BehaviorSTM
+	sref stm_behavior_ref = behavior::BehaviorSTM
 	connection BehaviorController on receiveField to stm_behavior_ref on receiveField
 	connection BehaviorController on receiveFrame to stm_behavior_ref on receiveFrame
 	connection BehaviorController on receiveTactic to stm_behavior_ref on receiveTactic
 
-	sref stm_carry_ball_on_ball_placement_ref = CarryBallOnBallPlacementSTM
+	sref stm_carry_ball_on_ball_placement_ref = behavior::CarryBallOnBallPlacementSTM
 	connection stm_behavior_ref on startCarryBallOnBallPlacement to stm_carry_ball_on_ball_placement_ref on startCarryBallOnBallPlacement
 	connection stm_behavior_ref on stopCarryBallOnBallPlacement to stm_carry_ball_on_ball_placement_ref on stopCarryBallOnBallPlacement
 
 	// Sub-FSMs.
-	sref stm_go_to_behind_ball_ref = GoToBehindBallSTM
-	sref stm_approach_ball_ref = ApproachBallSTM
-	sref stm_carry_ball_ref = CarryBallSTM
-	sref stm_move_away_ref = MoveAwayFromPositionSTM
+	sref stm_go_to_behind_ball_ref = behavior::GoToBehindBallSTM
+	sref stm_approach_ball_ref = behavior::ApproachBallSTM
+	sref stm_carry_ball_ref = behavior::CarryBallSTM
+	sref stm_move_away_ref = behavior::MoveAwayFromPositionSTM
 
-	sref stm_skill_ref = SkillSTM
+	sref stm_skill_ref = behavior::SkillSTM
 	connection stm_skill_ref on startGoToBehindBall to stm_go_to_behind_ball_ref on startGoToBehindBall
 	connection stm_skill_ref on stopGoToBehindBall to stm_go_to_behind_ball_ref on stopGoToBehindBall
 	connection stm_skill_ref on startApproachBall to stm_approach_ball_ref on startApproachBall
@@ -84,7 +84,11 @@ controller BehaviorController {
 	connection stm_behavior_ref on startHalt to stm_halt_ref on startHalt
 	connection stm_behavior_ref on stopHalt to stm_halt_ref on stopHalt
 	connection stm_halt_ref on haltSkill to stm_behavior_ref on haltSkill
-	// connection stm_behavior_ref on sendSkill to stm_skill_ref on receiveSkill
+	connection stm_behavior_ref on sendSkill to stm_skill_ref on receiveSkill
+	connection stm_go_to_behind_ball_ref on goToBehindBallAction to stm_skill_ref on goToBehindBallAction
+	connection stm_approach_ball_ref on approachBallAction to stm_skill_ref on approachBallAction
+connection stm_carry_ball_ref on carryBallAction to stm_skill_ref on carryBallAction
+	connection stm_move_away_ref on moveAwayAction to stm_skill_ref on moveAwayAction
 }
 // END TODO
 
@@ -275,7 +279,12 @@ stm BehaviorSTM {
 	
 	// Controls the Skill for the current tactic.
 	uses TacticI
-	// event sendSkill: Skill
+	event sendSkill: Skill
+	
+	// The current Skill.
+	//
+	// Receives value from different skill events.
+	var currentSkill:Skill
 	
 	// Current Tactic.
 	//
@@ -287,7 +296,7 @@ stm BehaviorSTM {
 	
 	// States.
 	initial sInitial
-	state sWaitTactic {}
+	state sWaitTacticOrSkill {}
 	junction jCheckCurrentTactic
 	junction jStopLastTactic
 	junction jStartCurrentTactic
@@ -298,12 +307,12 @@ stm BehaviorSTM {
 	// Start transition. Just wait for a tactic.
 	transition start {
 		from sInitial
-		to sWaitTactic
+		to sWaitTacticOrSkill
 	}
 	
 	// A tactic has been received.
 	transition receiveTactic {
-		from sWaitTactic
+		from sWaitTacticOrSkill
 		to jCheckCurrentTactic
 		trigger receiveTactic?currentTactic
 	}
@@ -313,7 +322,7 @@ stm BehaviorSTM {
 	// running and don't trigger any event.
 	transition sameTactic {
 		from jCheckCurrentTactic
-		to sWaitTactic
+		to sWaitTacticOrSkill
 		condition currentTactic == lastTactic
 	}
 	
@@ -350,7 +359,7 @@ stm BehaviorSTM {
 	// is Tactic::PLACE_BALL_IN_POSITION.
 	transition startCarryBallOnBallPlacement {
 		from jStartCurrentTactic
-		to sWaitTactic
+		to sWaitTacticOrSkill
 		condition currentTactic == Tactic :: PLACE_BALL_IN_POSITION
 		action startCarryBallOnBallPlacement
 	}
@@ -359,22 +368,22 @@ stm BehaviorSTM {
 	// tactic is Tactic::HALT.
 	transition startHalt {
 		from jStartCurrentTactic
-		to sWaitTactic
+		to sWaitTacticOrSkill
 		condition currentTactic == Tactic :: HALT
 		action startHalt
 	}
 
 
 	transition carryBallOnBallPlacementSkill {
-		from sWaitTactic
+		from sWaitTacticOrSkill
 		to jCheckSkillForTactic
 		trigger carryBallOnBallPlacementSkill
 	}
-	transition t1 {
+	transition sendProperlySkill {
 		from jCheckSkillForTactic
-		to sWaitTactic
+		to sWaitTacticOrSkill
 		condition currentTactic == Tactic :: PLACE_BALL_IN_POSITION
-		// action sendSkill?skill
+		action sendSkill!currentSkill
 	}
 }
 
@@ -393,30 +402,35 @@ stm SkillSTM {
 	// Last Skill.
 	var lastSkill:Skill
 	
+	// Controls the Action for the current skill.
+	event sendAction: Action
+	var currentAction: Action
+	
 	// States.
 	initial sInitial
-	state sWaitSkill {}
+	state sWaitSkillOrAction {}
 	junction jCheckCurrentSkill
 	junction jStopLastSkill
 	junction jStartCurrentSkill
+	junction jCheckActionForSkill
 	
 	// Sub-FSMs --> Output events.
-	uses GoToBehindBallI
-	uses ApproachBallI
-	uses CarryBallI
-	uses MoveAwayFromPositionI	
+	uses behavior::GoToBehindBallI
+	uses behavior::ApproachBallI
+	uses behavior::CarryBallI
+	uses behavior::MoveAwayFromPositionI	
 	
 	// Transitions.
 	//
 	// Start transition. Just wait for a Skill.
 	transition start {
 		from sInitial
-		to sWaitSkill
+		to sWaitSkillOrAction
 	}
 	
 	// A Skill has been received.
 	transition receiveSkill {
-		from sWaitSkill
+		from sWaitSkillOrAction
 		to jCheckCurrentSkill
 		trigger receiveSkill?currentSkill
 	}
@@ -426,7 +440,7 @@ stm SkillSTM {
 	// running and don't trigger any event.
 	transition sameSkill {
 		from jCheckCurrentSkill
-		to sWaitSkill
+		to sWaitSkillOrAction
 		condition currentSkill == lastSkill
 	}
 	
@@ -484,36 +498,50 @@ stm SkillSTM {
 	// is Skill::GO_TO_BEHIND_BALL.
 	transition startGoToBehindBall {
 		from jStartCurrentSkill
-		to sWaitSkill
+		to sWaitSkillOrAction
 		condition currentSkill == Skill::GO_TO_BEHIND_BALL
 		action startGoToBehindBall
 	}
 	
-//	// Trigger a `startHalt` event to start the HaltSTM if the current 
-//	// tactic is Tactic::HALT.
-//	transition startHalt {
-//		from jStartCurrentTactic
-//		to sWaitTactic
-//		condition currentTactic == Tactic :: HALT
-//		action startHalt
-//	}
-	transition t0 {
+	// Triggers a `startApproachBall` event to 
+	// start the ApproachBallSTM if the current skill
+	// is Skill::APPROACH_BALL.
+	transition startApproachBall {
 		from jStartCurrentSkill
-		to sWaitSkill
+		to sWaitSkillOrAction
 		condition currentSkill == Skill :: APPROACH_BALL
 		action startApproachBall
 	}
-	transition t1 {
+	
+	// Triggers a `startCarryBall` event to 
+	// start the CarryBallSTM if the current skill
+	// is Skill::CARRY_BALL.
+	transition startCarryBall {
 		from jStartCurrentSkill
-		to sWaitSkill
+		to sWaitSkillOrAction
 		condition currentSkill == Skill :: CARRY_BALL
 		action startCarryBall
 	}
-	transition t2 {
+	
+	// Triggers a `startMoveAwayFromPosition` event to 
+	// start the MoveAwayFromPositionSTM if the current skill
+	// is Skill::MOVE_AWAY_FROM_POSITION.
+	transition startMoveAwayFromPosition {
 		from jStartCurrentSkill
-		to sWaitSkill
+		to sWaitSkillOrAction
 		condition currentSkill == Skill :: MOVE_AWAY_FROM_POSITION
 		action startMoveAwayFromPosition
+	}
+
+	transition goToBehindBallAction {
+		from sWaitSkillOrAction
+		to jCheckActionForSkill
+		trigger goToBehindBallAction?currentAction
+	}
+	
+	transition sendProperlyAction {
+		from jCheckActionForSkill
+		to sWaitSkillOrAction
 	}
 }
 

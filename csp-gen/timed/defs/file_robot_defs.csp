@@ -1,12 +1,30 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 08-11-2023 13:36:06
+-- Automatically generated on 21-11-2023 21:50:11
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
 -- data definitions used by platform:/resource/SSLUnification/utils/robot.rct
+nametype RobotFeedback = (core_boolean,core_real,core_real)
+RobotFeedback_ir((ir,battery,capacitor)) = ir
+update_RobotFeedback_ir((ir,battery,capacitor),v__) = (v__,battery,capacitor)
+RobotFeedback_battery((ir,battery,capacitor)) = battery
+update_RobotFeedback_battery((ir,battery,capacitor),v__) = (ir,v__,capacitor)
+RobotFeedback_capacitor((ir,battery,capacitor)) = capacitor
+update_RobotFeedback_capacitor((ir,battery,capacitor),v__) = (ir,battery,v__)
+nametype Robot = (core_int,Point,Point,core_real,RobotFeedback)
+Robot_id((id,position,vel,angle,feedback)) = id
+update_Robot_id((id,position,vel,angle,feedback),v__) = (v__,position,vel,angle,feedback)
+Robot_position((id,position,vel,angle,feedback)) = position
+update_Robot_position((id,position,vel,angle,feedback),v__) = (id,v__,vel,angle,feedback)
+Robot_vel((id,position,vel,angle,feedback)) = vel
+update_Robot_vel((id,position,vel,angle,feedback),v__) = (id,position,v__,angle,feedback)
+Robot_angle((id,position,vel,angle,feedback)) = angle
+update_Robot_angle((id,position,vel,angle,feedback),v__) = (id,position,vel,v__,feedback)
+Robot_feedback((id,position,vel,angle,feedback)) = feedback
+update_Robot_feedback((id,position,vel,angle,feedback),v__) = (id,position,vel,angle,v__)
 
 	

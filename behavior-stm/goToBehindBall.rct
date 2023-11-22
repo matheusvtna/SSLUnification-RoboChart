@@ -1,3 +1,4 @@
+package behavior
 import utils
 
 // --------------------------------------------
@@ -6,6 +7,7 @@ import utils
 interface GoToBehindBallI {
 	event startGoToBehindBall
 	event stopGoToBehindBall
+	event goToBehindBallAction: Action
 }
 
 // This operation makes robot move to behind the

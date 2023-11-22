@@ -1,0 +1,26 @@
+enumeration ActionType {
+	HALT
+	GO_TO_POINT
+	GO_TO_POINT_WITH_PATH
+	ROTATE_IN_POINT
+	// TODO: Add more actions...
+}
+
+datatype Actuation {
+	front: boolean
+	chip: boolean
+	dribbler: boolean
+	dribblerSpeed: real
+}
+
+datatype Target {
+	position: Point
+	angle: real
+	velocity: Point
+}
+
+datatype Action {
+	actionType: ActionType
+	target: Target
+	actuation: Actuation
+}

@@ -1,3 +1,4 @@
+package behavior
 import utils
 
 // --------------------------------------------
@@ -6,6 +7,7 @@ import utils
 interface ApproachBallI {
 	event startApproachBall
 	event stopApproachBall
+	event approachBallAction: Action
 }
 
 // This state machine makes robot move to ball smoothly.
@@ -38,7 +40,7 @@ stm ApproachBallSTM {
 			entry nodeStatus = NODE_STATUS::RUNNING
 		}
 
-	// Transitions.
+		// Transitions.
 		transition start {
 			from sInitial
 			to sApproach
@@ -90,7 +92,6 @@ stm ApproachBallSTM {
 		to sWaitStart
 		condition nodeStatus == NODE_STATUS::FAILED
 	}
-	
 	
 	transition abortFromRunning {		
 		from sRun

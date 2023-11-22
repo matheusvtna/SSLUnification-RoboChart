@@ -7,3 +7,6 @@
 /file_moveAwayFromPosition_coreassertions.csp
 /file_tactic.csp
 /file_tactic_coreassertions.csp
+/carryBallOnBallPlacement.csp
+/carryBallOnBallPlacement_coreassertions.csp
+/file_approachBall.csp

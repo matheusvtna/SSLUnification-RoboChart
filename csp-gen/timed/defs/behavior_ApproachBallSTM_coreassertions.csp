@@ -1,0 +1,38 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 21-11-2023 22:08:25
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "behavior_ApproachBallSTM.csp"
+include "core_timed_defs.csp"
+include "core_defs.csp"
+include "state_timed_defs.csp"
+include "behavior_defs.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+
+transparent wbisim
+channel r__
+-- generate behavior_ApproachBallSTM
+P_behavior_ApproachBallSTM = let
+	id__ = 0
+	
+	
+	
+within
+	behavior_ApproachBallSTM::O__(
+		id__
+	)
+assert P_behavior_ApproachBallSTM :[deadlock-free]	
+assert P_behavior_ApproachBallSTM;RUN({r__}) :[deadlock-free]
+assert P_behavior_ApproachBallSTM :[deterministic]
+assert P_behavior_ApproachBallSTM :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_behavior_ApproachBallSTM[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_behavior_ApproachBallSTM

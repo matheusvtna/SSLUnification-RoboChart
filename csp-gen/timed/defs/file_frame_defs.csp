@@ -1,12 +1,17 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 08-11-2023 13:36:07
+-- Automatically generated on 21-11-2023 21:50:37
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
 -- data definitions used by platform:/resource/SSLUnification/utils/frame.rct
+nametype Frame = (Ball,Robot)
+Frame_ball((ball,robot)) = ball
+update_Frame_ball((ball,robot),v__) = (v__,robot)
+Frame_robot((ball,robot)) = robot
+update_Frame_robot((ball,robot),v__) = (ball,v__)
 
 	

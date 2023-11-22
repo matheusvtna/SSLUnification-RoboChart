@@ -14,3 +14,7 @@
 /carryBallOnBallPlacement_CarryBallOnBallPlacementSTM_coreassertions.csp
 /file_tactic.csp
 /file_tactic_defs.csp
+/MoveAwayFromPositionSTM.csp
+/MoveAwayFromPositionSTM_coreassertions.csp
+/carryBallOnBallPlacement_BehaviorController.csp
+/carryBallOnBallPlacement_BehaviorController_coreassertions.csp

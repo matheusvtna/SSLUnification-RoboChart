@@ -43,12 +43,11 @@ module SSL {
 //	connection decisionControllerRef on sendTactic to behaviorControllerRef on receiveTactic ( _async )
 	
 //	connection behaviorControllerRef on sendAction to planningControllerRef on receiveAction ( _async )
-	
+	cref behaviorControllerRef = behavior::BehaviorController
 	connection planningControllerRef on sendCommand to navigationControllerRef on receiveCommand ( _async )
-connection visionControllerRef on sendFieldBehavior to ctrl_ref0 on receiveField
-	connection visionControllerRef on sendFrameBehavior to ctrl_ref0 on receiveFrame
-	connection decisionControllerRef on sendTactic to ctrl_ref0 on receiveTactic
-	cref ctrl_ref0 = carryBallOnBallPlacement::BehaviorController
-connection ctrl_ref0 on sendAction to planningControllerRef on receiveAction
+	connection visionControllerRef on sendFieldBehavior to behaviorControllerRef on receiveField ( _async )
+	connection visionControllerRef on sendFrameBehavior to behaviorControllerRef on receiveFrame ( _async )
+	connection decisionControllerRef on sendTactic to behaviorControllerRef on receiveTactic ( _async )
+	connection behaviorControllerRef on sendAction to planningControllerRef on receiveAction ( _async )
 }
 

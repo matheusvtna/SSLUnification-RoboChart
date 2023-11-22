@@ -1,0 +1,30 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 21-11-2023 22:22:01
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "core_defs.csp"
+include "state_defs.csp"
+include "behavior_HaltSTM.csp"
+include "behavior_defs.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+channel r__
+-- generate behavior_HaltSTM
+P_behavior_HaltSTM = let
+	id__ = 0
+	
+	
+	
+within
+	behavior_HaltSTM::O__(
+		id__
+	)
+assert P_behavior_HaltSTM :[deadlock-free]	
+assert P_behavior_HaltSTM;RUN({r__}) :[deadlock-free]
+assert P_behavior_HaltSTM :[deterministic]
+assert P_behavior_HaltSTM :[divergence-free]

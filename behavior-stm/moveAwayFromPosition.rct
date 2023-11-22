@@ -1,3 +1,4 @@
+package behavior
 import utils
 
 // --------------------------------------------
@@ -6,6 +7,7 @@ import utils
 interface MoveAwayFromPositionI {
 	event startMoveAwayFromPosition
 	event stopMoveAwayFromPosition
+	event moveAwayAction: Action
 }
 
 // This state machine makes robot move away to

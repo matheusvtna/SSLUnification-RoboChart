@@ -1,36 +1,36 @@
-//import ball
+import ball
+
+// ============================================
+// =                DATATYPES                 =
+// ============================================
 //
-//// ============================================
-//// =                DATATYPES                 =
-//// ============================================
-////
-//// Datatype to represent a RobotFeedback in SSL Environment.
-//// 
-//// A RobotFeedback contains informations of a Robot. It contains
-//// a boolean value to indicate whether the robot has the IR sensor
-//// activated, a real value to represent the battery charge and a
-//// real value to represent the capacitor charge.
-//datatype RobotFeedback {
-//	ir: boolean
-//	battery: real
-//	capacitor: real
-//}
-//
-//// Datatype to represent a Robot in SSL Environment.
-//// 
-//// A Robot an integer value to represent the robot id,
-//// a Point to represent its position in the field, a
-//// Point value to represent its velocity, a real value
-//// to represent its angle and a RobotFeedback which
-//// contains physical informations of the robot
-//datatype Robot {
-//	id: int
-//	position: Point
-//	vel: Point
-//	angle: real
-//	feedback: RobotFeedback
-//}
-//
+// Datatype to represent a RobotFeedback in SSL Environment.
+// 
+// A RobotFeedback contains informations of a Robot. It contains
+// a boolean value to indicate whether the robot has the IR sensor
+// activated, a real value to represent the battery charge and a
+// real value to represent the capacitor charge.
+datatype RobotFeedback {
+	ir: boolean
+	battery: real
+	capacitor: real
+}
+
+// Datatype to represent a Robot in SSL Environment.
+// 
+// A Robot an integer value to represent the robot id,
+// a Point to represent its position in the field, a
+// Point value to represent its velocity, a real value
+// to represent its angle and a RobotFeedback which
+// contains physical informations of the robot
+datatype Robot {
+	id: int
+	position: Point
+	vel: Point
+	angle: real
+	feedback: RobotFeedback
+}
+
 //// ============================================
 //// =                FSM UTILS                 =
 //// ============================================

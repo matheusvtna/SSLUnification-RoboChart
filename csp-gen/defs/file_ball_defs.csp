@@ -1,12 +1,17 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 08-11-2023 13:36:04
+-- Automatically generated on 21-11-2023 21:50:37
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
 -- data definitions used by platform:/resource/SSLUnification/utils/ball.rct
+nametype Ball = (Point,Point)
+Ball_pos((pos,vel)) = pos
+update_Ball_pos((pos,vel),v__) = (v__,vel)
+Ball_vel((pos,vel)) = vel
+update_Ball_vel((pos,vel),v__) = (pos,v__)
 
 	

@@ -1,0 +1,45 @@
+
+--
+-- RoboChart generator version 3.0.0.202206212138
+-- Automatically generated on 21-11-2023 22:08:02
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+-- data definitions used by platform:/resource/SSLUnification/utils/action.rct
+datatype ActionType = ActionType_HALT | ActionType_GO_TO_POINT | ActionType_GO_TO_POINT_WITH_PATH | ActionType_ROTATE_IN_POINT
+ActionType_is(ActionType_HALT,ActionType_HALT) = true
+ActionType_is(_,ActionType_HALT) = false
+ActionType_is(ActionType_GO_TO_POINT,ActionType_GO_TO_POINT) = true
+ActionType_is(_,ActionType_GO_TO_POINT) = false
+ActionType_is(ActionType_GO_TO_POINT_WITH_PATH,ActionType_GO_TO_POINT_WITH_PATH) = true
+ActionType_is(_,ActionType_GO_TO_POINT_WITH_PATH) = false
+ActionType_is(ActionType_ROTATE_IN_POINT,ActionType_ROTATE_IN_POINT) = true
+ActionType_is(_,ActionType_ROTATE_IN_POINT) = false
+
+nametype Actuation = (core_boolean,core_boolean,core_boolean,core_real)
+Actuation_front((front,chip,dribbler,dribblerSpeed)) = front
+update_Actuation_front((front,chip,dribbler,dribblerSpeed),v__) = (v__,chip,dribbler,dribblerSpeed)
+Actuation_chip((front,chip,dribbler,dribblerSpeed)) = chip
+update_Actuation_chip((front,chip,dribbler,dribblerSpeed),v__) = (front,v__,dribbler,dribblerSpeed)
+Actuation_dribbler((front,chip,dribbler,dribblerSpeed)) = dribbler
+update_Actuation_dribbler((front,chip,dribbler,dribblerSpeed),v__) = (front,chip,v__,dribblerSpeed)
+Actuation_dribblerSpeed((front,chip,dribbler,dribblerSpeed)) = dribblerSpeed
+update_Actuation_dribblerSpeed((front,chip,dribbler,dribblerSpeed),v__) = (front,chip,dribbler,v__)
+nametype Target = (Point,core_real,Point)
+Target_position((position,angle,velocity)) = position
+update_Target_position((position,angle,velocity),v__) = (v__,angle,velocity)
+Target_angle((position,angle,velocity)) = angle
+update_Target_angle((position,angle,velocity),v__) = (position,v__,velocity)
+Target_velocity((position,angle,velocity)) = velocity
+update_Target_velocity((position,angle,velocity),v__) = (position,angle,v__)
+nametype Action = (ActionType,Target,Actuation)
+Action_actionType((actionType,target,actuation)) = actionType
+update_Action_actionType((actionType,target,actuation),v__) = (v__,target,actuation)
+Action_target((actionType,target,actuation)) = target
+update_Action_target((actionType,target,actuation),v__) = (actionType,v__,actuation)
+Action_actuation((actionType,target,actuation)) = actuation
+update_Action_actuation((actionType,target,actuation),v__) = (actionType,target,v__)
+
+	
