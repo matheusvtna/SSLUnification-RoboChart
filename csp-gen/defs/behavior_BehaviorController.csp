@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 21-11-2023 23:05:57
+-- Automatically generated on 22-11-2023 14:59:17
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -506,21 +506,21 @@
 							 [[jCheckSkillForHaltTactic::interrupt <- x__ | x__ <- {|internal__.NID_jCheckSkillForHaltTactic,internal__.NID_jCheckSkillForHaltTactic|}]]
 							 [[jSendAction::interrupt <- x__ | x__ <- {|internal__.NID_jSendAction|}]]
 							 )
-							  [[ share__ <- x__ | x__ <- {| share__,setR_currentAction,setR_currentTactic |} ]] 
+							  [[ share__ <- x__ | x__ <- {| share__,setR_currentTactic,setR_currentAction |} ]] 
 							  [[set_lastTactic <- setL_lastTactic,set_currentTactic <- setL_currentTactic]]
 							 )
 							 [| union(union(union(flowevts,transSync),{terminate}),{|share__
 							 			,setL_lastTactic
 							 			,setL_currentTactic
-							 			,setR_currentAction
-							 			 			,setR_currentTactic
+							 			,setR_currentTactic
+							 			 			,setR_currentAction
 							 			|}) |]
 							 ((sInitial::enter -> Transitions(id__))
 							  [[ share__ <- x__ | x__ <- {| share__,setL_lastTactic,setL_currentTactic |} ]]
-							  [[set_currentAction <- setR_currentAction,set_currentTactic <- setR_currentTactic]]
+							  [[set_currentTactic <- setR_currentTactic,set_currentAction <- setR_currentAction]]
 							 )
 							)[[setL_lastTactic <- set_lastTactic,setL_currentTactic <- set_currentTactic]]
-							 [[setR_currentAction <- set_currentAction,setR_currentTactic <- set_currentTactic]]
+							 [[setR_currentTactic <- set_currentTactic,setR_currentAction <- set_currentAction]]
 							)
 						)
 						 \ hideSet)
@@ -661,21 +661,21 @@
 							 [[jCheckSkillForHaltTactic::interrupt <- x__ | x__ <- {|internal__.NID_jCheckSkillForHaltTactic,internal__.NID_jCheckSkillForHaltTactic|}]]
 							 [[jSendAction::interrupt <- x__ | x__ <- {|internal__.NID_jSendAction|}]]
 							 )
-							  [[ share__ <- x__ | x__ <- {| share__,setR_currentAction,setR_currentTactic |} ]] 
+							  [[ share__ <- x__ | x__ <- {| share__,setR_currentTactic,setR_currentAction |} ]] 
 							  [[set_lastTactic <- setL_lastTactic,set_currentTactic <- setL_currentTactic]]
 							 )
 							 [| union(union(union(flowevts,transSync),{terminate}),{|share__
 							 			,setL_lastTactic
 							 			,setL_currentTactic
-							 			,setR_currentAction
-							 			 			,setR_currentTactic
+							 			,setR_currentTactic
+							 			 			,setR_currentAction
 							 			|}) |]
 							 ((sInitial::enter -> Transitions(id__))
 							  [[ share__ <- x__ | x__ <- {| share__,setL_lastTactic,setL_currentTactic |} ]]
-							  [[set_currentAction <- setR_currentAction,set_currentTactic <- setR_currentTactic]]
+							  [[set_currentTactic <- setR_currentTactic,set_currentAction <- setR_currentAction]]
 							 )
 							)[[setL_lastTactic <- set_lastTactic,setL_currentTactic <- set_currentTactic]]
-							 [[setR_currentAction <- set_currentAction,setR_currentTactic <- set_currentTactic]]
+							 [[setR_currentTactic <- set_currentTactic,setR_currentAction <- set_currentAction]]
 							)
 						)
 						 \ hideSet)
@@ -1526,16 +1526,16 @@
 						 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 		 )
 						 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-						 		  [[set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_nodeStatus <- setL_nodeStatus]]
+						 		  [[set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall]]
 						 		 )
 						 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-						 		 			,setL_robotHasMovedAwayFromBall
 						 		 			,setL_nodeStatus
+						 		 			,setL_robotHasMovedAwayFromBall
 						 		|}) |]
 						 		 ((sInitial::enter -> Transitions(id__))
-						 		  [[ share__ <- x__ | x__ <- {| share__,setL_robotHasMovedAwayFromBall,setL_nodeStatus |} ]]
+						 		  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotHasMovedAwayFromBall |} ]]
 						 		 )
-						 		)[[setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_nodeStatus <- set_nodeStatus]]
+						 		)[[setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall]]
 						 		)
 						 	)
 						 	 \ hideSet)
@@ -1547,25 +1547,25 @@
 						 	]]
 						 )
 						 )
-						  [[ share__ <- x__ | x__ <- {| share__,setR_runningStm,setR_skill,setR_robotHasMovedAwayFromBall,setR_nodeStatus |} ]] 
-						  [[set_runningStm <- setL_runningStm,set_skill <- setL_skill,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_nodeStatus <- setL_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotHasMovedAwayFromBall,setR_skill,setR_runningStm |} ]] 
+						  [[set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_skill <- setL_skill,set_runningStm <- setL_runningStm]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-						 			,setL_runningStm
-						 			,setL_skill
-						 			,setL_robotHasMovedAwayFromBall
 						 			,setL_nodeStatus
-						 			,setR_runningStm
-						 			 			,setR_skill
+						 			,setL_robotHasMovedAwayFromBall
+						 			,setL_skill
+						 			,setL_runningStm
+						 			,setR_nodeStatus
 						 			 			,setR_robotHasMovedAwayFromBall
-						 			 			,setR_nodeStatus
+						 			 			,setR_skill
+						 			 			,setR_runningStm
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_runningStm,setL_skill,setL_robotHasMovedAwayFromBall,setL_nodeStatus |} ]]
-						  [[set_runningStm <- setR_runningStm,set_skill <- setR_skill,set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_nodeStatus <- setR_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotHasMovedAwayFromBall,setL_skill,setL_runningStm |} ]]
+						  [[set_nodeStatus <- setR_nodeStatus,set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_skill <- setR_skill,set_runningStm <- setR_runningStm]]
 						 )
-						)[[setL_runningStm <- set_runningStm,setL_skill <- set_skill,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_nodeStatus <- set_nodeStatus]]
-						 [[setR_runningStm <- set_runningStm,setR_skill <- set_skill,setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_nodeStatus <- set_nodeStatus]]
+						)[[setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_skill <- set_skill,setL_runningStm <- set_runningStm]]
+						 [[setR_nodeStatus <- set_nodeStatus,setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_skill <- set_skill,setR_runningStm <- set_runningStm]]
 						)\union(enteredSS,{terminate}) 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -1639,16 +1639,16 @@
 						 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 		 )
 						 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-						 		  [[set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_nodeStatus <- setL_nodeStatus]]
+						 		  [[set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall]]
 						 		 )
 						 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-						 		 			,setL_robotHasMovedAwayFromBall
 						 		 			,setL_nodeStatus
+						 		 			,setL_robotHasMovedAwayFromBall
 						 		|}) |]
 						 		 ((sInitial::enter -> Transitions(id__))
-						 		  [[ share__ <- x__ | x__ <- {| share__,setL_robotHasMovedAwayFromBall,setL_nodeStatus |} ]]
+						 		  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotHasMovedAwayFromBall |} ]]
 						 		 )
-						 		)[[setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_nodeStatus <- set_nodeStatus]]
+						 		)[[setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall]]
 						 		)
 						 	)
 						 	 \ hideSet)
@@ -1660,25 +1660,25 @@
 						 	]]
 						 )
 						 )
-						  [[ share__ <- x__ | x__ <- {| share__,setR_runningStm,setR_skill,setR_robotHasMovedAwayFromBall,setR_nodeStatus |} ]] 
-						  [[set_runningStm <- setL_runningStm,set_skill <- setL_skill,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_nodeStatus <- setL_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_robotHasMovedAwayFromBall,setR_skill,setR_runningStm |} ]] 
+						  [[set_nodeStatus <- setL_nodeStatus,set_robotHasMovedAwayFromBall <- setL_robotHasMovedAwayFromBall,set_skill <- setL_skill,set_runningStm <- setL_runningStm]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-						 			,setL_runningStm
-						 			,setL_skill
-						 			,setL_robotHasMovedAwayFromBall
 						 			,setL_nodeStatus
-						 			,setR_runningStm
-						 			 			,setR_skill
+						 			,setL_robotHasMovedAwayFromBall
+						 			,setL_skill
+						 			,setL_runningStm
+						 			,setR_nodeStatus
 						 			 			,setR_robotHasMovedAwayFromBall
-						 			 			,setR_nodeStatus
+						 			 			,setR_skill
+						 			 			,setR_runningStm
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_runningStm,setL_skill,setL_robotHasMovedAwayFromBall,setL_nodeStatus |} ]]
-						  [[set_runningStm <- setR_runningStm,set_skill <- setR_skill,set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_nodeStatus <- setR_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_robotHasMovedAwayFromBall,setL_skill,setL_runningStm |} ]]
+						  [[set_nodeStatus <- setR_nodeStatus,set_robotHasMovedAwayFromBall <- setR_robotHasMovedAwayFromBall,set_skill <- setR_skill,set_runningStm <- setR_runningStm]]
 						 )
-						)[[setL_runningStm <- set_runningStm,setL_skill <- set_skill,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_nodeStatus <- set_nodeStatus]]
-						 [[setR_runningStm <- set_runningStm,setR_skill <- set_skill,setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_nodeStatus <- set_nodeStatus]]
+						)[[setL_nodeStatus <- set_nodeStatus,setL_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setL_skill <- set_skill,setL_runningStm <- set_runningStm]]
+						 [[setR_nodeStatus <- set_nodeStatus,setR_robotHasMovedAwayFromBall <- set_robotHasMovedAwayFromBall,setR_skill <- set_skill,setR_runningStm <- set_runningStm]]
 						)\{terminate} 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -1687,7 +1687,7 @@
 					Inactive [| {terminate} |> SKIP)
 				
 				Transitions(id__) = ((let
-					Trans = share__choice(get_robotHasMovedAwayFromBall?robotHasMovedAwayFromBall -> get_nodeStatus?nodeStatus -> (
+					Trans = share__choice(get_nodeStatus?nodeStatus -> get_robotHasMovedAwayFromBall?robotHasMovedAwayFromBall -> (
 						((share__ -> SKIP
 						 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((share__choice(true & (share__choice(set_skill!behavior_Skill_GO_TO_BEHIND_BALL -> SKIP))) ; sGoToBehindBall::enter -> SKIP))))
 						 	 [] dbisim(((nodeStatus==NODE_STATUS_DONE))&(internal__!NID_sGiveSpaceToGetBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_skill!behavior_Skill_GO_TO_BEHIND_BALL -> SKIP))) ; sGoToBehindBall::enter -> SKIP)))
@@ -2442,17 +2442,17 @@
 						 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 		 )
 						 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-						 		  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+						 		  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsCloseToBall <- setL_allyIsCloseToBall]]
 						 		 )
 						 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-						 		 			,setL_allyIsCloseToBall
 						 		 			,setL_allyIsBehindBall
 						 		 			,setL_allyIsPushingBallWithHisBack
+						 		 			,setL_allyIsCloseToBall
 						 		|}) |]
 						 		 ((sInitial::enter -> Transitions(id__))
-						 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyIsBehindBall,setL_allyIsPushingBallWithHisBack |} ]]
+						 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall |} ]]
 						 		 )
-						 		)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+						 		)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall <- set_allyIsCloseToBall]]
 						 		)
 						 	)
 						 	 \ hideSet)
@@ -2464,25 +2464,25 @@
 						 	]]
 						 )
 						 )
-						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyIsCloseToBall,setR_allyIsBehindBall,setR_allyIsPushingBallWithHisBack |} ]] 
-						  [[set_nodeStatus <- setL_nodeStatus,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsBehindBall,setR_nodeStatus,setR_allyIsPushingBallWithHisBack,setR_allyIsCloseToBall |} ]] 
+						  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_nodeStatus <- setL_nodeStatus,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsCloseToBall <- setL_allyIsCloseToBall]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-						 			,setL_nodeStatus
-						 			,setL_allyIsCloseToBall
 						 			,setL_allyIsBehindBall
+						 			,setL_nodeStatus
 						 			,setL_allyIsPushingBallWithHisBack
-						 			,setR_nodeStatus
-						 			 			,setR_allyIsCloseToBall
-						 			 			,setR_allyIsBehindBall
+						 			,setL_allyIsCloseToBall
+						 			,setR_allyIsBehindBall
+						 			 			,setR_nodeStatus
 						 			 			,setR_allyIsPushingBallWithHisBack
+						 			 			,setR_allyIsCloseToBall
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyIsCloseToBall,setL_allyIsBehindBall,setL_allyIsPushingBallWithHisBack |} ]]
-						  [[set_nodeStatus <- setR_nodeStatus,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_nodeStatus,setL_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall |} ]]
+						  [[set_allyIsBehindBall <- setR_allyIsBehindBall,set_nodeStatus <- setR_nodeStatus,set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack,set_allyIsCloseToBall <- setR_allyIsCloseToBall]]
 						 )
-						)[[setL_nodeStatus <- set_nodeStatus,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
-						 [[setR_nodeStatus <- set_nodeStatus,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+						)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_nodeStatus <- set_nodeStatus,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall <- set_allyIsCloseToBall]]
+						 [[setR_allyIsBehindBall <- set_allyIsBehindBall,setR_nodeStatus <- set_nodeStatus,setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setR_allyIsCloseToBall <- set_allyIsCloseToBall]]
 						)\union(enteredSS,{terminate}) 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -2536,17 +2536,17 @@
 						 		 [[sInitial::interrupt <- x__ | x__ <- {|internal__.NID_sInitial|}]]
 						 		 )
 						 		  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-						 		  [[set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+						 		  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsCloseToBall <- setL_allyIsCloseToBall]]
 						 		 )
 						 		 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-						 		 			,setL_allyIsCloseToBall
 						 		 			,setL_allyIsBehindBall
 						 		 			,setL_allyIsPushingBallWithHisBack
+						 		 			,setL_allyIsCloseToBall
 						 		|}) |]
 						 		 ((sInitial::enter -> Transitions(id__))
-						 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsCloseToBall,setL_allyIsBehindBall,setL_allyIsPushingBallWithHisBack |} ]]
+						 		  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall |} ]]
 						 		 )
-						 		)[[setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+						 		)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall <- set_allyIsCloseToBall]]
 						 		)
 						 	)
 						 	 \ hideSet)
@@ -2558,25 +2558,25 @@
 						 	]]
 						 )
 						 )
-						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyIsCloseToBall,setR_allyIsBehindBall,setR_allyIsPushingBallWithHisBack |} ]] 
-						  [[set_nodeStatus <- setL_nodeStatus,set_allyIsCloseToBall <- setL_allyIsCloseToBall,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsBehindBall,setR_nodeStatus,setR_allyIsPushingBallWithHisBack,setR_allyIsCloseToBall |} ]] 
+						  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_nodeStatus <- setL_nodeStatus,set_allyIsPushingBallWithHisBack <- setL_allyIsPushingBallWithHisBack,set_allyIsCloseToBall <- setL_allyIsCloseToBall]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-						 			,setL_nodeStatus
-						 			,setL_allyIsCloseToBall
 						 			,setL_allyIsBehindBall
+						 			,setL_nodeStatus
 						 			,setL_allyIsPushingBallWithHisBack
-						 			,setR_nodeStatus
-						 			 			,setR_allyIsCloseToBall
-						 			 			,setR_allyIsBehindBall
+						 			,setL_allyIsCloseToBall
+						 			,setR_allyIsBehindBall
+						 			 			,setR_nodeStatus
 						 			 			,setR_allyIsPushingBallWithHisBack
+						 			 			,setR_allyIsCloseToBall
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyIsCloseToBall,setL_allyIsBehindBall,setL_allyIsPushingBallWithHisBack |} ]]
-						  [[set_nodeStatus <- setR_nodeStatus,set_allyIsCloseToBall <- setR_allyIsCloseToBall,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_nodeStatus,setL_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall |} ]]
+						  [[set_allyIsBehindBall <- setR_allyIsBehindBall,set_nodeStatus <- setR_nodeStatus,set_allyIsPushingBallWithHisBack <- setR_allyIsPushingBallWithHisBack,set_allyIsCloseToBall <- setR_allyIsCloseToBall]]
 						 )
-						)[[setL_nodeStatus <- set_nodeStatus,setL_allyIsCloseToBall <- set_allyIsCloseToBall,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
-						 [[setR_nodeStatus <- set_nodeStatus,setR_allyIsCloseToBall <- set_allyIsCloseToBall,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack]]
+						)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_nodeStatus <- set_nodeStatus,setL_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setL_allyIsCloseToBall <- set_allyIsCloseToBall]]
+						 [[setR_allyIsBehindBall <- set_allyIsBehindBall,setR_nodeStatus <- set_nodeStatus,setR_allyIsPushingBallWithHisBack <- set_allyIsPushingBallWithHisBack,setR_allyIsCloseToBall <- set_allyIsCloseToBall]]
 						)\{terminate} 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -2585,7 +2585,7 @@
 					Inactive [| {terminate} |> SKIP)
 				
 				Transitions(id__) = ((let
-					Trans = share__choice(get_allyIsCloseToBall?allyIsCloseToBall -> get_allyIsBehindBall?allyIsBehindBall -> get_allyIsPushingBallWithHisBack?allyIsPushingBallWithHisBack -> (
+					Trans = share__choice(get_allyIsBehindBall?allyIsBehindBall -> get_allyIsPushingBallWithHisBack?allyIsPushingBallWithHisBack -> get_allyIsCloseToBall?allyIsCloseToBall -> (
 						((share__ -> SKIP
 						 [] dbisim((true)&(internal__!NID_sInitial -> SKIP ;  ((SKIP ; sGoToBehindBall::enter -> SKIP))))
 						 	 [] dbisim((((allyIsBehindBall and allyIsCloseToBall)))&(internal__!NID_sGoToBehindBall -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; share__choice(true & (share__choice(set_nodeStatus!NODE_STATUS_DONE -> SKIP))) ; sFinal::enter -> SKIP)))
@@ -3357,25 +3357,25 @@
 						 	]]
 						 )
 						 )
-						  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsBehindBall,setR_allyHasBall,setR_nodeStatus,setR_allyIsCloseToBall |} ]] 
-						  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyHasBall <- setL_allyHasBall,set_nodeStatus <- setL_nodeStatus,set_allyIsCloseToBall <- setL_allyIsCloseToBall]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyIsBehindBall,setR_allyHasBall,setR_allyIsCloseToBall |} ]] 
+						  [[set_nodeStatus <- setL_nodeStatus,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyHasBall <- setL_allyHasBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+						 			,setL_nodeStatus
 						 			,setL_allyIsBehindBall
 						 			,setL_allyHasBall
-						 			,setL_nodeStatus
 						 			,setL_allyIsCloseToBall
-						 			,setR_allyIsBehindBall
+						 			,setR_nodeStatus
+						 			 			,setR_allyIsBehindBall
 						 			 			,setR_allyHasBall
-						 			 			,setR_nodeStatus
 						 			 			,setR_allyIsCloseToBall
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyHasBall,setL_nodeStatus,setL_allyIsCloseToBall |} ]]
-						  [[set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyHasBall <- setR_allyHasBall,set_nodeStatus <- setR_nodeStatus,set_allyIsCloseToBall <- setR_allyIsCloseToBall]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyIsBehindBall,setL_allyHasBall,setL_allyIsCloseToBall |} ]]
+						  [[set_nodeStatus <- setR_nodeStatus,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyHasBall <- setR_allyHasBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall]]
 						 )
-						)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyHasBall <- set_allyHasBall,setL_nodeStatus <- set_nodeStatus,setL_allyIsCloseToBall <- set_allyIsCloseToBall]]
-						 [[setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyHasBall <- set_allyHasBall,setR_nodeStatus <- set_nodeStatus,setR_allyIsCloseToBall <- set_allyIsCloseToBall]]
+						)[[setL_nodeStatus <- set_nodeStatus,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyHasBall <- set_allyHasBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall]]
+						 [[setR_nodeStatus <- set_nodeStatus,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyHasBall <- set_allyHasBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall]]
 						)\union(enteredSS,{terminate}) 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -3451,25 +3451,25 @@
 						 	]]
 						 )
 						 )
-						  [[ share__ <- x__ | x__ <- {| share__,setR_allyIsBehindBall,setR_allyHasBall,setR_nodeStatus,setR_allyIsCloseToBall |} ]] 
-						  [[set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyHasBall <- setL_allyHasBall,set_nodeStatus <- setL_nodeStatus,set_allyIsCloseToBall <- setL_allyIsCloseToBall]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyIsBehindBall,setR_allyHasBall,setR_allyIsCloseToBall |} ]] 
+						  [[set_nodeStatus <- setL_nodeStatus,set_allyIsBehindBall <- setL_allyIsBehindBall,set_allyHasBall <- setL_allyHasBall,set_allyIsCloseToBall <- setL_allyIsCloseToBall]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+						 			,setL_nodeStatus
 						 			,setL_allyIsBehindBall
 						 			,setL_allyHasBall
-						 			,setL_nodeStatus
 						 			,setL_allyIsCloseToBall
-						 			,setR_allyIsBehindBall
+						 			,setR_nodeStatus
+						 			 			,setR_allyIsBehindBall
 						 			 			,setR_allyHasBall
-						 			 			,setR_nodeStatus
 						 			 			,setR_allyIsCloseToBall
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_allyIsBehindBall,setL_allyHasBall,setL_nodeStatus,setL_allyIsCloseToBall |} ]]
-						  [[set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyHasBall <- setR_allyHasBall,set_nodeStatus <- setR_nodeStatus,set_allyIsCloseToBall <- setR_allyIsCloseToBall]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyIsBehindBall,setL_allyHasBall,setL_allyIsCloseToBall |} ]]
+						  [[set_nodeStatus <- setR_nodeStatus,set_allyIsBehindBall <- setR_allyIsBehindBall,set_allyHasBall <- setR_allyHasBall,set_allyIsCloseToBall <- setR_allyIsCloseToBall]]
 						 )
-						)[[setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyHasBall <- set_allyHasBall,setL_nodeStatus <- set_nodeStatus,setL_allyIsCloseToBall <- set_allyIsCloseToBall]]
-						 [[setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyHasBall <- set_allyHasBall,setR_nodeStatus <- set_nodeStatus,setR_allyIsCloseToBall <- set_allyIsCloseToBall]]
+						)[[setL_nodeStatus <- set_nodeStatus,setL_allyIsBehindBall <- set_allyIsBehindBall,setL_allyHasBall <- set_allyHasBall,setL_allyIsCloseToBall <- set_allyIsCloseToBall]]
+						 [[setR_nodeStatus <- set_nodeStatus,setR_allyIsBehindBall <- set_allyIsBehindBall,setR_allyHasBall <- set_allyHasBall,setR_allyIsCloseToBall <- set_allyIsCloseToBall]]
 						)\{terminate} 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -6112,21 +6112,21 @@
 							 [[jCheckActionForCarryBallSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForCarryBallSkill,internal__.NID_jCheckActionForCarryBallSkill|}]]
 							 [[jCheckActionForMoveAwaySkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForMoveAwaySkill,internal__.NID_jCheckActionForMoveAwaySkill|}]]
 							 )
-							  [[ share__ <- x__ | x__ <- {| share__,setR_currentSkill,setR_currentAction |} ]] 
+							  [[ share__ <- x__ | x__ <- {| share__,setR_currentAction,setR_currentSkill |} ]] 
 							  [[set_lastSkill <- setL_lastSkill,set_currentSkill <- setL_currentSkill]]
 							 )
 							 [| union(union(union(flowevts,transSync),{terminate}),{|share__
 							 			,setL_lastSkill
 							 			,setL_currentSkill
-							 			,setR_currentSkill
-							 			 			,setR_currentAction
+							 			,setR_currentAction
+							 			 			,setR_currentSkill
 							 			|}) |]
 							 ((sInitial::enter -> Transitions(id__))
 							  [[ share__ <- x__ | x__ <- {| share__,setL_lastSkill,setL_currentSkill |} ]]
-							  [[set_currentSkill <- setR_currentSkill,set_currentAction <- setR_currentAction]]
+							  [[set_currentAction <- setR_currentAction,set_currentSkill <- setR_currentSkill]]
 							 )
 							)[[setL_lastSkill <- set_lastSkill,setL_currentSkill <- set_currentSkill]]
-							 [[setR_currentSkill <- set_currentSkill,setR_currentAction <- set_currentAction]]
+							 [[setR_currentAction <- set_currentAction,setR_currentSkill <- set_currentSkill]]
 							)
 						)
 						 \ hideSet)
@@ -6256,21 +6256,21 @@
 							 [[jCheckActionForCarryBallSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForCarryBallSkill,internal__.NID_jCheckActionForCarryBallSkill|}]]
 							 [[jCheckActionForMoveAwaySkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForMoveAwaySkill,internal__.NID_jCheckActionForMoveAwaySkill|}]]
 							 )
-							  [[ share__ <- x__ | x__ <- {| share__,setR_currentSkill,setR_currentAction |} ]] 
+							  [[ share__ <- x__ | x__ <- {| share__,setR_currentAction,setR_currentSkill |} ]] 
 							  [[set_lastSkill <- setL_lastSkill,set_currentSkill <- setL_currentSkill]]
 							 )
 							 [| union(union(union(flowevts,transSync),{terminate}),{|share__
 							 			,setL_lastSkill
 							 			,setL_currentSkill
-							 			,setR_currentSkill
-							 			 			,setR_currentAction
+							 			,setR_currentAction
+							 			 			,setR_currentSkill
 							 			|}) |]
 							 ((sInitial::enter -> Transitions(id__))
 							  [[ share__ <- x__ | x__ <- {| share__,setL_lastSkill,setL_currentSkill |} ]]
-							  [[set_currentSkill <- setR_currentSkill,set_currentAction <- setR_currentAction]]
+							  [[set_currentAction <- setR_currentAction,set_currentSkill <- setR_currentSkill]]
 							 )
 							)[[setL_lastSkill <- set_lastSkill,setL_currentSkill <- set_currentSkill]]
-							 [[setR_currentSkill <- set_currentSkill,setR_currentAction <- set_currentAction]]
+							 [[setR_currentAction <- set_currentAction,setR_currentSkill <- set_currentSkill]]
 							)
 						)
 						 \ hideSet)
@@ -6724,21 +6724,21 @@
 						 	]]
 						 )
 						 )
-						  [[ share__ <- x__ | x__ <- {| share__,setR_skill,setR_nodeStatus |} ]] 
-						  [[set_skill <- setL_skill,set_nodeStatus <- setL_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_skill |} ]] 
+						  [[set_nodeStatus <- setL_nodeStatus,set_skill <- setL_skill]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-						 			,setL_skill
 						 			,setL_nodeStatus
-						 			,setR_skill
-						 			 			,setR_nodeStatus
+						 			,setL_skill
+						 			,setR_nodeStatus
+						 			 			,setR_skill
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_skill,setL_nodeStatus |} ]]
-						  [[set_skill <- setR_skill,set_nodeStatus <- setR_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_skill |} ]]
+						  [[set_nodeStatus <- setR_nodeStatus,set_skill <- setR_skill]]
 						 )
-						)[[setL_skill <- set_skill,setL_nodeStatus <- set_nodeStatus]]
-						 [[setR_skill <- set_skill,setR_nodeStatus <- set_nodeStatus]]
+						)[[setL_nodeStatus <- set_nodeStatus,setL_skill <- set_skill]]
+						 [[setR_nodeStatus <- set_nodeStatus,setR_skill <- set_skill]]
 						)\union(enteredSS,{terminate}) 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -6805,21 +6805,21 @@
 						 	]]
 						 )
 						 )
-						  [[ share__ <- x__ | x__ <- {| share__,setR_skill,setR_nodeStatus |} ]] 
-						  [[set_skill <- setL_skill,set_nodeStatus <- setL_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_skill |} ]] 
+						  [[set_nodeStatus <- setL_nodeStatus,set_skill <- setL_skill]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-						 			,setL_skill
 						 			,setL_nodeStatus
-						 			,setR_skill
-						 			 			,setR_nodeStatus
+						 			,setL_skill
+						 			,setR_nodeStatus
+						 			 			,setR_skill
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_skill,setL_nodeStatus |} ]]
-						  [[set_skill <- setR_skill,set_nodeStatus <- setR_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_skill |} ]]
+						  [[set_nodeStatus <- setR_nodeStatus,set_skill <- setR_skill]]
 						 )
-						)[[setL_skill <- set_skill,setL_nodeStatus <- set_nodeStatus]]
-						 [[setR_skill <- set_skill,setR_nodeStatus <- set_nodeStatus]]
+						)[[setL_nodeStatus <- set_nodeStatus,setL_skill <- set_skill]]
+						 [[setR_nodeStatus <- set_nodeStatus,setR_skill <- set_skill]]
 						)\{terminate} 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))

@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 21-11-2023 23:05:57
+-- Automatically generated on 22-11-2023 14:59:17
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -512,21 +512,21 @@ exports
 						 [[jCheckSkillForHaltTactic::interrupt <- x__ | x__ <- {|internal__.NID_jCheckSkillForHaltTactic,internal__.NID_jCheckSkillForHaltTactic|}]]
 						 [[jSendAction::interrupt <- x__ | x__ <- {|internal__.NID_jSendAction|}]]
 						 )
-						  [[ share__ <- x__ | x__ <- {| share__,setR_currentAction,setR_currentTactic |} ]] 
+						  [[ share__ <- x__ | x__ <- {| share__,setR_currentTactic,setR_currentAction |} ]] 
 						  [[set_lastTactic <- setL_lastTactic,set_currentTactic <- setL_currentTactic]]
 						 )
 						 [| union(union(union(flowevts,transSync),{terminate}),{|share__
 						 			,setL_lastTactic
 						 			,setL_currentTactic
-						 			,setR_currentAction
-						 			 			,setR_currentTactic
+						 			,setR_currentTactic
+						 			 			,setR_currentAction
 						 			|}) |]
 						 ((sInitial::enter -> Transitions(id__))
 						  [[ share__ <- x__ | x__ <- {| share__,setL_lastTactic,setL_currentTactic |} ]]
-						  [[set_currentAction <- setR_currentAction,set_currentTactic <- setR_currentTactic]]
+						  [[set_currentTactic <- setR_currentTactic,set_currentAction <- setR_currentAction]]
 						 )
 						)[[setL_lastTactic <- set_lastTactic,setL_currentTactic <- set_currentTactic]]
-						 [[setR_currentAction <- set_currentAction,setR_currentTactic <- set_currentTactic]]
+						 [[setR_currentTactic <- set_currentTactic,setR_currentAction <- set_currentAction]]
 						)
 					)
 					 \ hideSet)
@@ -696,21 +696,21 @@ exports
 						 [[jCheckSkillForHaltTactic::interrupt <- x__ | x__ <- {|internal__.NID_jCheckSkillForHaltTactic,internal__.NID_jCheckSkillForHaltTactic|}]]
 						 [[jSendAction::interrupt <- x__ | x__ <- {|internal__.NID_jSendAction|}]]
 						 )
-						  [[ share__ <- x__ | x__ <- {| share__,setR_currentAction,setR_currentTactic |} ]] 
+						  [[ share__ <- x__ | x__ <- {| share__,setR_currentTactic,setR_currentAction |} ]] 
 						  [[set_lastTactic <- setL_lastTactic,set_currentTactic <- setL_currentTactic]]
 						 )
 						 [| union(union(union(flowevts,transSync),{terminate}),{|share__
 						 			,setL_lastTactic
 						 			,setL_currentTactic
-						 			,setR_currentAction
-						 			 			,setR_currentTactic
+						 			,setR_currentTactic
+						 			 			,setR_currentAction
 						 			|}) |]
 						 ((sInitial::enter -> Transitions(id__))
 						  [[ share__ <- x__ | x__ <- {| share__,setL_lastTactic,setL_currentTactic |} ]]
-						  [[set_currentAction <- setR_currentAction,set_currentTactic <- setR_currentTactic]]
+						  [[set_currentTactic <- setR_currentTactic,set_currentAction <- setR_currentAction]]
 						 )
 						)[[setL_lastTactic <- set_lastTactic,setL_currentTactic <- set_currentTactic]]
-						 [[setR_currentAction <- set_currentAction,setR_currentTactic <- set_currentTactic]]
+						 [[setR_currentTactic <- set_currentTactic,setR_currentAction <- set_currentAction]]
 						)
 					)
 					 \ hideSet)

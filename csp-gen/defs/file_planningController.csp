@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 21-11-2023 22:57:56
+-- Automatically generated on 22-11-2023 14:59:17
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -22,7 +22,7 @@
 		-- declaring controller events
 		channel receiveFrame: InOut.core_string
 		channel receiveField: InOut.core_string
-		channel receiveAction: InOut.core_string
+		channel receiveAction: InOut.Action
 		channel sendCommand: InOut.core_string
 		
 		

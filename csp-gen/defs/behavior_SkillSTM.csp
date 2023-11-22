@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 21-11-2023 23:05:57
+-- Automatically generated on 22-11-2023 14:59:17
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -504,21 +504,21 @@ exports
 					 [[jCheckActionForCarryBallSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForCarryBallSkill,internal__.NID_jCheckActionForCarryBallSkill|}]]
 					 [[jCheckActionForMoveAwaySkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForMoveAwaySkill,internal__.NID_jCheckActionForMoveAwaySkill|}]]
 					 )
-					  [[ share__ <- x__ | x__ <- {| share__,setR_currentSkill,setR_currentAction |} ]] 
+					  [[ share__ <- x__ | x__ <- {| share__,setR_currentAction,setR_currentSkill |} ]] 
 					  [[set_lastSkill <- setL_lastSkill,set_currentSkill <- setL_currentSkill]]
 					 )
 					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
 					 			,setL_lastSkill
 					 			,setL_currentSkill
-					 			,setR_currentSkill
-					 			 			,setR_currentAction
+					 			,setR_currentAction
+					 			 			,setR_currentSkill
 					 			|}) |]
 					 ((sInitial::enter -> Transitions(id__))
 					  [[ share__ <- x__ | x__ <- {| share__,setL_lastSkill,setL_currentSkill |} ]]
-					  [[set_currentSkill <- setR_currentSkill,set_currentAction <- setR_currentAction]]
+					  [[set_currentAction <- setR_currentAction,set_currentSkill <- setR_currentSkill]]
 					 )
 					)[[setL_lastSkill <- set_lastSkill,setL_currentSkill <- set_currentSkill]]
-					 [[setR_currentSkill <- set_currentSkill,setR_currentAction <- set_currentAction]]
+					 [[setR_currentAction <- set_currentAction,setR_currentSkill <- set_currentSkill]]
 					)
 				)
 				 \ hideSet)
@@ -648,21 +648,21 @@ exports
 					 [[jCheckActionForCarryBallSkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForCarryBallSkill,internal__.NID_jCheckActionForCarryBallSkill|}]]
 					 [[jCheckActionForMoveAwaySkill::interrupt <- x__ | x__ <- {|internal__.NID_jCheckActionForMoveAwaySkill,internal__.NID_jCheckActionForMoveAwaySkill|}]]
 					 )
-					  [[ share__ <- x__ | x__ <- {| share__,setR_currentSkill,setR_currentAction |} ]] 
+					  [[ share__ <- x__ | x__ <- {| share__,setR_currentAction,setR_currentSkill |} ]] 
 					  [[set_lastSkill <- setL_lastSkill,set_currentSkill <- setL_currentSkill]]
 					 )
 					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
 					 			,setL_lastSkill
 					 			,setL_currentSkill
-					 			,setR_currentSkill
-					 			 			,setR_currentAction
+					 			,setR_currentAction
+					 			 			,setR_currentSkill
 					 			|}) |]
 					 ((sInitial::enter -> Transitions(id__))
 					  [[ share__ <- x__ | x__ <- {| share__,setL_lastSkill,setL_currentSkill |} ]]
-					  [[set_currentSkill <- setR_currentSkill,set_currentAction <- setR_currentAction]]
+					  [[set_currentAction <- setR_currentAction,set_currentSkill <- setR_currentSkill]]
 					 )
 					)[[setL_lastSkill <- set_lastSkill,setL_currentSkill <- set_currentSkill]]
-					 [[setR_currentSkill <- set_currentSkill,setR_currentAction <- set_currentAction]]
+					 [[setR_currentAction <- set_currentAction,setR_currentSkill <- set_currentSkill]]
 					)
 				)
 				 \ hideSet)

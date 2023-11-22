@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 21-11-2023 23:05:57
+-- Automatically generated on 22-11-2023 14:59:17
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -83,8 +83,8 @@ exports
 	
 	
 	channel get_CLID_sWaitStart : core_clock_type 
-	channel get_CLID_sRun : core_clock_type 
 	channel get_CLID_sFinal : core_clock_type 
+	channel get_CLID_sRun : core_clock_type 
 	--channel increment__
 	
 	CLID_sWaitStart_clock_type(id__) = 
@@ -95,7 +95,7 @@ exports
 	within
 		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
-	CLID_sRun_clock_type(id__) = 
+	CLID_sFinal_clock_type(id__) = 
 		let
 			max = (clock_type_max(Union({
 	}))+1)
@@ -103,7 +103,7 @@ exports
 	within
 		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
-	CLID_sFinal_clock_type(id__) = 
+	CLID_sRun_clock_type(id__) = 
 		let
 			max = (clock_type_max(Union({
 	}))+1)
@@ -403,21 +403,21 @@ exports
 						 	]]
 						 )
 						 ))
-						  [[ share__ <- x__ | x__ <- {| share__,setR_skill,setR_nodeStatus |} ]] 
-						  [[set_skill <- setL_skill,set_nodeStatus <- setL_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_skill |} ]] 
+						  [[set_nodeStatus <- setL_nodeStatus,set_skill <- setL_skill]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-						 			,setL_skill
 						 			,setL_nodeStatus
-						 			,setR_skill
-						 			 			,setR_nodeStatus
+						 			,setL_skill
+						 			,setR_nodeStatus
+						 			 			,setR_skill
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_skill,setL_nodeStatus |} ]]
-						  [[set_skill <- setR_skill,set_nodeStatus <- setR_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_skill |} ]]
+						  [[set_nodeStatus <- setR_nodeStatus,set_skill <- setR_skill]]
 						 )
-						)[[setL_skill <- set_skill,setL_nodeStatus <- set_nodeStatus]]
-						 [[setR_skill <- set_skill,setR_nodeStatus <- set_nodeStatus]]
+						)[[setL_nodeStatus <- set_nodeStatus,setL_skill <- set_skill]]
+						 [[setR_nodeStatus <- set_nodeStatus,setR_skill <- set_skill]]
 						)\union(enteredSS,{terminate}) 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -484,21 +484,21 @@ exports
 						 	]]
 						 )
 						 ))
-						  [[ share__ <- x__ | x__ <- {| share__,setR_skill,setR_nodeStatus |} ]] 
-						  [[set_skill <- setL_skill,set_nodeStatus <- setL_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_skill |} ]] 
+						  [[set_nodeStatus <- setL_nodeStatus,set_skill <- setL_skill]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-						 			,setL_skill
 						 			,setL_nodeStatus
-						 			,setR_skill
-						 			 			,setR_nodeStatus
+						 			,setL_skill
+						 			,setR_nodeStatus
+						 			 			,setR_skill
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_skill,setL_nodeStatus |} ]]
-						  [[set_skill <- setR_skill,set_nodeStatus <- setR_nodeStatus]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_skill |} ]]
+						  [[set_nodeStatus <- setR_nodeStatus,set_skill <- setR_skill]]
 						 )
-						)[[setL_skill <- set_skill,setL_nodeStatus <- set_nodeStatus]]
-						 [[setR_skill <- set_skill,setR_nodeStatus <- set_nodeStatus]]
+						)[[setL_nodeStatus <- set_nodeStatus,setL_skill <- set_skill]]
+						 [[setR_nodeStatus <- set_nodeStatus,setR_skill <- set_skill]]
 						)\{terminate} 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))

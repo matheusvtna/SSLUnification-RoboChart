@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 21-11-2023 22:57:56
+-- Automatically generated on 22-11-2023 14:59:18
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -422,23 +422,23 @@ exports
 				 	]]
 				 )
 				 )
-				  [[ share__ <- x__ | x__ <- {| share__,setR_allyHasBall,setR_nodeStatus,setR_ballIsPositioned |} ]] 
-				  [[set_allyHasBall <- setL_allyHasBall,set_nodeStatus <- setL_nodeStatus,set_ballIsPositioned <- setL_ballIsPositioned]]
+				  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyHasBall,setR_ballIsPositioned |} ]] 
+				  [[set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall,set_ballIsPositioned <- setL_ballIsPositioned]]
 				 )
 				 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-				 			,setL_allyHasBall
 				 			,setL_nodeStatus
+				 			,setL_allyHasBall
 				 			,setL_ballIsPositioned
-				 			,setR_allyHasBall
-				 			 			,setR_nodeStatus
+				 			,setR_nodeStatus
+				 			 			,setR_allyHasBall
 				 			 			,setR_ballIsPositioned
 				 			|}) |]
 				 ((During)
-				  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_nodeStatus,setL_ballIsPositioned |} ]]
-				  [[set_allyHasBall <- setR_allyHasBall,set_nodeStatus <- setR_nodeStatus,set_ballIsPositioned <- setR_ballIsPositioned]]
+				  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyHasBall,setL_ballIsPositioned |} ]]
+				  [[set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall,set_ballIsPositioned <- setR_ballIsPositioned]]
 				 )
-				)[[setL_allyHasBall <- set_allyHasBall,setL_nodeStatus <- set_nodeStatus,setL_ballIsPositioned <- set_ballIsPositioned]]
-				 [[setR_allyHasBall <- set_allyHasBall,setR_nodeStatus <- set_nodeStatus,setR_ballIsPositioned <- set_ballIsPositioned]]
+				)[[setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall,setL_ballIsPositioned <- set_ballIsPositioned]]
+				 [[setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall,setR_ballIsPositioned <- set_ballIsPositioned]]
 				)\union(enteredSS,{terminate}) 
 			)
 			During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -513,23 +513,23 @@ exports
 				 	]]
 				 )
 				 )
-				  [[ share__ <- x__ | x__ <- {| share__,setR_allyHasBall,setR_nodeStatus,setR_ballIsPositioned |} ]] 
-				  [[set_allyHasBall <- setL_allyHasBall,set_nodeStatus <- setL_nodeStatus,set_ballIsPositioned <- setL_ballIsPositioned]]
+				  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_allyHasBall,setR_ballIsPositioned |} ]] 
+				  [[set_nodeStatus <- setL_nodeStatus,set_allyHasBall <- setL_allyHasBall,set_ballIsPositioned <- setL_ballIsPositioned]]
 				 )
 				 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-				 			,setL_allyHasBall
 				 			,setL_nodeStatus
+				 			,setL_allyHasBall
 				 			,setL_ballIsPositioned
-				 			,setR_allyHasBall
-				 			 			,setR_nodeStatus
+				 			,setR_nodeStatus
+				 			 			,setR_allyHasBall
 				 			 			,setR_ballIsPositioned
 				 			|}) |]
 				 ((During)
-				  [[ share__ <- x__ | x__ <- {| share__,setL_allyHasBall,setL_nodeStatus,setL_ballIsPositioned |} ]]
-				  [[set_allyHasBall <- setR_allyHasBall,set_nodeStatus <- setR_nodeStatus,set_ballIsPositioned <- setR_ballIsPositioned]]
+				  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_allyHasBall,setL_ballIsPositioned |} ]]
+				  [[set_nodeStatus <- setR_nodeStatus,set_allyHasBall <- setR_allyHasBall,set_ballIsPositioned <- setR_ballIsPositioned]]
 				 )
-				)[[setL_allyHasBall <- set_allyHasBall,setL_nodeStatus <- set_nodeStatus,setL_ballIsPositioned <- set_ballIsPositioned]]
-				 [[setR_allyHasBall <- set_allyHasBall,setR_nodeStatus <- set_nodeStatus,setR_ballIsPositioned <- set_ballIsPositioned]]
+				)[[setL_nodeStatus <- set_nodeStatus,setL_allyHasBall <- set_allyHasBall,setL_ballIsPositioned <- set_ballIsPositioned]]
+				 [[setR_nodeStatus <- set_nodeStatus,setR_allyHasBall <- set_allyHasBall,setR_ballIsPositioned <- set_ballIsPositioned]]
 				)\{terminate} 
 			)
 			During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))

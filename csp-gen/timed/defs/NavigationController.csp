@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 21-11-2023 22:57:55
+-- Automatically generated on 22-11-2023 14:59:16
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -25,8 +25,8 @@
 		
 		
 		-- declaring call and ret events for undefined operations
-		channel moveCall: core_real.core_real
 		channel stopCall
+		channel moveCall: core_real.core_real
 		
 		-- declaring controller termination channel
 		channel terminate
@@ -37,8 +37,8 @@
 		,	receiveFrame,
 			receiveField,
 			receiveCommand
-		,	moveCall,
-			stopCall
+		,	stopCall,
+			moveCall
 		|}
 		
 		-- set of visible memory events
@@ -443,10 +443,10 @@
 		
 		Timed(OneStep) {
 				-- undefined operations
+				CALL__stop(id__) 	= stopCall -> SKIP
 				CALL__move(id__,
 						    param_linearVelocity,
 						    param_angularVelocity) 	= moveCall.param_linearVelocity.param_angularVelocity -> SKIP
-				CALL__stop(id__) 	= stopCall -> SKIP
 				
 				-- declaring controller memory
 				Memory(id__) = SKIP

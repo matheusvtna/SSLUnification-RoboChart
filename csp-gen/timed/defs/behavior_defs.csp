@@ -1,24 +1,12 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 21-11-2023 23:05:57
+-- Automatically generated on 22-11-2023 14:59:18
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
 --
 
--- data definitions used by platform:/resource/SSLUnification/behavior-stm/carryBallOnBallPlacement.rct
-datatype behavior_Skill = behavior_Skill_NONE | behavior_Skill_GO_TO_BEHIND_BALL | behavior_Skill_APPROACH_BALL | behavior_Skill_CARRY_BALL | behavior_Skill_MOVE_AWAY_FROM_POSITION
-behavior_Skill_is(behavior_Skill_NONE,behavior_Skill_NONE) = true
-behavior_Skill_is(_,behavior_Skill_NONE) = false
-behavior_Skill_is(behavior_Skill_GO_TO_BEHIND_BALL,behavior_Skill_GO_TO_BEHIND_BALL) = true
-behavior_Skill_is(_,behavior_Skill_GO_TO_BEHIND_BALL) = false
-behavior_Skill_is(behavior_Skill_APPROACH_BALL,behavior_Skill_APPROACH_BALL) = true
-behavior_Skill_is(_,behavior_Skill_APPROACH_BALL) = false
-behavior_Skill_is(behavior_Skill_CARRY_BALL,behavior_Skill_CARRY_BALL) = true
-behavior_Skill_is(_,behavior_Skill_CARRY_BALL) = false
-behavior_Skill_is(behavior_Skill_MOVE_AWAY_FROM_POSITION,behavior_Skill_MOVE_AWAY_FROM_POSITION) = true
-behavior_Skill_is(_,behavior_Skill_MOVE_AWAY_FROM_POSITION) = false
-
+-- data definitions used by platform:/resource/SSLUnification/behavior-stm/carryBall.rct
 
 	
