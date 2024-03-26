@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202206212138
--- Automatically generated on 22-11-2023 14:59:17
+-- Automatically generated on 23-03-2024 14:58:15
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -82,10 +82,18 @@ exports
 	localClockResets = {||}
 	
 	
+	channel get_CLID_sRun : core_clock_type 
 	channel get_CLID_sWaitStart : core_clock_type 
 	channel get_CLID_sFinal : core_clock_type 
-	channel get_CLID_sRun : core_clock_type 
 	--channel increment__
+	
+	CLID_sRun_clock_type(id__) = 
+		let
+			max = (clock_type_max(Union({
+	}))+1)
+		ctype = {0..max}
+	within
+		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
 	CLID_sWaitStart_clock_type(id__) = 
 		let
@@ -96,14 +104,6 @@ exports
 		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
 	CLID_sFinal_clock_type(id__) = 
-		let
-			max = (clock_type_max(Union({
-	}))+1)
-		ctype = {0..max}
-	within
-		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
-	
-	CLID_sRun_clock_type(id__) = 
 		let
 			max = (clock_type_max(Union({
 	}))+1)
@@ -403,21 +403,21 @@ exports
 						 	]]
 						 )
 						 ))
-						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_skill |} ]] 
-						  [[set_nodeStatus <- setL_nodeStatus,set_skill <- setL_skill]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_skill,setR_nodeStatus |} ]] 
+						  [[set_skill <- setL_skill,set_nodeStatus <- setL_nodeStatus]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-						 			,setL_nodeStatus
 						 			,setL_skill
-						 			,setR_nodeStatus
-						 			 			,setR_skill
+						 			,setL_nodeStatus
+						 			,setR_skill
+						 			 			,setR_nodeStatus
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_skill |} ]]
-						  [[set_nodeStatus <- setR_nodeStatus,set_skill <- setR_skill]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_skill,setL_nodeStatus |} ]]
+						  [[set_skill <- setR_skill,set_nodeStatus <- setR_nodeStatus]]
 						 )
-						)[[setL_nodeStatus <- set_nodeStatus,setL_skill <- set_skill]]
-						 [[setR_nodeStatus <- set_nodeStatus,setR_skill <- set_skill]]
+						)[[setL_skill <- set_skill,setL_nodeStatus <- set_nodeStatus]]
+						 [[setR_skill <- set_skill,setR_nodeStatus <- set_nodeStatus]]
 						)\union(enteredSS,{terminate}) 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -484,21 +484,21 @@ exports
 						 	]]
 						 )
 						 ))
-						  [[ share__ <- x__ | x__ <- {| share__,setR_nodeStatus,setR_skill |} ]] 
-						  [[set_nodeStatus <- setL_nodeStatus,set_skill <- setL_skill]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_skill,setR_nodeStatus |} ]] 
+						  [[set_skill <- setL_skill,set_nodeStatus <- setL_nodeStatus]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
-						 			,setL_nodeStatus
 						 			,setL_skill
-						 			,setR_nodeStatus
-						 			 			,setR_skill
+						 			,setL_nodeStatus
+						 			,setR_skill
+						 			 			,setR_nodeStatus
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_nodeStatus,setL_skill |} ]]
-						  [[set_nodeStatus <- setR_nodeStatus,set_skill <- setR_skill]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_skill,setL_nodeStatus |} ]]
+						  [[set_skill <- setR_skill,set_nodeStatus <- setR_nodeStatus]]
 						 )
-						)[[setL_nodeStatus <- set_nodeStatus,setL_skill <- set_skill]]
-						 [[setR_nodeStatus <- set_nodeStatus,setR_skill <- set_skill]]
+						)[[setL_skill <- set_skill,setL_nodeStatus <- set_nodeStatus]]
+						 [[setR_skill <- set_skill,setR_nodeStatus <- set_nodeStatus]]
 						)\{terminate} 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -666,7 +666,7 @@ exports
 		
 		Behaviour(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+				stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
 			 within
 				(MachineBody(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ union(stateClockSync,enteredSS)
 			)
@@ -674,20 +674,20 @@ exports
 		
 		IteratedBehaviour(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+				stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
 			 within
 				(dbisim(
 					sbisim(
 						dbisim(
 							sbisim(
 								MachineBody(id__)
-								[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-								dbisim(Clock_CLID_sRun(id__,0))
-							)\{|get_CLID_sRun|}
+								[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+								dbisim(Clock_CLID_sWaitStart(id__,0))
+							)\{|get_CLID_sWaitStart|}
 						)
-						[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-						dbisim(Clock_CLID_sWaitStart(id__,0))
-					)\{|get_CLID_sWaitStart|}
+						[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+						dbisim(Clock_CLID_sRun(id__,0))
+					)\{|get_CLID_sRun|}
 				)
 				) \ union(stateClockSync,enteredSS)
 			)
@@ -785,7 +785,7 @@ exports
 		
 		Behaviour_VS_O(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+				stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
 			 within
 				(MachineBody_VS_O(id__) [| union(stateClockSync,{terminate}) |] StateClocks(id__)) \ diff(union(stateClockSync,enteredSS),enteredSS)
 			)
@@ -793,20 +793,20 @@ exports
 		
 		IteratedBehaviour_VS_O(id__) = 
 			dbisim((let
-				stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+				stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
 			 within
 				(dbisim(
 					sbisim(
 						dbisim(
 							sbisim(
 								MachineBody_VS_O(id__)
-								[| {|get_CLID_sRun,sRun::entered,terminate|} |]
-								dbisim(Clock_CLID_sRun(id__,0))
-							)\{|get_CLID_sRun|}
+								[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
+								dbisim(Clock_CLID_sWaitStart(id__,0))
+							)\{|get_CLID_sWaitStart|}
 						)
-						[| {|get_CLID_sWaitStart,sWaitStart::entered,terminate|} |]
-						dbisim(Clock_CLID_sWaitStart(id__,0))
-					)\{|get_CLID_sWaitStart|}
+						[| {|get_CLID_sRun,sRun::entered,terminate|} |]
+						dbisim(Clock_CLID_sRun(id__,0))
+					)\{|get_CLID_sRun|}
 				)
 				) \ diff(union(stateClockSync,enteredSS),enteredSS)
 			)
@@ -866,13 +866,6 @@ exports
 		
 		clockSync = {||}
 		
-		Clock_CLID_sWaitStart(id__,x__) = 
-			TimeOut_1(
-				sWaitStart::entered -> Clock_CLID_sWaitStart(id__,0)
-				[]
-				get_CLID_sWaitStart!x__ -> Clock_CLID_sWaitStart(id__,x__)
-				[]
-				terminate -> SKIP,Clock_CLID_sWaitStart(id__,clock_type_plus(x__,1,CLID_sWaitStart_clock_type(id__))))
 		Clock_CLID_sRun(id__,x__) = 
 			TimeOut_1(
 				sRun::entered -> Clock_CLID_sRun(id__,0)
@@ -880,13 +873,20 @@ exports
 				get_CLID_sRun!x__ -> Clock_CLID_sRun(id__,x__)
 				[]
 				terminate -> SKIP,Clock_CLID_sRun(id__,clock_type_plus(x__,1,CLID_sRun_clock_type(id__))))
+		Clock_CLID_sWaitStart(id__,x__) = 
+			TimeOut_1(
+				sWaitStart::entered -> Clock_CLID_sWaitStart(id__,0)
+				[]
+				get_CLID_sWaitStart!x__ -> Clock_CLID_sWaitStart(id__,x__)
+				[]
+				terminate -> SKIP,Clock_CLID_sWaitStart(id__,clock_type_plus(x__,1,CLID_sWaitStart_clock_type(id__))))
 		
-		StateClocks(id__) = dbisim(Clock_CLID_sWaitStart(id__,0))
+		StateClocks(id__) = dbisim(Clock_CLID_sRun(id__,0))
 		[| { terminate } |] (
-		dbisim(Clock_CLID_sRun(id__,0))
+		dbisim(Clock_CLID_sWaitStart(id__,0))
 		)
 		
-		stateClockSync = {|get_CLID_sWaitStart,sWaitStart::entered,get_CLID_sRun,sRun::entered|}
+		stateClockSync = {|get_CLID_sRun,sRun::entered,get_CLID_sWaitStart,sWaitStart::entered|}
 		
 		-- Shared memory
 		-- Shared memory variables
